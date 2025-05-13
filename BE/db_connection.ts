@@ -1,10 +1,14 @@
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import segnalazioneModel from './models/segnalazione.ts';
 
-mongoose.connect('mongodb+srv://jacopoconsolaro:aro5NPYUJaGYALWp@cluster0.hjkejiu.mongodb.net/securiTrento')
-   .then(() => console.log('OK'))
-   .catch(e => console.error('ERR:', e.message));
-//aro5NPYUJaGYALWp
+dotenv.config();
+
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/securiTrento';
+
+mongoose.connect(MONGODB_URI)
+   .then(() => console.log('Successfully connected to MongoDB'))
+   .catch(e => console.error('MongoDB connection error:', e.message));
 
 // Create a new document based on your model
 const newSegnalazione = new segnalazioneModel({
@@ -18,7 +22,7 @@ const newSegnalazione = new segnalazioneModel({
     idUtente: "1283123123123"
   });
   
-  // Save the document to the database
-  newSegnalazione.save()
+// Save the document to the database
+newSegnalazione.save()
     .then(doc => console.log('Document saved:', doc))
     .catch(err => console.error('Error saving document:', err));
