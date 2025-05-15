@@ -5,9 +5,15 @@ const segnalazioneSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    coordinateGPS: {
-        lat: Number,
-        lng: Number
+    coordinateGps: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number]
+        }
     },
     tipologia: {
         type: String,

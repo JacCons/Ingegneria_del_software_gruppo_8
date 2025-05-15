@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import swaggerSpec from './config/swaggerConfig.ts';
 import swaggerUi from 'swagger-ui-express';
-import controllerSegnalazione from './controllers/controllerSegnalazione.ts';
+import routerSegnalazione from './routes/routerSegnalazione.ts';
+
 
 dotenv.config();
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/securiTrento';
@@ -15,7 +16,7 @@ mongoose.connect(MONGODB_URI)
 const app = express();
 app.use(express.json());
 
-app.use('/segnalazioni', controllerSegnalazione.router); //imposto il route path
+app.use('/segnalazioni', routerSegnalazione); //imposto il route path
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
