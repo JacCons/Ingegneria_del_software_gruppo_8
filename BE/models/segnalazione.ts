@@ -16,10 +16,12 @@ const segnalazioneSchema = new Schema({
     },
     stato: {
         type: String,
-        enum: ["aperto", "chiuso"],
-        required: true
+        enum: ["aperto", "chiuso"]
     },
-    telefonata: Boolean,
+    telefonata: {
+        type: Boolean,
+        default: false
+    },
     media: String,
     descrizione: String,
     idUtente: String
