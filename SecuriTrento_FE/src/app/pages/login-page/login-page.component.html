@@ -1,0 +1,17 @@
+<div>
+    <div class="form-container">
+        <mat-form-field floatLabel="always">
+            <mat-label>Numero di telefono</mat-label>
+            <input matInput type="number" class="example-right-align" placeholder="+39..." />
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Enter your password</mat-label>
+            <input matInput [type]="hide() ? 'password' : 'text'" />
+            <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide()">
+                <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+</div>
