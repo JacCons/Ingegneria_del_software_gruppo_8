@@ -17,7 +17,7 @@ const segnalazioneSchema = new Schema({
     },
     tipologia: {
         type: String,
-        enum: ["rissa", "spaccio", "furto", "degrado su mezzo pubblico", "disturbo della quiete","vandalismo", "altro"],
+        enum: ["rissa", "spaccio", "furto", "degrado su mezzo pubblico", "disturbo della quiete", "vandalismo", "altro"],
         required: true
     },
     stato: {

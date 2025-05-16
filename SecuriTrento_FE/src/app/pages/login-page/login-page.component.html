@@ -1,17 +1,26 @@
 <div>
     <div class="form-container">
-        <mat-form-field floatLabel="always">
-            <mat-label>Numero di telefono</mat-label>
-            <input matInput type="number" class="example-right-align" placeholder="+39..." />
+        <mat-form-field class="example-full-width">
+            <mat-label>Numero Cellulare</mat-label>
+            <span matTextPrefix>+39 &nbsp;</span>
+            <input type="tel" matInput placeholder="349-824-5285" [(ngModel)]="cellularPhone">
+            <mat-icon matSuffix>mode_edit</mat-icon>
         </mat-form-field>
 
+        <!-- password -->
         <mat-form-field>
             <mat-label>Enter your password</mat-label>
-            <input matInput [type]="hide() ? 'password' : 'text'" />
+            <input matInput [type]="hide() ? 'password' : 'text'" [(ngModel)]="password">
             <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'"
                 [attr.aria-pressed]="hide()">
                 <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
         </mat-form-field>
     </div>
+    <div class="buttons_login">
+        <button [disabled]="checkLoginNotEmpty()" (click)="clickAccedi($event)" mat-raised-button Interactive
+            matTooltip="Accedi">Accedi</button>
+        <button (click)="clickRegistrati($event)" mat-raised-button enabled matTooltip="Registrati">Registrati</button>
+    </div>
+
 </div>

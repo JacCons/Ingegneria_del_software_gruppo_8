@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="segnalazioneSection">
+    <div class="segnalazioniButtons">
+      <button mat-fab extended (click)="creaSegnalazione('urgente')">
+        <mat-icon>add</mat-icon>
+        Segnalazione Urgente
+      </button>
+
+      <button mat-fab extended (click)="creaSegnalazione('normale')">
+        <mat-icon>add</mat-icon>
+        Segnalazione
+      </button>
+
+    </div>
+
+    <div [ngSwitch]="tipoSegnalazione" class="segnalazioneForm" *ngIf="showSegnalazioneForm">
+      <mat-card appearance="outlined">
+        <mat-card-title *ngSwitchCase="'urgente'">Completa segnalazione urgente:</mat-card-title>
+        <mat-card-title *ngSwitchCase="'normale'">Completa segnalazione:</mat-card-title>
+
+        <mat-card-content>
+          <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+            <mat-step [stepControl]="firstFormGroup">
+              <form [formGroup]="firstFormGroup">
+
+                <mat-form-field>
+                  <ng-template matStepLabel>Tipologia segnalazione:</ng-template>
+                  <mat-select [disabled]="disableSelect.value">
+                    <mat-option value="rissa">Rissa</mat-option>
+                    <mat-option value="spaccio">Spaccio</mat-option>
+                    <mat-option value="vandalismo">Vandalismo</mat-option>
+                    <mat-option value="Furto">Furto</mat-option>
+                    <mat-option value="Degrado su mezzo pubblico">Degrado su mezzo pubblico</mat-option>
+                    <mat-option value="Disturbo della quiete">Disturbo della quiete</mat-option>
+                    <mat-option value="Altro">Altro</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <div>
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button mat-button matStepperNext>Next</button>
+                </div>
+              </form>
+
+            </mat-step>
+            <mat-step [stepControl]="secondFormGroup">
+              <form [formGroup]="secondFormGroup">
+                <ng-template matStepLabel>Fill out your address</ng-template>
+                <mat-form-field class="example-full-width">
+                  <mat-label>Scrivi una descrizione</mat-label>
+                  <textarea matInput placeholder="Ex. It makes me feel..."></textarea>
+                </mat-form-field>
+                
+                <div>
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button mat-button matStepperNext>Next</button>
+                  <button mat-button *ngSwitchCase="'normale'">Conferma</button>
+                </div>
+
+              </form>
+            </mat-step>
+            <mat-step *ngSwitchCase="'urgente'">
+              <ng-template matStepLabel>Done</ng-template>
+              <p>You are now done.</p>
+              <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button (click)="stepper.reset()">Reset</button>
+                <button mat-button *ngSwitchCase="'urgente'">Conferma</button>
+
+              </div>
+            </mat-step>
+          </mat-stepper>
+
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+  </div>
+
+</body>
+
+</html>
