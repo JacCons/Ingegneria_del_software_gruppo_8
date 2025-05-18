@@ -53,16 +53,16 @@
             </mat-step>
             <mat-step [stepControl]="secondFormGroup">
               <form [formGroup]="secondFormGroup">
-                <ng-template matStepLabel>Fill out your address</ng-template>
+                <ng-template matStepLabel>Inserisci una descrizione</ng-template>
                 <mat-form-field class="example-full-width">
                   <mat-label>Scrivi una descrizione</mat-label>
-                  <textarea matInput placeholder="Ex. It makes me feel..."></textarea>
+                  <textarea matInput placeholder="Ex. descrizione dettagliata..."></textarea>
                 </mat-form-field>
-                
+
                 <div>
                   <button mat-button matStepperPrevious>Back</button>
-                  <button mat-button matStepperNext>Next</button>
-                  <button mat-button *ngSwitchCase="'normale'">Conferma</button>
+                  <button mat-button *ngSwitchCase="'urgente'" matStepperNext>Next</button>
+                  <button mat-button (click)="confermaNuovaSegnalazione()" *ngSwitchCase="'normale'">Conferma</button>
                 </div>
 
               </form>
@@ -73,14 +73,21 @@
               <div>
                 <button mat-button matStepperPrevious>Back</button>
                 <button mat-button (click)="stepper.reset()">Reset</button>
-                <button mat-button *ngSwitchCase="'urgente'">Conferma</button>
-
+                <button mat-button (click)="confermaNuovaSegnalazione()" *ngSwitchCase="'urgente'">Conferma</button>
               </div>
             </mat-step>
           </mat-stepper>
 
         </mat-card-content>
       </mat-card>
+    </div>
+
+
+    <div>
+      Segnalazioni:
+      <div *ngFor="let segnalazione of segnalazioni">
+        {{segnalazione._id}} | {{segnalazione.descrizione}}
+      </div>
     </div>
 
   </div>

@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors'; 
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import swaggerSpec from './config/swaggerConfig.ts';
@@ -14,6 +15,7 @@ mongoose.connect(MONGODB_URI)
    .catch(e => console.error('MongoDB connection error:', e.message));
 
 const app = express();
+app.use(cors()); //abilito le richieste cross-origin
 app.use(express.json());
 
 app.use('/segnalazioni', routerSegnalazione); //imposto il route path
