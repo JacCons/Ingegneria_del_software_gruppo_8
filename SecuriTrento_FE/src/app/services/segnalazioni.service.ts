@@ -4,6 +4,7 @@ import { Segnalazione } from '../models/segnalazione.model';
 import { ApiResponse } from '../models/api-response.model';
 import { Observable } from 'rxjs';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,4 +15,13 @@ export class SegnalazioniService {
   getAllSegnalazioni(): Observable<ApiResponse<Segnalazione[]>> {
     return this.http.get<ApiResponse<Segnalazione[]>>(`${this.apiBasePathUrl}/segnalazioni`);
   }
+
+  updateSegnalazione(segnalazioneID : string, segnalazione: Segnalazione): Observable<ApiResponse<Segnalazione>> {
+    return this.http.put<ApiResponse<Segnalazione>>(
+      `${this.apiBasePathUrl}/segnalazioni/${segnalazioneID}`,
+      segnalazione
+    );
+  }
+
+  
 }
