@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
-
+import 'leaflet.markercluster';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +9,7 @@ export class MappaService {
   private map: L.Map | null = null;
   private readonly TRENTO_COORDINATES: L.LatLngExpression = [46.0748, 11.1217]; // Coordinate di Trento [latitudine, longitudine]
   private readonly DEFAULT_ZOOM = 13;
+  private markerClusterGroup!: L.MarkerClusterGroup;
 
   constructor() { }
 
@@ -25,9 +26,21 @@ export class MappaService {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19
-    }).addTo(this.map);
 
+    }).addTo(this.map);
+    this.markerClusterGroup = L.markerClusterGroup();
+    this.map.addLayer(this.markerClusterGroup);
     return this.map;
+  }
+
+  addMarkerToCluster(latLng: [number, number]): L.Marker {
+    const marker = L.marker(latLng);
+    this.markerClusterGroup.addLayer(marker);
+    return marker;
+  }
+
+  clearMarkers(): void {
+    this.markerClusterGroup.clearLayers();
   }
 
   /**
