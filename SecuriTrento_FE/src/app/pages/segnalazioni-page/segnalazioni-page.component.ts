@@ -50,12 +50,9 @@ export class SegnalazioniPageComponent {
   private segnalazioniService = inject(SegnalazioniService);
   private _formBuilder = inject(FormBuilder);
   disableSelect = new FormControl(false);
-  tipoSegnalazione: string = '';
-  newTipologiaSegnalazione: TipoSegnalazione = TipoSegnalazione.ALTRO;
+  tipoSegnalazione : string = '';
   showSegnalazioneForm = false;
   segnalazioni: Segnalazione[] = [];
-  newDescrizione: string = '';
-  newTipologia: TipoSegnalazione = TipoSegnalazione.ALTRO;
 
   ngOnInit(): void {
     this.segnalazioniService.getAllSegnalazioni().subscribe({
@@ -76,7 +73,7 @@ export class SegnalazioniPageComponent {
   }
 
   firstFormGroup = this._formBuilder.group({
-    newTipologia: ['', Validators.required],
+    newTipologiaSegnalazione: ['', Validators.required],
   });
   secondFormGroup = this._formBuilder.group({
     newDescrizione: ['', Validators.required],
@@ -119,11 +116,17 @@ export class SegnalazioniPageComponent {
     ).subscribe(result => {
       if (result === 'confirm') {
         this.showSegnalazioneForm = false;
+
+        const tipologiaValue = this.firstFormGroup.get('newTipologiaSegnalazione')?.value;
+        const descrizioneValue = this.secondFormGroup.get('newDescrizione')?.value;
+
         console.log('Segnalazione confermata!');
+        console.log('Tipologia:', tipologiaValue);
+        console.log('Descrizione:', descrizioneValue);
 
         const segnalazione: Segnalazione = {
-          tipologia: this.newTipologiaSegnalazione as TipoSegnalazione,
-          descrizione: this.newDescrizione
+          tipologia: tipologiaValue ? (tipologiaValue as TipoSegnalazione) : TipoSegnalazione.ALTRO,
+          descrizione: descrizioneValue || ''
         };
 
         this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
@@ -132,8 +135,6 @@ export class SegnalazioniPageComponent {
               this.dialogService.showSuccess('Segnalazione creata con successo!');
               console.log('Segnalazione creata:', response.data);
               this.aggiungiMarkerSegnalazioni()
-            } else {
-              this.dialogService.showError('Errore nella creazione della segnalazione');
             }
           },
           error: (error) => {
@@ -143,7 +144,6 @@ export class SegnalazioniPageComponent {
         });
 
         this.cdr.detectChanges();
-
       } else if (result === 'cancel') {
         console.log('Operazione annullata');
       }
