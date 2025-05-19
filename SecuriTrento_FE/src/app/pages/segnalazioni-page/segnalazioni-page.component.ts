@@ -59,12 +59,13 @@ export class SegnalazioniPageComponent {
   }
 
   firstFormGroup = this._formBuilder.group({
-    firstCtrl: ['', Validators.required],
+    newTipologia: ['', Validators.required],
   });
   secondFormGroup = this._formBuilder.group({
-    secondCtrl: ['', Validators.required],
+    newDescrizione: ['', Validators.required],
   });
   isLinear = false;
+
 
   creaSegnalazione(tipoSegnalazione: string) {
     console.log("hai premuto: ", tipoSegnalazione);

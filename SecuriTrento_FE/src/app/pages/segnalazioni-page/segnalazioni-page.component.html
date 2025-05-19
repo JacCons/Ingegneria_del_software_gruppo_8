@@ -33,7 +33,7 @@
 
                 <mat-form-field>
                   <ng-template matStepLabel>Tipologia segnalazione:</ng-template>
-                  <mat-select [(ngModel)]="newTipologiaSegnalazione" [disabled]="!!disableSelect.value">
+                  <mat-select formControlName="newTipologia">
                     <mat-option value="RISSA">Rissa</mat-option>
                     <mat-option value="SPACCIO">Spaccio</mat-option>
                     <mat-option value="VANDALISMO">Vandalismo</mat-option>
@@ -55,7 +55,7 @@
                 <ng-template matStepLabel>Inserisci una descrizione</ng-template>
                 <mat-form-field class="example-full-width">
                   <mat-label>Scrivi una descrizione</mat-label>
-                  <textarea matInput placeholder="Ex. descrizione dettagliata..." [(ngModel)]="newDescrizione"></textarea>
+                  <textarea matInput placeholder="Ex. descrizione dettagliata..." formControlName="newDescrizione"></textarea>
                 </mat-form-field>
 
                 <div>
