@@ -23,7 +23,6 @@ export class SegnalazioniService {
     return this.http.delete<ApiResponse<null>>(`${this.apiBasePathUrl}/segnalazioni/${segnalazioneID}`);
   }
 
-
   updateSegnalazione(segnalazioneID : string, segnalazione: Segnalazione): Observable<ApiResponse<Segnalazione>> {
     return this.http.put<ApiResponse<Segnalazione>>(
       `${this.apiBasePathUrl}/segnalazioni/${segnalazioneID}`,
@@ -31,5 +30,12 @@ export class SegnalazioniService {
     );
   }
 
-
+  createSegnalazione(segnalazione: Segnalazione): Observable<ApiResponse<Segnalazione>> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    return this.http.post<ApiResponse<Segnalazione>>(`${this.apiBasePathUrl}/segnalazioni`,
+      segnalazione,
+      { headers });
+  }
 }

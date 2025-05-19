@@ -33,14 +33,14 @@
 
                 <mat-form-field>
                   <ng-template matStepLabel>Tipologia segnalazione:</ng-template>
-                  <mat-select [disabled]="disableSelect.value">
-                    <mat-option value="rissa">Rissa</mat-option>
-                    <mat-option value="spaccio">Spaccio</mat-option>
-                    <mat-option value="vandalismo">Vandalismo</mat-option>
-                    <mat-option value="Furto">Furto</mat-option>
-                    <mat-option value="Degrado su mezzo pubblico">Degrado su mezzo pubblico</mat-option>
-                    <mat-option value="Disturbo della quiete">Disturbo della quiete</mat-option>
-                    <mat-option value="Altro">Altro</mat-option>
+                  <mat-select [(ngModel)]="newTipologiaSegnalazione" [disabled]="!!disableSelect.value">
+                    <mat-option value="RISSA">Rissa</mat-option>
+                    <mat-option value="SPACCIO">Spaccio</mat-option>
+                    <mat-option value="VANDALISMO">Vandalismo</mat-option>
+                    <mat-option value="FURTO">Furto</mat-option>
+                    <mat-option value="DEGRADO">Degrado su mezzo pubblico</mat-option>
+                    <mat-option value="VANDALISMO">Disturbo della quiete</mat-option>
+                    <mat-option value="ALTRO">Altro</mat-option>
                   </mat-select>
                 </mat-form-field>
                 <div>
@@ -55,7 +55,7 @@
                 <ng-template matStepLabel>Inserisci una descrizione</ng-template>
                 <mat-form-field class="example-full-width">
                   <mat-label>Scrivi una descrizione</mat-label>
-                  <textarea matInput placeholder="Ex. descrizione dettagliata..."></textarea>
+                  <textarea matInput placeholder="Ex. descrizione dettagliata..." [(ngModel)]="newDescrizione"></textarea>
                 </mat-form-field>
 
                 <div>

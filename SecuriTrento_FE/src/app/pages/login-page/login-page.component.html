@@ -1,9 +1,9 @@
-<div>
+<div class="outer-container">
     <div class="form-container">
         <mat-form-field class="example-full-width">
             <mat-label>Numero Cellulare</mat-label>
             <span matTextPrefix>+39 &nbsp;</span>
-            <input type="tel" matInput placeholder="349-824-5285" [(ngModel)]="cellularPhone">
+            <input type="tel" matInput placeholder="349-824-5285" [(ngModel)]="cellularPhone" (keydown)="validatePhoneInput($event)">
             <mat-icon matSuffix>mode_edit</mat-icon>
         </mat-form-field>
 
@@ -18,7 +18,7 @@
         </mat-form-field>
     </div>
     <div class="buttons_login">
-        <button [disabled]="checkLoginNotEmpty()" (click)="clickAccedi($event)" mat-raised-button Interactive
+        <button [disabled]="!checkLoginNotEmpty()" (click)="clickAccedi($event)" mat-raised-button Interactive
             matTooltip="Accedi">Accedi</button>
         <button (click)="clickRegistrati($event)" mat-raised-button enabled matTooltip="Registrati">Registrati</button>
     </div>

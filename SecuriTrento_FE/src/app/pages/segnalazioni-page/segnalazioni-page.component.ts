@@ -14,7 +14,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CommonModule } from '@angular/common';
 import { DialogService } from '../../services/dialog.service';
 import { SegnalazioniService } from '../../services/segnalazioni.service';
-import { Segnalazione } from '../../models/segnalazione.model';
+import { Segnalazione, TipoSegnalazione } from '../../models/segnalazione.model';
 
 @Component({
   selector: 'app-segnalazioni-page',
@@ -48,16 +48,12 @@ export class SegnalazioniPageComponent {
   private segnalazioniService = inject(SegnalazioniService);
   private _formBuilder = inject(FormBuilder);
   disableSelect = new FormControl(false);
-  tipoSegnalazione = "";
+  tipoSegnalazione : string = '';
+  newTipologiaSegnalazione : TipoSegnalazione = TipoSegnalazione.ALTRO;
   showSegnalazioneForm = false;
-  segnalazioni: Segnalazione[]  = [];
-  segnalazione: Segnalazione = {} as Segnalazione;
-
-  newsegnalazione: Segnalazione = {
-    tipologia: 'rissa',
-    descrizione: 'caccamolla',
-  }
-
+  segnalazioni: Segnalazione[] = [];
+  newDescrizione: string = '';
+  newTipologia: TipoSegnalazione = TipoSegnalazione.ALTRO;
 
   ngOnInit(): void {
   }
@@ -69,7 +65,6 @@ export class SegnalazioniPageComponent {
     secondCtrl: ['', Validators.required],
   });
   isLinear = false;
-
 
   creaSegnalazione(tipoSegnalazione: string) {
     console.log("hai premuto: ", tipoSegnalazione);
@@ -86,40 +81,31 @@ export class SegnalazioniPageComponent {
       'Conferma',
       'Annulla'
     ).subscribe(result => {
-      let segnalazione: {id: string, descrizione: string, [key: string]: any} | null = null;
       if (result === 'confirm') {
         this.showSegnalazioneForm = false;
         console.log('Segnalazione confermata!');
 
-        this.segnalazioniService.getSegnalazioneById("682616cb1b0d5ba583f95fd4").subscribe({
+        const segnalazione: Segnalazione = {
+          tipologia: this.newTipologiaSegnalazione as TipoSegnalazione,
+          descrizione: this.newDescrizione
+        };
+
+        this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
           next: (response) => {
             if (response.success) {
-              //this.segnalazione = response.data;
-              const segnalazione = response.data;
-              console.log('Segnalazione got:', segnalazione);
+              this.dialogService.showSuccess('Segnalazione creata con successo!');
+              console.log('Segnalazione creata:', response.data);
+            } else {
+              this.dialogService.showError('Errore nella creazione della segnalazione');
             }
           },
           error: (error) => {
-            console.error('Error fetching segnalazioni:', error);
+            console.error('Error creating segnalazione:', error);
+            this.dialogService.showError('Errore nella creazione della segnalazione');
           }
         });
+
         this.cdr.detectChanges();
-
-
-        /*this.segnalazioniService.updateSegnalazione("682b2d1cc50a1fff9b8c5eab",this.newsegnalazione ).subscribe({
-          next: (response) => {
-            if (response.success) {
-              this.segnalazione = response.data;
-              console.log('Segnalazioni:', this.segnalazione);
-            }
-          },
-          error: (error) => {
-            console.error('Error fetching segnalazioni:', error);
-          }
-        });
-        this.cdr.detectChanges();*/
-
-
 
       } else if (result === 'cancel') {
         console.log('Operazione annullata');

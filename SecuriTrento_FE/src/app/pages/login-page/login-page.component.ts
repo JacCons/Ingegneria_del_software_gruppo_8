@@ -19,15 +19,15 @@ import { Router } from '@angular/router';
 export class LoginPageComponent {
   //variabili di support
   hide = signal(true);
-  
+
   cellularPhone: string = "";
   password: string = "";
 
   constructor(
     private router: Router
-  ){}
+  ) { }
 
-  ngOnInit(): void{
+  ngOnInit(): void {
   }
 
   //pulsante mostra/nascondi password
@@ -36,18 +36,41 @@ export class LoginPageComponent {
     event.stopPropagation();
   }
 
-  clickAccedi(event: MouseEvent){
+  clickAccedi(event: MouseEvent) {
     console.log("ho cliccato accedi");
     this.router.navigate(['/segnalazioni']);
   }
 
-  clickRegistrati(event: MouseEvent){
+  clickRegistrati(event: MouseEvent) {
     console.log("Ho registrato");
     console.log(this.cellularPhone);
     console.log(this.password)
   }
-  
-  checkLoginNotEmpty(){
-    return !this.cellularPhone || !this.password;
+
+  checkLoginNotEmpty() {
+    const phoneNumber = this.cellularPhone?.trim() || '';
+    const password = this.password?.trim() || '';
+    const isPhoneValid = /^[0-9]{1,15}$/.test(phoneNumber);
+    const isPasswordValid = password.length >= 7;
+
+    return isPhoneValid && isPasswordValid;
   }
+
+  validatePhoneInput(event: KeyboardEvent): boolean {
+  const isDigit = /^\d$/.test(event.key);
+  const isControlKey = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(event.key);
+
+  const currentValue = (event.target as HTMLInputElement).value;
+  if (currentValue.length >= 10 && !isControlKey) {
+    event.preventDefault();
+    return false;
+  }
+
+  if (!isDigit && !isControlKey) {
+    event.preventDefault();
+    return false;
+  }
+
+  return true;
+}
 }
