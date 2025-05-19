@@ -57,8 +57,8 @@ export class SegnalazioniPageComponent {
     tipologia: 'rissa',
     descrizione: 'caccamolla',
   }
-    
-  
+
+
   ngOnInit(): void {
   }
 
@@ -86,15 +86,17 @@ export class SegnalazioniPageComponent {
       'Conferma',
       'Annulla'
     ).subscribe(result => {
+      let segnalazione: {id: string, descrizione: string, [key: string]: any} | null = null;
       if (result === 'confirm') {
         this.showSegnalazioneForm = false;
         console.log('Segnalazione confermata!');
 
-        this.segnalazioniService.getAllSegnalazioni().subscribe({
+        this.segnalazioniService.getSegnalazioneById("682616cb1b0d5ba583f95fd4").subscribe({
           next: (response) => {
             if (response.success) {
-              this.segnalazioni = response.data;
-              console.log('Segnalazioni:', this.segnalazioni);
+              //this.segnalazione = response.data;
+              const segnalazione = response.data;
+              console.log('Segnalazione got:', segnalazione);
             }
           },
           error: (error) => {
@@ -103,7 +105,7 @@ export class SegnalazioniPageComponent {
         });
         this.cdr.detectChanges();
 
-        
+
         /*this.segnalazioniService.updateSegnalazione("682b2d1cc50a1fff9b8c5eab",this.newsegnalazione ).subscribe({
           next: (response) => {
             if (response.success) {
