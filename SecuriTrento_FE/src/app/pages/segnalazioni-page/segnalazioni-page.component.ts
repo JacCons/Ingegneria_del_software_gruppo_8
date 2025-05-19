@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { DialogService } from '../../services/dialog.service';
 import { SegnalazioniService } from '../../services/segnalazioni.service';
 import { Segnalazione, TipoSegnalazione } from '../../models/segnalazione.model';
+import { MappaService } from '../../services/mappa.service';
 
 @Component({
   selector: 'app-segnalazioni-page',
@@ -40,7 +41,8 @@ import { Segnalazione, TipoSegnalazione } from '../../models/segnalazione.model'
 export class SegnalazioniPageComponent {
 
   constructor(
-    private router: Router
+    private router: Router,
+    private mappaService: MappaService
   ) { }
 
   private cdr = inject(ChangeDetectorRef);
@@ -48,14 +50,29 @@ export class SegnalazioniPageComponent {
   private segnalazioniService = inject(SegnalazioniService);
   private _formBuilder = inject(FormBuilder);
   disableSelect = new FormControl(false);
-  tipoSegnalazione : string = '';
-  newTipologiaSegnalazione : TipoSegnalazione = TipoSegnalazione.ALTRO;
+  tipoSegnalazione: string = '';
+  newTipologiaSegnalazione: TipoSegnalazione = TipoSegnalazione.ALTRO;
   showSegnalazioneForm = false;
   segnalazioni: Segnalazione[] = [];
   newDescrizione: string = '';
   newTipologia: TipoSegnalazione = TipoSegnalazione.ALTRO;
 
   ngOnInit(): void {
+    this.segnalazioniService.getAllSegnalazioni().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.segnalazioni = response.data;
+          this.cdr.detectChanges();
+        } else {
+          this.dialogService.showError('Errore nel recupero delle segnalazioni');
+        }
+        console.log("segnalazioni: ", this.segnalazioni);
+      },
+      error: (error) => {
+        console.error('Error fetching segnalazioni:', error);
+        this.dialogService.showError('Errore nel recupero delle segnalazioni');
+      }
+    });
   }
 
   firstFormGroup = this._formBuilder.group({
@@ -66,6 +83,24 @@ export class SegnalazioniPageComponent {
   });
   isLinear = false;
 
+  ngAfterViewInit(): void {
+    this.mappaService.initMap('map');
+    this.aggiungiMarkerSegnalazioni();
+  }
+
+  aggiungiMarkerSegnalazioni() {
+    if (this.segnalazioni && this.segnalazioni.length) {
+      this.segnalazioni.forEach(s => {
+        const lon = Number(s.coordinateGps?.coordinates?.at(0));
+        const lat = Number(s.coordinateGps?.coordinates?.at(1));
+        if ( lon && lat ) {
+          this.mappaService.addMarker([lat, lon])
+            .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
+        }
+      });
+    }
+
+  }
 
   creaSegnalazione(tipoSegnalazione: string) {
     console.log("hai premuto: ", tipoSegnalazione);
@@ -96,6 +131,7 @@ export class SegnalazioniPageComponent {
             if (response.success) {
               this.dialogService.showSuccess('Segnalazione creata con successo!');
               console.log('Segnalazione creata:', response.data);
+              this.aggiungiMarkerSegnalazioni()
             } else {
               this.dialogService.showError('Errore nella creazione della segnalazione');
             }
