@@ -53,7 +53,7 @@ const swaggerDefinition = {
 const options = {
   swaggerDefinition,
   apis: [
-    './controllers/*.ts',
+    './routes/*.ts',
     './models/*.ts',
   ],
 };
