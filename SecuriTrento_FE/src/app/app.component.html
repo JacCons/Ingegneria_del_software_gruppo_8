@@ -1,13 +1,35 @@
-<router-outlet>
-  <main class="main">
-    <div class="content">
-      <div class="left-side">
-        <h1>Hello, {{ title }}</h1>
-        <p>Congratulations! Your app is running. 🎉</p>
+<main class="main">
+  <div class="content">
+    <ng-container *ngIf= "showDashboard" >
+      <div class="left-side" >
+        <div class="example-button-container">
+
+          <button (click)="clickSegnalazioni($event)" mat-fab extended>
+            <mat-icon>maps</mat-icon>
+            Segnalazioni
+          </button>
+
+          <button (click)="clickNotifiche($event)" mat-fab extended>
+            <mat-icon>notifications</mat-icon>
+            Notifiche
+          </button>
+
+          <button (click)="clickUtenti($event)" mat-fab extended>
+            <mat-icon>group</mat-icon>
+            Gestione Utenti
+          </button>
+
+          <button (click)="clickLogout($event)" mat-fab extended>
+            <mat-icon>logout</mat-icon>
+            Logout
+          </button>
+
+        </div>
       </div>
       <div class="divider" role="separator" aria-label="Divider"></div>
-      <div class="right-side">
-      </div>
+    </ng-container>
+    <div class="right-side">
+      <router-outlet></router-outlet>
     </div>
-  </main>
-<router-outlet/>
+  </div>
+</main>

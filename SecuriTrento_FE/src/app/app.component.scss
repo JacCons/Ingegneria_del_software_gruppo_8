@@ -1,5 +1,136 @@
+/* Sfondo generale con gradiente */
+body, .main {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e3ecfa 0%, #f5f7fa 100%);
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
 
-:root{
-background: linear-gradient(135deg, #e3ecfa 100%, #f5f7fa 20%)
+/* Layout principale */
+.content {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+min-width: 0;
+}
 
+/* Sidebar sinistra */
+.left-side {
+  background: #fff;
+  min-width: 260px;
+  max-width: 300px;
+  width: 22vw;
+  box-shadow: 2px 0 16px rgba(44, 62, 80, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0 0 0;
+  position: relative;
+}
+
+/* Contenitore bottoni */
+.example-button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  align-items: center;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Bottoni sidebar */
+.example-button-container button {
+  width: 180px;
+  justify-content: flex-start;
+  padding-left: 24px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+  background: linear-gradient(90deg, #e3ecfa 60%, #c9e7ff 100%);
+  color: #2d3a4b;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.example-button-container button:hover {
+  background: linear-gradient(90deg, #c9e7ff 0%, #e3ecfa 100%);
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
+}
+
+/* Divider centrale */
+.divider {
+  width: 2px;
+  background: #e3ecfa;
+  margin: 0 32px;
+  height: 90vh;
+  align-self: center;
+  border-radius: 2px;
+}
+
+/* Area destra (contenuto principale) */
+.right-side {
+  flex: 1;
+  padding: 48px 40px;
+  background: transparent;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+
+/* Responsive */
+@media (max-width: 900px) {
+  .content {
+    flex-direction: column;
+  }
+  .left-side {
+    flex-direction: row;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 16px 0;
+    box-shadow: none;
+    border-bottom: 2px solid #e3ecfa;
+  }
+  .example-button-container {
+    flex-direction: row;
+    gap: 16px;
+    width: 100%;
+    justify-content: center;
+  }
+  .divider {
+    display: none;
+  }
+  .right-side {
+    padding: 24px 8px;
+  }
+}
+
+@media (max-height: 400px) {
+  .content {
+    flex-direction: column;
+    height: auto;
+  }
+  .left-side {
+    flex-direction: row;
+    min-width: 100%;
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    padding: 12px 0;
+    box-shadow: none;
+    border-bottom: 2px solid #e3ecfa;
+  }
+  .example-button-container {
+    flex-direction: row;
+    gap: 12px;
+    width: 100%;
+    justify-content: left;
+    padding-left: 12px;
+  }
+  .divider {
+    display: none;
+  }
+  .right-side {
+    padding: 16px 4px;
+  }
 }
