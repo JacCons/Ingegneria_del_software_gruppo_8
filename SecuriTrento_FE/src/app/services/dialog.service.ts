@@ -18,12 +18,18 @@ export interface DialogData { //template dati dialog
 export class DialogService {
   private dialog = inject(MatDialog);
 
-  showSuccess(message: string): void {
-    this.openDialog({
-      title: 'Operazione completata',
-      message: message,
-      confirmButton: 'OK'
+  
+  showSuccess(title: string, message: string, buttonTextConfirm: string = 'OK'): Observable<string|undefined> {
+    const dialogRef = this.dialog.open(DialogContentComponent, {
+      width: '300px',
+      data: {
+        title: title,
+        message: message,
+        confirmButton: buttonTextConfirm,
+      }
     });
+
+    return dialogRef.afterClosed(); 
   }
 
   showError(message: string): void {

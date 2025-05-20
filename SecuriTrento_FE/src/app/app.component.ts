@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgIf } from '@angular/common';
+import { AutenticazioneService } from './services/autenticazione.service';
+import { Utente } from './models/utente.model';
 
 
 @Component({
@@ -14,8 +16,18 @@ import { NgIf } from '@angular/common';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
+
   title = 'SecuriTrento_FE';
   showDashboard = true;
+  currentUser: Utente | null = null;
+  private autenticazioneService = inject(AutenticazioneService);
+  
+  ngOnInit(): void {
+    this.autenticazioneService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      console.log("currentUser", this.currentUser);
+    });
+  }
 
   constructor(private router: Router) {
     this.router.events.subscribe(event => {

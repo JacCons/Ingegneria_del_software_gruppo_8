@@ -6,7 +6,8 @@ export enum TipoSegnalazione {
   DISTURBO = 'disturbo della quiete',
   VANDALISMO = 'vandalismo',
   ALTRO = 'altro'
-}export interface Segnalazione {
+}
+export interface Segnalazione {
   _id?: string;
   timeStamp?: Date;
   coordinateGps?: {
