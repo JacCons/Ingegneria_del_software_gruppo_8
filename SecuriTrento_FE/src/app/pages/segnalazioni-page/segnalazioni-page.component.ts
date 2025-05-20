@@ -82,8 +82,40 @@ export class SegnalazioniPageComponent {
 
   ngAfterViewInit(): void {
     this.mappaService.initMap('map');
-    this.aggiungiMarkerSegnalazioni();
+    this.caricaSegnalazioniCluster();
   }
+
+  caricaSegnalazioniCluster() {
+  this.segnalazioniService.getAllSegnalazioni().subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.segnalazioni = response.data;
+        // Prima pulisci tutti i marker esistenti
+        this.mappaService.clearMarkers();
+        
+        // Aggiungi i marker con clustering
+        if (this.segnalazioni && this.segnalazioni.length) {
+          this.segnalazioni.forEach(s => {
+            const lon = Number(s.coordinateGps?.coordinates?.at(0));
+            const lat = Number(s.coordinateGps?.coordinates?.at(1));
+            if (lon && lat) {
+              this.mappaService.addMarkerToCluster([lat, lon])
+                .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
+            }
+          });
+        }
+        this.cdr.detectChanges();
+      } else {
+        this.dialogService.showError('Errore nel recupero delle segnalazioni');
+      }
+    },
+    error: (error) => {
+      console.error('Error fetching segnalazioni:', error);
+      this.dialogService.showError('Errore nel recupero delle segnalazioni');
+    }
+  });
+}
+
 
   aggiungiMarkerSegnalazioni() {
     if (this.segnalazioni && this.segnalazioni.length) {
@@ -108,47 +140,56 @@ export class SegnalazioniPageComponent {
   }
 
   confermaNuovaSegnalazione() {
-    this.dialogService.showCustom(
-      'Conferma Segnalazione',
-      'Vuoi confermare la segnalazione?',
-      'Conferma',
-      'Annulla'
-    ).subscribe(result => {
-      if (result === 'confirm') {
-        this.showSegnalazioneForm = false;
+  this.dialogService.showCustom(
+    'Conferma Segnalazione',
+    'Vuoi confermare la segnalazione?',
+    'Conferma',
+    'Annulla'
+  ).subscribe(result => {
+    if (result === 'confirm') {
+      this.showSegnalazioneForm = false;
+      console.log('Segnalazione confermata!');
 
-        const tipologiaValue = this.firstFormGroup.get('newTipologiaSegnalazione')?.value;
-        const descrizioneValue = this.secondFormGroup.get('newDescrizione')?.value;
+      // Recupera i valori dai form groups
+      const tipologia = this.firstFormGroup.get('newTipologiaSegnalazione')?.value;
+      const descrizione = this.secondFormGroup.get('newDescrizione')?.value;
 
-        console.log('Segnalazione confermata!');
-        console.log('Tipologia:', tipologiaValue);
-        console.log('Descrizione:', descrizioneValue);
+      const segnalazione: Segnalazione = {
+        tipologia: tipologia as TipoSegnalazione,
+        descrizione: descrizione || ''
+      };
 
-        const segnalazione: Segnalazione = {
-          tipologia: tipologiaValue ? (tipologiaValue as TipoSegnalazione) : TipoSegnalazione.ALTRO,
-          descrizione: descrizioneValue || ''
-        };
-
-        this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
-          next: (response) => {
-            if (response.success) {
-              this.dialogService.showSuccess('Segnalazione creata con successo!');
-              console.log('Segnalazione creata:', response.data);
-              this.aggiungiMarkerSegnalazioni()
-            }
-          },
-          error: (error) => {
-            console.error('Error creating segnalazione:', error);
-            this.dialogService.showError('Errore nella creazione della segnalazione');
-          }
-        });
-
-        this.cdr.detectChanges();
-      } else if (result === 'cancel') {
-        console.log('Operazione annullata');
+      // Verifica che i dati siano validi prima di inviare
+      if (!tipologia) {
+        this.dialogService.showError('Tipologia segnalazione mancante');
+        return;
       }
-    });
 
-  }
+      this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.dialogService.showSuccess('Segnalazione creata con successo!');
+            console.log('Segnalazione creata:', response.data);
+            // Aggiorna la mappa con i nuovi dati
+            this.caricaSegnalazioniCluster();
+            
+            // Reset dei form
+            this.firstFormGroup.reset();
+            this.secondFormGroup.reset();
+          } 
+        },
+        error: (error) => {
+          console.error('Error creating segnalazione:', error);
+          this.dialogService.showError('Errore nella creazione della segnalazione');
+        }
+      });
+
+      this.cdr.detectChanges();
+
+    } else if (result === 'cancel') {
+      console.log('Operazione annullata');
+    }
+  });
+}
 
 }

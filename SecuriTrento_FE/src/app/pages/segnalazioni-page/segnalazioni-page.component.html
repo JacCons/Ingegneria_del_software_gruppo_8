@@ -8,92 +8,98 @@
 </head>
 
 <body>
-  <div class="segnalazioneSection">
-    <div class="segnalazioniButtons">
-      <button mat-fab extended (click)="creaSegnalazione('urgente')">
-        <mat-icon>add</mat-icon>
-        Segnalazione Urgente
-      </button>
-
-      <button mat-fab extended (click)="creaSegnalazione('normale')">
-        <mat-icon>add</mat-icon>
-        Segnalazione
-      </button>
-    </div>
-
-    <div [ngSwitch]="tipoSegnalazione" class="segnalazioneForm" *ngIf="showSegnalazioneForm">
-      <mat-card appearance="outlined">
-        <mat-card-title *ngSwitchCase="'urgente'">Completa segnalazione urgente:</mat-card-title>
-        <mat-card-title *ngSwitchCase="'normale'">Completa segnalazione:</mat-card-title>
-
-        <mat-card-content>
-          <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
-            <mat-step [stepControl]="firstFormGroup">
-              <form [formGroup]="firstFormGroup">
-
-                <mat-form-field>
-                  <ng-template matStepLabel>Tipologia segnalazione:</ng-template>
-                  <mat-select formControlName="newTipologiaSegnalazione">
-                    <mat-option value="RISSA">Rissa</mat-option>
-                    <mat-option value="SPACCIO">Spaccio</mat-option>
-                    <mat-option value="VANDALISMO">Vandalismo</mat-option>
-                    <mat-option value="FURTO">Furto</mat-option>
-                    <mat-option value="DEGRADO">Degrado su mezzo pubblico</mat-option>
-                    <mat-option value="VANDALISMO">Disturbo della quiete</mat-option>
-                    <mat-option value="ALTRO">Altro</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <div>
-                  <button mat-button matStepperPrevious>Back</button>
-                  <button mat-button matStepperNext>Next</button>
-                </div>
-              </form>
-
-            </mat-step>
-            <mat-step [stepControl]="secondFormGroup">
-              <form [formGroup]="secondFormGroup">
-                <ng-template matStepLabel>Inserisci una descrizione</ng-template>
-                <mat-form-field class="example-full-width">
-                  <mat-label>Scrivi una descrizione</mat-label>
-                  <textarea matInput placeholder="Ex. descrizione dettagliata..." formControlName="newDescrizione"></textarea>
-                </mat-form-field>
-
-                <div>
-                  <button mat-button matStepperPrevious>Back</button>
-                  <button mat-button *ngSwitchCase="'urgente'" matStepperNext>Next</button>
-                  <button mat-button (click)="confermaNuovaSegnalazione()" *ngSwitchCase="'normale'">Conferma</button>
-                </div>
-
-              </form>
-            </mat-step>
-            <mat-step *ngSwitchCase="'urgente'">
-              <ng-template matStepLabel>Done</ng-template>
-              <p>You are now done.</p>
-              <div>
-                <button mat-button matStepperPrevious>Back</button>
-                <button mat-button (click)="stepper.reset()">Reset</button>
-                <button mat-button (click)="confermaNuovaSegnalazione()" *ngSwitchCase="'urgente'">Conferma</button>
-              </div>
-            </mat-step>
-          </mat-stepper>
-
-        </mat-card-content>
-      </mat-card>
-    </div>
-
-
-    <div>
-      Segnalazioni:
-      <div *ngFor="let segnalazione of segnalazioni">
-        {{segnalazione._id}} | {{segnalazione.descrizione}}
+  <div class="segnalazioniPage">
+    <div class="lista-segnalazioni">
+      <h3>Segnalazioni:</h3>
+      <div class="card" *ngFor="let segnalazione of segnalazioni">
+        <div><strong>ID:</strong> {{ segnalazione._id }}</div>
+        <div><strong>Descrizione:</strong> {{ segnalazione.descrizione }}</div>
+        <div><strong>Tipo:</strong> {{ segnalazione.tipologia }}</div>
+        <div><strong>Data:</strong> {{ segnalazione.timeStamp | date:'short' }}</div>
       </div>
     </div>
 
-    <div id="map" style="height: 400px; width: 100%; margin-bottom: 32px;"></div>
-    <button mat-raised-button color="primary" (click)="aggiungiMarkerSegnalazioni()">
-      <mat-icon>refresh</mat-icon>
-      Aggiorna
-    </button>
+    <div class="segnalazioneSection">
+      <div id="map"></div>
+      <div class="segnalazioniButtons">
+        <button mat-fab extended (click)="creaSegnalazione('urgente')">
+          <mat-icon>add</mat-icon>
+          Segnalazione Urgente
+        </button>
+
+        <button mat-fab extended (click)="creaSegnalazione('normale')">
+          <mat-icon>add</mat-icon>
+          Segnalazione
+        </button>
+      </div>
+
+      <div [ngSwitch]="tipoSegnalazione" class="segnalazioneForm" *ngIf="showSegnalazioneForm">
+        <mat-card appearance="outlined">
+          <mat-card-title *ngSwitchCase="'urgente'">Completa segnalazione urgente:</mat-card-title>
+          <mat-card-title *ngSwitchCase="'normale'">Completa segnalazione:</mat-card-title>
+
+          <mat-card-content>
+            <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+              <mat-step [stepControl]="firstFormGroup">
+                <form [formGroup]="firstFormGroup">
+
+                  <mat-form-field>
+                    <ng-template matStepLabel>Tipologia segnalazione:</ng-template>
+                    <mat-select formControlName="newTipologiaSegnalazione">
+                      <mat-option value="RISSA">Rissa</mat-option>
+                      <mat-option value="SPACCIO">Spaccio</mat-option>
+                      <mat-option value="VANDALISMO">Vandalismo</mat-option>
+                      <mat-option value="FURTO">Furto</mat-option>
+                      <mat-option value="DEGRADO">Degrado su mezzo pubblico</mat-option>
+                      <mat-option value="VANDALISMO">Disturbo della quiete</mat-option>
+                      <mat-option value="ALTRO">Altro</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button matStepperNext>Next</button>
+                  </div>
+                </form>
+
+              </mat-step>
+              <mat-step [stepControl]="secondFormGroup">
+                <form [formGroup]="secondFormGroup">
+                  <ng-template matStepLabel>Inserisci una descrizione</ng-template>
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Scrivi una descrizione</mat-label>
+                    <textarea matInput placeholder="Ex. descrizione dettagliata..."
+                      formControlName="newDescrizione"></textarea>
+                  </mat-form-field>
+
+                  <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button *ngSwitchCase="'urgente'" matStepperNext>Next</button>
+                    <button mat-button (click)="confermaNuovaSegnalazione()" *ngSwitchCase="'normale'">Conferma</button>
+                  </div>
+
+                </form>
+              </mat-step>
+              <mat-step *ngSwitchCase="'urgente'">
+                <ng-template matStepLabel>Done</ng-template>
+                <p>You are now done.</p>
+                <div>
+                  <button mat-button matStepperPrevious>Back</button>
+                  <button mat-button (click)="stepper.reset()">Reset</button>
+                  <button mat-button (click)="confermaNuovaSegnalazione()" *ngSwitchCase="'urgente'">Conferma</button>
+                </div>
+              </mat-step>
+            </mat-stepper>
+
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <button mat-raised-button color="primary" (click)="caricaSegnalazioniCluster()">
+        <mat-icon>refresh</mat-icon>
+        Aggiorna
+      </button>
+    </div>
+
+
   </div>
 </body>
 
