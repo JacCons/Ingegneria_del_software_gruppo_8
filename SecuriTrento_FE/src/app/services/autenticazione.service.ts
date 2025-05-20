@@ -15,7 +15,7 @@ export class AutenticazioneService {
     this.loadUserFromStorage();
   }
 
-  public setCurrentUser(user: Utente): void {
+  public setCurrentUser(user: Utente): void { //serve per avere l'utente a disposizione in tutta l'app
     this.currentUserSubject.next(user);
     
     const userToSave = { ...user };
@@ -35,4 +35,7 @@ export class AutenticazioneService {
       }
     }
   }
+
+  //metti lo user che si autentica chiamando la setCurrentUser
+
 }
