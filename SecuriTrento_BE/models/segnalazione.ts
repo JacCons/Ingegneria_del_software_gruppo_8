@@ -30,7 +30,11 @@ const segnalazioneSchema = new Schema({
     },
     media: String,
     descrizione: String,
-    idUtente: String
+        idUtente: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'utenteRegistrato',
+        required: true
+    }
 });
 
 const segnalazioneModel = mongoose.model('segnalazione', segnalazioneSchema, 'segnalazioni');
