@@ -176,9 +176,7 @@ export class SegnalazioniPageComponent {
             // Reset dei form
             this.firstFormGroup.reset();
             this.secondFormGroup.reset();
-          } else {
-            this.dialogService.showError('Errore nella creazione della segnalazione');
-          }
+          } 
         },
         error: (error) => {
           console.error('Error creating segnalazione:', error);

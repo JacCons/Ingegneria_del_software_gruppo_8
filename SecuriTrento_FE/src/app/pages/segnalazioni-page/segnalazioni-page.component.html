@@ -9,6 +9,16 @@
 
 <body>
   <div class="segnalazioniPage">
+    <div class="lista-segnalazioni">
+      <h3>Segnalazioni:</h3>
+      <div class="card" *ngFor="let segnalazione of segnalazioni">
+        <div><strong>ID:</strong> {{ segnalazione._id }}</div>
+        <div><strong>Descrizione:</strong> {{ segnalazione.descrizione }}</div>
+        <div><strong>Tipo:</strong> {{ segnalazione.tipologia }}</div>
+        <div><strong>Data:</strong> {{ segnalazione.timeStamp | date:'short' }}</div>
+      </div>
+    </div>
+
     <div class="segnalazioneSection">
       <div id="map"></div>
       <div class="segnalazioniButtons">
@@ -83,24 +93,13 @@
           </mat-card-content>
         </mat-card>
       </div>
-
-
-      <div class="lista-segnalazioni">
-        <h3>Segnalazioni:</h3>
-        <div class="card" *ngFor="let segnalazione of segnalazioni">
-          <div><strong>ID:</strong> {{ segnalazione._id }}</div>
-          <div><strong>Descrizione:</strong> {{ segnalazione.descrizione }}</div>
-          <div><strong>Tipo:</strong> {{ segnalazione.tipologia }}</div>
-          <div><strong>Data:</strong> {{ segnalazione.timeStamp | date:'short' }}</div>
-        </div>
-      </div>
+      <button mat-raised-button color="primary" (click)="caricaSegnalazioniCluster()">
+        <mat-icon>refresh</mat-icon>
+        Aggiorna
+      </button>
     </div>
 
 
-    <button mat-raised-button color="primary" (click)="aggiungiMarkerSegnalazioni()">
-      <mat-icon>refresh</mat-icon>
-      Aggiorna
-    </button>
   </div>
 </body>
 
