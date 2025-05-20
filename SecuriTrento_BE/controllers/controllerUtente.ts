@@ -70,28 +70,28 @@ export const getUtentiByType = async (req, res) => {
  * Recupera un utente specifico tramite ID
  */
 export const getUtenteById = async (req, res) => {
-  try {
-    const utente = await utenteRegistratoModel.findById(req.params.id);
-    
-    if (!utente) {
-      return res.status(404).json({
-        success: false,
-        message: 'Utente non trovato'
-      });
+    try {
+        const utente = await utenteRegistratoModel.findById(req.params.id);
+
+        if (!utente) {
+            return res.status(404).json({
+                success: false,
+                message: 'Utente non trovato'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: utente,
+            message: 'Utente recuperato con successo'
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Errore del server',
+            error: error.message
+        });
     }
-    
-    return res.status(200).json({
-      success: true,
-      data: utente,
-      message: 'Utente recuperato con successo'
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: 'Errore del server',
-      error: error.message
-    });
-  }
 };
 
 /**
@@ -100,19 +100,19 @@ export const getUtenteById = async (req, res) => {
 export const registerUser = async (req, res) => {
     try {
         const { tipo } = req.params;
-        const { 
-            nome, 
-            cognome, 
-            telefono, 
-            password, 
+        const {
+            nome,
+            cognome,
+            telefono,
+            password,
             // campi specifici per utenteFDO
-            TipoFDO, 
-            zoneDiOperazione, 
+            TipoFDO,
+            zoneDiOperazione,
             disponibilità,
-            coordinateGps 
+            coordinateGps
         } = req.body;
 
-        if (!nome ) {
+        if (!nome) {
             return res.status(400).json({
                 success: false,
                 message: 'Il nome è obbligatorio'
@@ -124,14 +124,14 @@ export const registerUser = async (req, res) => {
                 message: 'Il cognome è obbligatorio'
             });
         }
-        
+
         if (!password || password.length < 7) {
             return res.status(400).json({
                 success: false,
                 message: 'La password deve essere di almeno 7 caratteri'
             });
         }
-        
+
         if (!telefono || telefono.length < 10) {
             return res.status(400).json({
                 success: false,
@@ -147,14 +147,14 @@ export const registerUser = async (req, res) => {
                 message: 'Telefono già registrata'
             });
         }
-        
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        
+
         let newUser;
-        
+
         switch (tipo.toLowerCase()) {
             case 'comunale':
-                
+
                 newUser = new utenteComunaleModel({
                     nome,
                     cognome,
@@ -163,7 +163,7 @@ export const registerUser = async (req, res) => {
                     tipoUtente: 'UtenteComunale',
                 });
                 break;
-                
+
             case 'fdo':
                 if (!TipoFDO) {
                     return res.status(400).json({
@@ -171,7 +171,7 @@ export const registerUser = async (req, res) => {
                         message: 'Il campo TipoFDO è obbligatorio per utenti FDO'
                     });
                 }
-                
+
                 newUser = new utenteFDOModel({
                     nome,
                     cognome,
@@ -183,7 +183,7 @@ export const registerUser = async (req, res) => {
                     coordinateGps
                 });
                 break;
-                
+
             case 'standard':
             default:
                 newUser = new utenteRegistratoModel({
@@ -194,15 +194,15 @@ export const registerUser = async (req, res) => {
                 });
                 break;
         }
-        
+
         const savedUser = await newUser.save();
-        
+
         return res.status(201).json({
             success: true,
             data: savedUser,
             message: `Utente ${tipo} registrato con successo`
         });
-        
+
     } catch (error) {
         console.error('Errore registrazione utente:', error);
         return res.status(500).json({
@@ -217,24 +217,143 @@ export const registerUser = async (req, res) => {
  * Elimina una segnalazione tramite ID
  */
 export const deleteUtente = async (req, res) => {  //solo by ID
-  try {
-    const segnalazione = await utenteRegistratoModel.findByIdAndDelete(req.params.id);
-    if (!segnalazione) {
-      return res.status(404).json({
-        success: false,
-        message: 'Utente not found'
-      });
+    try {
+        const segnalazione = await utenteRegistratoModel.findByIdAndDelete(req.params.id);
+        if (!segnalazione) {
+            return res.status(404).json({
+                success: false,
+                message: 'Utente not found'
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            data: segnalazione,
+            message: 'Utente deleted successfully'
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message
+        });
     }
-    return res.status(200).json({
-      success: true,
-      data: segnalazione,
-      message: 'Utente deleted successfully'
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: 'Server error',
-      error: error.message
-    });
-  }
 }
+
+/**
+ * Aggiorna l'utente esistente
+ * Permette di aggiornare la password per tutti gli utenti
+ * Per utenti FDO permette anche di aggiornare zoneDiOperazione e coordinateGps
+ */
+export const updateUtente = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { password, zoneDiOperazione, coordinateGps } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID utente non valido'
+            });
+        }
+
+        const utente = await utenteRegistratoModel.findById(id);
+        if (!utente) {
+            return res.status(404).json({
+                success: false,
+                message: 'Utente non trovato'
+            });
+        }
+
+        const datiAggiornamento = {} as any;
+
+        if (password) {
+            if (password.length < 7) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'La password deve essere di almeno 7 caratteri'
+                });
+            }
+
+            datiAggiornamento.password = await bcrypt.hash(password, 10);
+        }
+
+        //update specifici per utenteFDO
+        if (utente.tipoUtente === 'UtenteFDO') {
+            if (zoneDiOperazione) {
+                if (!Array.isArray(zoneDiOperazione)) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Il campo zoneDiOperazione deve essere un array'
+                    });
+                }
+
+                for (const zona of zoneDiOperazione) {
+                    if (!zona.coordinateGps || !zona.fasceOrarie || !Array.isArray(zona.fasceOrarie)) {
+                        return res.status(400).json({
+                            success: false,
+                            message: 'Ogni zona deve avere coordinateGps e fasceOrarie valide'
+                        });
+                    }
+                }
+
+                datiAggiornamento.zoneDiOperazione = zoneDiOperazione;
+            }
+
+            if (coordinateGps) {
+                if (!coordinateGps.coordinates || !Array.isArray(coordinateGps.coordinates)) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Il campo coordinateGps deve avere coordinate valide'
+                    });
+                }
+
+                datiAggiornamento.coordinateGps = coordinateGps;
+            }
+
+            if (Object.keys(datiAggiornamento).length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Nessun campo valido fornito per l\'aggiornamento'
+                });
+            }
+
+            const utenteAggiornato = await utenteFDOModel.findByIdAndUpdate(
+                id,
+                datiAggiornamento,
+                { new: true, runValidators: true }
+            );
+
+            return res.status(200).json({
+                success: true,
+                data: utenteAggiornato,
+                message: 'Utente FDO aggiornato con successo'
+            });
+        } else {
+            if (Object.keys(datiAggiornamento).length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Nessun campo valido fornito per l\'aggiornamento'
+                });
+            }
+
+            const utenteAggiornato = await utenteRegistratoModel.findByIdAndUpdate(
+                id,
+                datiAggiornamento,
+                { new: true, runValidators: true }
+            );
+
+            return res.status(200).json({
+                success: true,
+                data: utenteAggiornato,
+                message: 'Utente aggiornato con successo'
+            });
+        }
+    } catch (error) {
+        console.error('Errore aggiornamento utente:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Errore del server durante l\'aggiornamento',
+            error: error.message
+        });
+    }
+};
