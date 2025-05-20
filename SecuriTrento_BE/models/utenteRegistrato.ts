@@ -1,20 +1,39 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+const opzioniSchema = {
+    discriminatorKey: 'tipoUtente',
+    collection: 'utenti'
+};
+
 const utenteRegistratoSchema = new Schema({
     nome: {
-        type: String, 
+        type: String,
         required: true
     },
     cognome: {
-        type: String, 
+        type: String,
         required: true
     },
     telefono: {
         type: String,
         required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    tipoUtente: {
+        type: String,
+        default: 'UtenteCittadino'
     }
-    //storicoSegnalazioni: lista di segnalazioni
+}, opzioniSchema);
+
+utenteRegistratoSchema.set('toJSON', {
+    transform: function (doc, ret) {
+        delete ret.password;  // remove password field when exposing
+        return ret;
+    }
 });
 
-const utenteRegistratoModel = mongoose.model('utenteCittadino', utenteRegistratoSchema, 'utentiCittadini');
-export default utenteRegistratoModel;
+const utenteRegistratoModel = mongoose.model('utenteRegistrato', utenteRegistratoSchema);
+export { utenteRegistratoSchema, utenteRegistratoModel };

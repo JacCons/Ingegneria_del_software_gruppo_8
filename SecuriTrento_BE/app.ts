@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import swaggerSpec from './config/swaggerConfig.ts';
 import swaggerUi from 'swagger-ui-express';
 import routerSegnalazione from './routes/routerSegnalazione.ts';
+import routerUtente from './routes/routerUtenti.ts';
 
 
 dotenv.config();
@@ -18,6 +19,7 @@ const app = express();
 app.use(cors()); //abilito le richieste cross-origin
 app.use(express.json());
 
+app.use('/utenti', routerUtente);
 app.use('/segnalazioni', routerSegnalazione); //imposto il route path
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
