@@ -48,8 +48,33 @@ export class LoginPageComponent {
   }
 
   clickAccedi(event: MouseEvent) {
-    console.log("ho cliccato accedi");
-    this.router.navigate(['/segnalazioni']);
+    if (!this.checkLoginNotEmpty()) {
+      this.dialogService.showError("Compila tutti i campi per accedere");
+      return;
+    }
+
+    this.autenticazioneService.loginUser({
+      telefono: this.cellularPhone,
+      password: this.password
+    }).subscribe({
+      next: (response) => {
+        // Salva il token JWT
+        localStorage.setItem('token', response.token);
+
+        // Salva l'utente corrente
+        this.autenticazioneService.setCurrentUser(response.utente);
+
+        this.dialogService.showSuccess("Login effettuato con successo", "Premi Ok per proseguire").subscribe(result => {
+          if (result === 'confirm') {
+            this.router.navigate(['/segnalazioni']);
+          }
+        });
+      },
+      error: (error) => {
+        this.dialogService.showError("Telefono o password errati");
+        console.error('Errore login:', error);
+      }
+    });
   }
 
   switchToLogin() {
@@ -80,6 +105,7 @@ export class LoginPageComponent {
       this.utentiService.registerUser("standard", newUser).subscribe({
         next: (response) => {
           if (response.success) {
+            //this.clickAccedi(event);
             // Logga l'utente dopo la registrazione
             this.autenticazioneService.setCurrentUser(response.data); //da spostare nell'endpoint
             this.dialogService.showSuccess("Registrazione avvenuta con successo", "Premi Ok per proseguire").subscribe(result => {
@@ -97,8 +123,6 @@ export class LoginPageComponent {
 
     }
   }
-
-
 
   checkLoginNotEmpty() {
     const phoneNumber = this.cellularPhone?.trim() || '';
@@ -143,4 +167,8 @@ export class LoginPageComponent {
 
     return true;
   }
+
+
+
+
 }

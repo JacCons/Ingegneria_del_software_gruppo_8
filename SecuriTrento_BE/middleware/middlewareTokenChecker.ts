@@ -19,7 +19,6 @@ export const tokenChecker = (
 
     // header or url parameters or post parameters
     const token = req.headers['authorization']?.split(' ')[1];
-    console.log(token);
 
     if (!token) res.status(401).json({
         success: false, message: 'No token provided.'

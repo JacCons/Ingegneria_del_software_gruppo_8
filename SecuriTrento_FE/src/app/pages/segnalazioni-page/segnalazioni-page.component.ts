@@ -178,10 +178,6 @@ export class SegnalazioniPageComponent {
             this.secondFormGroup.reset();
           } 
         },
-        error: (error) => {
-          console.error('Error creating segnalazione:', error);
-          this.dialogService.showError('Errore nella creazione della segnalazione');
-        }
       });
 
       this.cdr.detectChanges();
