@@ -20,6 +20,72 @@
     }
   ],
   "paths": {
+    "/login": {
+      "post": {
+        "summary": "Verifica le credenziali dell'utente e restituisce un token JWT.",
+        "tags": [
+          "Autenticazione"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "telefono": {
+                    "type": "number",
+                    "example": "1489164451"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticazione avvenuta con successo, ritorna il token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenziali non valide.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/segnalazioni": {
       "get": {
         "summary": "Recupera tutte le segnalazioni",
@@ -1000,7 +1066,7 @@
           }
         }
       },
-      "UtenteRegistratoInput": {
+      "UtenteRegistrato": {
         "type": "object",
         "required": [
           "nome",
@@ -1029,40 +1095,37 @@
           }
         }
       },
-      "UtenteComunaleInput": {
+      "UtenteComunale": {
         "allOf": [
           {
             "$ref": "#/components/schemas/UtenteRegistratoInput"
           },
           {
             "type": "object",
-            "required": [
-              "dipartimento"
-            ],
             "properties": {
-              "dipartimento": {
+              "nome": {
                 "type": "string",
-                "example": "Urbanistica"
+                "example": "Mario"
               },
-              "livelloAccesso": {
-                "type": "number",
-                "example": 2
+              "cognome": {
+                "type": "string",
+                "example": "Rossi"
               },
-              "areeGestite": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "example": [
-                  "Centro",
-                  "Nord"
-                ]
+              "telefono": {
+                "type": "string",
+                "example": "3401234567"
+              },
+              "password": {
+                "type": "string",
+                "format": "password",
+                "minLength": 7,
+                "example": "password123"
               }
             }
           }
         ]
       },
-      "UtenteFDOInput": {
+      "UtenteFDO": {
         "allOf": [
           {
             "$ref": "#/components/schemas/UtenteRegistratoInput"
@@ -1073,6 +1136,24 @@
               "TipoFDO"
             ],
             "properties": {
+              "nome": {
+                "type": "string",
+                "example": "Mario"
+              },
+              "cognome": {
+                "type": "string",
+                "example": "Rossi"
+              },
+              "telefono": {
+                "type": "string",
+                "example": "3401234567"
+              },
+              "password": {
+                "type": "string",
+                "format": "password",
+                "minLength": 7,
+                "example": "password123"
+              },
               "TipoFDO": {
                 "type": "string",
                 "enum": [
@@ -1167,23 +1248,6 @@
             }
           }
         ]
-      },
-      "Error": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "example": false
-          },
-          "message": {
-            "type": "string",
-            "example": "Errore del server"
-          },
-          "error": {
-            "type": "string",
-            "example": "Error message details"
-          }
-        }
       }
     }
   },

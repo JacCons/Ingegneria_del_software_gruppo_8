@@ -22,7 +22,7 @@ const app = express();
 app.use(cors()); //abilito le richieste cross-origin
 app.use(express.json());
 
-app.use('/utenti', tokenChecker, routerUtente); //imposto il route path
+app.use('/utenti', routerUtente); //imposto il route path
 app.use('/segnalazioni',tokenChecker, routerSegnalazione); //imposto il route path
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/login', routerAutenticazione);

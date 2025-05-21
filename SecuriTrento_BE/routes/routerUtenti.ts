@@ -7,6 +7,7 @@ import {
     deleteUtente,
     updateUtente
 } from '../controllers/controllerUtente.ts';
+import { tokenChecker } from '../middleware/middlewareTokenChecker.ts';
 
 const router = express.Router();
 
@@ -46,7 +47,7 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', getAllUtenti);
+router.get('/', tokenChecker, getAllUtenti);
 
 /**
  * @swagger
@@ -97,7 +98,7 @@ router.get('/', getAllUtenti);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/:tipo', getUtentiByType);
+router.get('/:tipo', tokenChecker, getUtentiByType);
 
 /**
  * @swagger
@@ -142,7 +143,7 @@ router.get('/:tipo', getUtentiByType);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/id/:id', getUtenteById);
+router.get('/id/:id', tokenChecker, getUtenteById);
 
 /**
  * @swagger
@@ -240,7 +241,7 @@ router.post('/register/:tipo', registerUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', deleteUtente);
+router.delete('/:id', tokenChecker, deleteUtente);
 
 /**
  * @swagger
@@ -364,7 +365,7 @@ router.delete('/:id', deleteUtente);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', updateUtente);
+router.put('/:id', tokenChecker, updateUtente);
 
 /**
  * @swagger
@@ -395,7 +396,7 @@ router.put('/:id', updateUtente);
  *           enum: [UtenteRegistrato, UtenteComune, UtenteFDO]
  *           example: UtenteRegistrato
  *
- *     UtenteRegistratoInput:
+ *     UtenteRegistrato:
  *       type: object
  *       required:
  *         - nome
@@ -418,32 +419,47 @@ router.put('/:id', updateUtente);
  *           minLength: 7
  *           example: password123
  *
- *     UtenteComunaleInput:
+ *     UtenteComunale:
  *       allOf:
  *         - $ref: '#/components/schemas/UtenteRegistratoInput'
  *         - type: object
- *           required:
- *             - dipartimento
  *           properties:
- *             dipartimento:
+ *             nome:
  *               type: string
- *               example: Urbanistica
- *             livelloAccesso:
- *               type: number
- *               example: 2
- *             areeGestite:
- *               type: array
- *               items:
- *                 type: string
- *               example: ["Centro", "Nord"]
+ *               example: Mario
+ *             cognome:
+ *               type: string
+ *               example: Rossi
+ *             telefono:
+ *               type: string
+ *               example: "3401234567"
+ *             password:
+ *               type: string
+ *               format: password
+ *               minLength: 7
+ *               example: password123
  *
- *     UtenteFDOInput:
+ *     UtenteFDO:
  *       allOf:
  *         - $ref: '#/components/schemas/UtenteRegistratoInput'
  *         - type: object
  *           required:
  *             - TipoFDO
  *           properties:
+ *             nome:
+ *               type: string
+ *               example: Mario
+ *             cognome:
+ *               type: string
+ *               example: Rossi
+ *             telefono:
+ *               type: string
+ *               example: "3401234567"
+ *             password:
+ *               type: string
+ *               format: password
+ *               minLength: 7
+ *               example: password123
  *             TipoFDO:
  *               type: string
  *               enum: [POLIZIA, CARABINIERI, GUARDIA DI FINANZA]
@@ -490,18 +506,6 @@ router.put('/:id', updateUtente);
  *                     type: number
  *                   example: [11.12, 46.07]
  *
- *     Error:
- *       type: object
- *       properties:
- *         success:
- *           type: boolean
- *           example: false
- *         message:
- *           type: string
- *           example: Errore del server
- *         error:
- *           type: string
- *           example: Error message details
  */
 
 export default router;
