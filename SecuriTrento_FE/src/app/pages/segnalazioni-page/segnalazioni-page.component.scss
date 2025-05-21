@@ -4,7 +4,6 @@
   align-items: center;
   min-height: 100vh;
   padding: 24px 0;
-
 }
 
 .segnalazioniButtons {
@@ -22,35 +21,11 @@
   width: 100%;
 }
 
-.lista-segnalazioni {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.card {
-  margin: 15px;
-  padding: 12px;
-  border-radius: 10px;
-  background-color: #ffffff;
-  font-family: 'Arial', sans-serif;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(5, 91, 240, 0.581);
-  background-color: #a4e2fc09;
-}
-
 #map {
-  margin-bottom: 12px;
-  margin-left: 15px;
-  height: 40vh;   
-  width: 60vw;  
+  margin: 15px;
+  height: 50vh;   
+  width: 70vw; 
+  border-radius: 15px; 
 }
 
 .page-title {
@@ -91,3 +66,115 @@ button {
   width: 100%;
 }
 
+.segnalazioni-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 70vw;
+}
+
+.segnalazioni-title {
+  color: #2d3a4b;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.lista-segnalazioni {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #f5f7fa;
+  border-radius: 12px;
+  padding: 16px;
+  width: 100%;
+  height: auto;
+  max-height: 50vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.lista-segnalazioni::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lista-segnalazioni::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 8px;
+}
+
+.lista-segnalazioni::-webkit-scrollbar-thumb {
+  background-color: #c1c9d6;
+  border-radius: 8px;
+}
+
+.lista-segnalazioni::-webkit-scrollbar-thumb:hover {
+  background-color: #a0a8b5;
+}
+
+.card {
+  margin-bottom: 12px;
+  padding: 16px;
+  min-width: 280px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border-left: 5px solid #ccc;
+}
+
+.card div {
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+.card div strong {
+  color: #4a5568;
+  font-weight: 600;
+}
+
+/* Different colors based on tipologia - from most severe (red) to least severe (violet) */
+.card.RISSA {
+  border-left-color: #e53e3e; /* Red */
+  background-color: rgba(229, 62, 62, 0.05);
+}
+
+.card.SPACCIO {
+  border-left-color: #dd6b20; /* Orange */
+  background-color: rgba(221, 107, 32, 0.05);
+}
+
+.card.FURTO {
+  border-left-color: #ecc94b; /* Yellow */
+  background-color: rgba(236, 201, 75, 0.05);
+}
+
+.card.DEGRADO {
+  border-left-color: #48bb78; /* Green */
+  background-color: rgba(72, 187, 120, 0.05);
+}
+
+.card.DISTURBO {
+  border-left-color: #4299e1; /* Blue */
+  background-color: rgba(66, 153, 225, 0.05);
+}
+
+.card.VANDALISMO {
+  border-left-color: #667eea; /* Indigo */
+  background-color: rgba(102, 126, 234, 0.05);
+}
+
+.card.ALTRO {
+  border-left-color: #9f7aea; /* Violet */
+  background-color: rgba(159, 122, 234, 0.05);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(5, 91, 240, 0.15);
+}
