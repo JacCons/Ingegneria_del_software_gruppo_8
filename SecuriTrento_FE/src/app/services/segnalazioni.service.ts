@@ -31,7 +31,13 @@ export class SegnalazioniService {
       { headers: this.getAuthHeaders() }
     );
   }
-  
+
+  getSegnalazioniNearby(utenteFdoID: String, radius: number): Observable<ApiResponse<Segnalazione[]>> {
+    return this.http.get<ApiResponse<Segnalazione[]>>(
+      `${this.apiBasePathUrl}/segnalazioni/nearby/${utenteFdoID}?radius=${radius}`
+    );
+  }
+
   deleteSegnalazione(segnalazioneID: String): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(
       `${this.apiBasePathUrl}/segnalazioni/${segnalazioneID}`,
@@ -46,7 +52,7 @@ export class SegnalazioniService {
       { headers: this.getAuthHeaders() }
     );
   }
-  
+
   createSegnalazione(segnalazione: Segnalazione): Observable<ApiResponse<Segnalazione>> {
     const headers = this.getAuthHeaders().set('Content-Type', 'application/json');
     return this.http.post<ApiResponse<Segnalazione>>(
