@@ -31,7 +31,7 @@ const segnalazioneSchema = new Schema({
     },
     media: String,
     descrizione: String,
-        idUtente: {
+    idUtente: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'utenteRegistrato',
         required: true

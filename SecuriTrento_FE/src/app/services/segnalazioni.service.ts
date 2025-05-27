@@ -34,7 +34,8 @@ export class SegnalazioniService {
 
   getSegnalazioniNearby(utenteFdoID: String, radius: number): Observable<ApiResponse<Segnalazione[]>> {
     return this.http.get<ApiResponse<Segnalazione[]>>(
-      `${this.apiBasePathUrl}/segnalazioni/nearby/${utenteFdoID}?radius=${radius}`
+      `${this.apiBasePathUrl}/segnalazioni/nearby/${utenteFdoID}?radius=${radius}`,
+      { headers: this.getAuthHeaders() }
     );
   }
 

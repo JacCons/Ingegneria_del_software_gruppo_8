@@ -34,8 +34,8 @@ export class NotifichePageComponent {
   }
 
   caricaNotificheSegnalazioni() {
-    if (this.currentUser && this.currentUser.tipoUtente === TipoUtente.FDO) {
-      this.segnalazioniService.getAllSegnalazioni().subscribe({
+    if (this.currentUser && this.currentUser.tipoUtente === TipoUtente.FDO && this.currentUser._id) {
+      this.segnalazioniService.getSegnalazioniNearby(this.currentUser._id, 2000).subscribe({
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
