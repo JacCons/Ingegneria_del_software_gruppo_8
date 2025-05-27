@@ -6,7 +6,8 @@ import express from 'express';
  */
 export const getAllSegnalazioni = async (req, res) => {
 
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.loggedUser?.ruolo;
+  console.log('Ruolo utente:', ruolo);
 
   if (ruolo === 'UtenteCittadino') {
     return res.status(403).json({
@@ -37,7 +38,7 @@ export const getAllSegnalazioni = async (req, res) => {
  * Recupera una segnalazione specifica tramite ID
  */
 export const getSegnalazioneById = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.user?.ruolo;
 
   if (ruolo === 'UtenteCittadino') {
     return res.status(403).json({
@@ -67,7 +68,7 @@ export const getSegnalazioneById = async (req, res) => {
  */
 export const createSegnalazione = async (req, res) => {
   
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.user?.ruolo;
 
   if (ruolo === 'UtenteFDO' || ruolo === 'UtenteComunale') {
     return res.status(403).json({
@@ -126,7 +127,7 @@ export const createSegnalazione = async (req, res) => {
  */
 export const updateSegnalazione = async (req, res) => {
   
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.user?.ruolo;
 
   if (ruolo === 'UtenteFDO' || ruolo === 'UtenteComunale') {
     return res.status(403).json({
