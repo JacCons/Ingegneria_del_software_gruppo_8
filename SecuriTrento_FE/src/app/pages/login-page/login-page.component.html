@@ -1,9 +1,11 @@
-<div class="outer-container">
-    <div class="form-container">
+<p>INSERISCI LOGO SECURITRENTO QUI! (centranto ovviamente)</p>
+<div [ngSwitch]="authPage" class="outer-container">
+    <div *ngSwitchCase="'login'" class="form-container">
         <mat-form-field class="example-full-width">
             <mat-label>Numero Cellulare</mat-label>
             <span matTextPrefix>+39 &nbsp;</span>
-            <input type="tel" matInput placeholder="349-824-5285" [(ngModel)]="cellularPhone" (keydown)="validatePhoneInput($event)">
+            <input type="tel" matInput placeholder="349-824-5285" [(ngModel)]="cellularPhone"
+                (keydown)="validatePhoneInput($event)">
             <mat-icon matSuffix>mode_edit</mat-icon>
         </mat-form-field>
 
@@ -17,10 +19,48 @@
             </button>
         </mat-form-field>
     </div>
-    <div class="buttons_login">
-        <button [disabled]="!checkLoginNotEmpty()" (click)="clickAccedi($event)" mat-raised-button Interactive
-            matTooltip="Accedi">Accedi</button>
-        <button (click)="clickRegistrati($event)" mat-raised-button enabled matTooltip="Registrati">Registrati</button>
+
+    <div *ngSwitchCase="'register'" class="form-container">
+        <mat-form-field class="example-full-width">
+            <mat-label>Numero Cellulare</mat-label>
+            <span matTextPrefix>+39 &nbsp;</span>
+            <input type="tel" matInput placeholder="349-824-5285" [(ngModel)]="cellularPhone"
+                (keydown)="validatePhoneInput($event)">
+            <mat-icon matSuffix>mode_edit</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width">
+            <mat-label>Nome</mat-label>
+            <input matInput placeholder="Mario" [(ngModel)]="name">
+            <mat-icon matSuffix>mode_edit</mat-icon>
+        </mat-form-field>
+
+
+        <mat-form-field class="example-full-width">
+            <mat-label>Cognome</mat-label>
+            <input matInput placeholder="Rossi" [(ngModel)]="surname">
+            <mat-icon matSuffix>mode_edit</mat-icon>
+        </mat-form-field>
+
+
+        <!-- password -->
+        <mat-form-field>
+            <mat-label>Enter your password</mat-label>
+            <input matInput [type]="hide() ? 'password' : 'text'" [(ngModel)]="password">
+            <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide()">
+                <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+        </mat-form-field>
     </div>
 
+
+    <div class="buttons_login">
+        <button *ngSwitchCase="'login'" [disabled]="!checkLoginNotEmpty()" (click)="clickAccedi($event)"
+            mat-raised-button Interactive matTooltip="Accedi">Accedi</button>
+        <p *ngSwitchCase="'register'" class="switch-link">
+            Hai già un account? <a (click)="switchToLogin()">Accedi qui</a>
+        </p>
+        <button (click)="clickRegistrati($event)" [disabled]="!checkRegisterNotEmpty()" mat-raised-button enabled matTooltip="Registrati">Registrati</button>
+    </div>
 </div>

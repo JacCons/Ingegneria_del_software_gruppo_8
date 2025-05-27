@@ -20,6 +20,72 @@
     }
   ],
   "paths": {
+    "/login": {
+      "post": {
+        "summary": "Verifica le credenziali dell'utente e restituisce un token JWT.",
+        "tags": [
+          "Autenticazione"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "telefono": {
+                    "type": "number",
+                    "example": "1489164451"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticazione avvenuta con successo, ritorna il token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenziali non valide.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/segnalazioni": {
       "get": {
         "summary": "Recupera tutte le segnalazioni",
@@ -669,6 +735,210 @@
             }
           }
         }
+      },
+      "put": {
+        "summary": "Aggiorna i dati di un utente esistente",
+        "tags": [
+          "Utenti"
+        ],
+        "description": "Permette di aggiornare la password per tutti i tipi di utente. Per gli utenti FDO permette anche di aggiornare zoneDiOperazione e coordinateGps.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID MongoDB dell'utente da aggiornare"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "minLength": 7,
+                    "description": "Nuova password (min 7 caratteri)",
+                    "example": "nuovaPassword123"
+                  },
+                  "zoneDiOperazione": {
+                    "type": "array",
+                    "description": "Zone di operazione (solo per utenti FDO)",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "coordinateGps",
+                        "fasceOrarie"
+                      ],
+                      "properties": {
+                        "coordinateGps": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "Polygon"
+                              ],
+                              "example": "Polygon"
+                            },
+                            "coordinates": {
+                              "type": "array",
+                              "items": {
+                                "type": "number"
+                              },
+                              "example": [
+                                11.12,
+                                46.07
+                              ]
+                            }
+                          }
+                        },
+                        "fasceOrarie": {
+                          "type": "array",
+                          "items": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 23
+                          },
+                          "example": [
+                            8,
+                            9,
+                            10,
+                            11
+                          ],
+                          "description": "Ore del giorno (0-23)"
+                        },
+                        "giorniSettimana": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "Lunedi",
+                              "Martedi",
+                              "Mercoledi",
+                              "Giovedi",
+                              "Venerdi",
+                              "Sabato",
+                              "Domenica"
+                            ]
+                          },
+                          "example": [
+                            "Lunedi",
+                            "Martedi",
+                            "Mercoledi"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "coordinateGps": {
+                    "type": "object",
+                    "description": "Posizione attuale dell'agente (solo per utenti FDO)",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Point"
+                        ],
+                        "example": "Point"
+                      },
+                      "coordinates": {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "example": [
+                          11.12,
+                          46.07
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Utente aggiornato con successo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Utente"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Utente aggiornato con successo"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dati non validi, ID non valido o nessun campo da aggiornare",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error",
+                  "examples": {
+                    "invalidId": {
+                      "value": {
+                        "success": false,
+                        "message": "ID utente non valido"
+                      }
+                    },
+                    "shortPassword": {
+                      "value": {
+                        "success": false,
+                        "message": "La password deve essere di almeno 7 caratteri"
+                      }
+                    },
+                    "noData": {
+                      "value": {
+                        "success": false,
+                        "message": "Nessun campo valido fornito per l'aggiornamento"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Utente non trovato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Errore del server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -796,7 +1066,7 @@
           }
         }
       },
-      "UtenteRegistratoInput": {
+      "UtenteRegistrato": {
         "type": "object",
         "required": [
           "nome",
@@ -825,40 +1095,37 @@
           }
         }
       },
-      "UtenteComunaleInput": {
+      "UtenteComunale": {
         "allOf": [
           {
             "$ref": "#/components/schemas/UtenteRegistratoInput"
           },
           {
             "type": "object",
-            "required": [
-              "dipartimento"
-            ],
             "properties": {
-              "dipartimento": {
+              "nome": {
                 "type": "string",
-                "example": "Urbanistica"
+                "example": "Mario"
               },
-              "livelloAccesso": {
-                "type": "number",
-                "example": 2
+              "cognome": {
+                "type": "string",
+                "example": "Rossi"
               },
-              "areeGestite": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "example": [
-                  "Centro",
-                  "Nord"
-                ]
+              "telefono": {
+                "type": "string",
+                "example": "3401234567"
+              },
+              "password": {
+                "type": "string",
+                "format": "password",
+                "minLength": 7,
+                "example": "password123"
               }
             }
           }
         ]
       },
-      "UtenteFDOInput": {
+      "UtenteFDO": {
         "allOf": [
           {
             "$ref": "#/components/schemas/UtenteRegistratoInput"
@@ -869,6 +1136,24 @@
               "TipoFDO"
             ],
             "properties": {
+              "nome": {
+                "type": "string",
+                "example": "Mario"
+              },
+              "cognome": {
+                "type": "string",
+                "example": "Rossi"
+              },
+              "telefono": {
+                "type": "string",
+                "example": "3401234567"
+              },
+              "password": {
+                "type": "string",
+                "format": "password",
+                "minLength": 7,
+                "example": "password123"
+              },
               "TipoFDO": {
                 "type": "string",
                 "enum": [
@@ -963,23 +1248,6 @@
             }
           }
         ]
-      },
-      "Error": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "example": false
-          },
-          "message": {
-            "type": "string",
-            "example": "Errore del server"
-          },
-          "error": {
-            "type": "string",
-            "example": "Error message details"
-          }
-        }
       }
     }
   },

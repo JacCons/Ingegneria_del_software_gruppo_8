@@ -4,8 +4,10 @@ import {
     getUtentiByType,
     getUtenteById,
     registerUser,
-    deleteUtente
+    deleteUtente,
+    updateUtente
 } from '../controllers/controllerUtente.ts';
+import { tokenChecker } from '../middleware/middlewareTokenChecker.ts';
 
 const router = express.Router();
 
@@ -45,7 +47,7 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', getAllUtenti);
+router.get('/', tokenChecker, getAllUtenti);
 
 /**
  * @swagger
@@ -96,7 +98,7 @@ router.get('/', getAllUtenti);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/:tipo', getUtentiByType);
+router.get('/:tipo', tokenChecker, getUtentiByType);
 
 /**
  * @swagger
@@ -141,7 +143,7 @@ router.get('/:tipo', getUtentiByType);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/id/:id', getUtenteById);
+router.get('/id/:id', tokenChecker, getUtenteById);
 
 /**
  * @swagger
@@ -239,7 +241,131 @@ router.post('/register/:tipo', registerUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', deleteUtente);
+router.delete('/:id', tokenChecker, deleteUtente);
+
+/**
+ * @swagger
+ * /utenti/{id}:
+ *   put:
+ *     summary: Aggiorna i dati di un utente esistente
+ *     tags: [Utenti]
+ *     description: Permette di aggiornare la password per tutti i tipi di utente. Per gli utenti FDO permette anche di aggiornare zoneDiOperazione e coordinateGps.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID MongoDB dell'utente da aggiornare
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 7
+ *                 description: Nuova password (min 7 caratteri)
+ *                 example: nuovaPassword123
+ *               zoneDiOperazione:
+ *                 type: array
+ *                 description: Zone di operazione (solo per utenti FDO)
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - coordinateGps
+ *                     - fasceOrarie
+ *                   properties:
+ *                     coordinateGps:
+ *                       type: object
+ *                       properties:
+ *                         type:
+ *                           type: string
+ *                           enum: [Polygon]
+ *                           example: Polygon
+ *                         coordinates:
+ *                           type: array
+ *                           items:
+ *                             type: number
+ *                           example: [11.12, 46.07]
+ *                     fasceOrarie:
+ *                       type: array
+ *                       items:
+ *                         type: number
+ *                         minimum: 0
+ *                         maximum: 23
+ *                       example: [8, 9, 10, 11]
+ *                       description: Ore del giorno (0-23)
+ *                     giorniSettimana:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         enum: [Lunedi, Martedi, Mercoledi, Giovedi, Venerdi, Sabato, Domenica]
+ *                       example: ["Lunedi", "Martedi", "Mercoledi"]
+ *               coordinateGps:
+ *                 type: object
+ *                 description: Posizione attuale dell'agente (solo per utenti FDO)
+ *                 properties:
+ *                   type:
+ *                     type: string
+ *                     enum: [Point]
+ *                     example: Point
+ *                   coordinates:
+ *                     type: array
+ *                     items:
+ *                       type: number
+ *                     example: [11.12, 46.07]
+ *     responses:
+ *       200:
+ *         description: Utente aggiornato con successo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Utente'
+ *                 message:
+ *                   type: string
+ *                   example: Utente aggiornato con successo
+ *       400:
+ *         description: Dati non validi, ID non valido o nessun campo da aggiornare
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *               examples:
+ *                 invalidId:
+ *                   value:
+ *                     success: false
+ *                     message: ID utente non valido
+ *                 shortPassword:
+ *                   value:
+ *                     success: false
+ *                     message: La password deve essere di almeno 7 caratteri
+ *                 noData:
+ *                   value:
+ *                     success: false
+ *                     message: Nessun campo valido fornito per l'aggiornamento
+ *       404:
+ *         description: Utente non trovato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Errore del server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.put('/:id', tokenChecker, updateUtente);
 
 /**
  * @swagger
@@ -270,7 +396,7 @@ router.delete('/:id', deleteUtente);
  *           enum: [UtenteRegistrato, UtenteComune, UtenteFDO]
  *           example: UtenteRegistrato
  *
- *     UtenteRegistratoInput:
+ *     UtenteRegistrato:
  *       type: object
  *       required:
  *         - nome
@@ -293,32 +419,47 @@ router.delete('/:id', deleteUtente);
  *           minLength: 7
  *           example: password123
  *
- *     UtenteComunaleInput:
+ *     UtenteComunale:
  *       allOf:
  *         - $ref: '#/components/schemas/UtenteRegistratoInput'
  *         - type: object
- *           required:
- *             - dipartimento
  *           properties:
- *             dipartimento:
+ *             nome:
  *               type: string
- *               example: Urbanistica
- *             livelloAccesso:
- *               type: number
- *               example: 2
- *             areeGestite:
- *               type: array
- *               items:
- *                 type: string
- *               example: ["Centro", "Nord"]
+ *               example: Mario
+ *             cognome:
+ *               type: string
+ *               example: Rossi
+ *             telefono:
+ *               type: string
+ *               example: "3401234567"
+ *             password:
+ *               type: string
+ *               format: password
+ *               minLength: 7
+ *               example: password123
  *
- *     UtenteFDOInput:
+ *     UtenteFDO:
  *       allOf:
  *         - $ref: '#/components/schemas/UtenteRegistratoInput'
  *         - type: object
  *           required:
  *             - TipoFDO
  *           properties:
+ *             nome:
+ *               type: string
+ *               example: Mario
+ *             cognome:
+ *               type: string
+ *               example: Rossi
+ *             telefono:
+ *               type: string
+ *               example: "3401234567"
+ *             password:
+ *               type: string
+ *               format: password
+ *               minLength: 7
+ *               example: password123
  *             TipoFDO:
  *               type: string
  *               enum: [POLIZIA, CARABINIERI, GUARDIA DI FINANZA]
@@ -365,18 +506,6 @@ router.delete('/:id', deleteUtente);
  *                     type: number
  *                   example: [11.12, 46.07]
  *
- *     Error:
- *       type: object
- *       properties:
- *         success:
- *           type: boolean
- *           example: false
- *         message:
- *           type: string
- *           example: Errore del server
- *         error:
- *           type: string
- *           example: Error message details
  */
 
 export default router;

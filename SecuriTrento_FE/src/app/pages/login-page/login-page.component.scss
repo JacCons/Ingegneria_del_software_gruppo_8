@@ -1,4 +1,4 @@
-.outer-container{
+.outer-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -13,6 +13,23 @@ input.example-right-align::-webkit-inner-spin-button {
     display: none;
 }
 
+.switch-link {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    margin-right: 20px;
+
+    a {
+        color: #3f51b5; // Colore primario di Angular Material
+        cursor: pointer;
+        text-decoration: underline;
+
+        &:hover {
+            color: #303f9f; // Colore più scuro per l'hover
+        }
+    }
+}
+
 .form-container {
     display: flex;
     flex-direction: column;
@@ -25,7 +42,7 @@ input.example-right-align {
 }
 
 button {
-  margin-right: 8px;
+    margin-right: 8px;
 }
 
 .buttons_login {

@@ -3,7 +3,7 @@
     <ng-container *ngIf= "showDashboard" >
       <div class="left-side" >
         <div class="example-button-container">
-
+          <p>Sei Attualmente Loggato come: {{currentUser?.nome}} {{currentUser?.cognome}}</p>
           <button (click)="clickSegnalazioni($event)" mat-fab extended>
             <mat-icon>maps</mat-icon>
             Segnalazioni
@@ -24,6 +24,9 @@
             Logout
           </button>
 
+        </div>
+        <div>
+          <img src="logo.png" alt="Description of image">
         </div>
       </div>
       <div class="divider" role="separator" aria-label="Divider"></div>

@@ -5,6 +5,8 @@ import { SegnalazioniService } from './services/segnalazioni.service';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { MappaService } from './services/mappa.service';
+import { UtentiService } from './services/utenti.service';
+import { AutenticazioneService } from './services/autenticazione.service';
 
 
 export const appConfig: ApplicationConfig = {
@@ -14,6 +16,8 @@ export const appConfig: ApplicationConfig = {
   provideHttpClient(),
   DialogService,
   SegnalazioniService,
-  MappaService
+  MappaService,
+  UtentiService,
+  AutenticazioneService
 ]
 };

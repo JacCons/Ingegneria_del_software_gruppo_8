@@ -22,12 +22,17 @@ export class MappaService {
     // Crea un'istanza della mappa nel contenitore specificato
     this.map = L.map(elementId).setView(this.TRENTO_COORDINATES, this.DEFAULT_ZOOM);
 
-    // Aggiungi il layer delle tile di OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19
+    // PER MODIFICARE LO STILE DELLA MAPPA
+// L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+//       attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+//       maxZoom: 18
+//     }).addTo(this.map);
 
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 19
     }).addTo(this.map);
+
     this.markerClusterGroup = L.markerClusterGroup();
     this.map.addLayer(this.markerClusterGroup);
     return this.map;

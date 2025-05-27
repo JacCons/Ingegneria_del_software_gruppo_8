@@ -6,6 +6,9 @@ import swaggerSpec from './config/swaggerConfig.ts';
 import swaggerUi from 'swagger-ui-express';
 import routerSegnalazione from './routes/routerSegnalazione.ts';
 import routerUtente from './routes/routerUtenti.ts';
+import routerAutenticazione from './routes/routerAutenticazione.ts';
+import router from './routes/routerSegnalazione.ts';
+import { tokenChecker } from './middleware/middlewareTokenChecker.ts';
 
 
 dotenv.config();
@@ -19,10 +22,10 @@ const app = express();
 app.use(cors()); //abilito le richieste cross-origin
 app.use(express.json());
 
-app.use('/utenti', routerUtente);
-app.use('/segnalazioni', routerSegnalazione); //imposto il route path
+app.use('/utenti', routerUtente); //imposto il route path
+app.use('/segnalazioni',tokenChecker, routerSegnalazione); //imposto il route path
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+app.use('/login', routerAutenticazione);
 
 app.listen(3000, () => {
   console.log(`Server running on port 3000`);

@@ -12,7 +12,8 @@ const segnalazioneSchema = new Schema({
             default: 'Point'
         },
         coordinates: {
-            type: [Number]
+            type: [Number],
+            required: true
         }
     },
     tipologia: {

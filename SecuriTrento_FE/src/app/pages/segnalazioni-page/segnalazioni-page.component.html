@@ -9,16 +9,6 @@
 
 <body>
   <div class="segnalazioniPage">
-    <div class="lista-segnalazioni">
-      <h3>Segnalazioni:</h3>
-      <div class="card" *ngFor="let segnalazione of segnalazioni">
-        <div><strong>ID:</strong> {{ segnalazione._id }}</div>
-        <div><strong>Descrizione:</strong> {{ segnalazione.descrizione }}</div>
-        <div><strong>Tipo:</strong> {{ segnalazione.tipologia }}</div>
-        <div><strong>Data:</strong> {{ segnalazione.timeStamp | date:'short' }}</div>
-      </div>
-    </div>
-
     <div class="segnalazioneSection">
       <div id="map"></div>
       <div class="segnalazioniButtons">
@@ -100,6 +90,17 @@
     </div>
 
 
+  </div>
+  <div class="segnalazioni-container">
+    <h3 class="segnalazioni-title">Segnalazioni:</h3>
+    <div class="lista-segnalazioni">
+      <div class="card" [ngClass]="segnalazione.tipologia" *ngFor="let segnalazione of segnalazioni">
+        <div><strong>ID:</strong> {{ segnalazione._id }}</div>
+        <div><strong>Descrizione:</strong> {{ segnalazione.descrizione }}</div>
+        <div><strong>Tipo:</strong> {{ segnalazione.tipologia }}</div>
+        <div><strong>Data:</strong> {{ segnalazione.timeStamp | date:'short' }}</div>
+      </div>
+    </div>
   </div>
 </body>
 

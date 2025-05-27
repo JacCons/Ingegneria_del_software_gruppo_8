@@ -168,7 +168,7 @@ export class SegnalazioniPageComponent {
       this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
         next: (response) => {
           if (response.success) {
-            this.dialogService.showSuccess('Segnalazione creata con successo!');
+            this.dialogService.showSuccess("Operazione effettuata",'Segnalazione creata con successo!');
             console.log('Segnalazione creata:', response.data);
             // Aggiorna la mappa con i nuovi dati
             this.caricaSegnalazioniCluster();
@@ -178,10 +178,6 @@ export class SegnalazioniPageComponent {
             this.secondFormGroup.reset();
           } 
         },
-        error: (error) => {
-          console.error('Error creating segnalazione:', error);
-          this.dialogService.showError('Errore nella creazione della segnalazione');
-        }
       });
 
       this.cdr.detectChanges();
