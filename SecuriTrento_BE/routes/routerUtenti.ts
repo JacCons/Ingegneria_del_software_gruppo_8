@@ -42,10 +42,6 @@ const router = express.Router();
  *                   example: Utenti recuperati con successo
  *       500:
  *         description: Errore del server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 router.get('/', tokenChecker, getAllUtenti);
 
@@ -93,10 +89,6 @@ router.get('/', tokenChecker, getAllUtenti);
  *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Errore del server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 router.get('/:tipo', tokenChecker, getUtentiByType);
 
@@ -138,10 +130,6 @@ router.get('/:tipo', tokenChecker, getUtentiByType);
  *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Errore del server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 router.get('/id/:id', tokenChecker, getUtenteById);
 
@@ -193,10 +181,6 @@ router.get('/id/:id', tokenChecker, getUtenteById);
  *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Errore del server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 router.post('/register/:tipo', registerUser);
 
@@ -236,10 +220,6 @@ router.post('/register/:tipo', registerUser);
  *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Errore del server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', tokenChecker, deleteUtente);
 
@@ -360,10 +340,6 @@ router.delete('/:id', tokenChecker, deleteUtente);
  *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Errore del server
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
  */
 router.put('/:id', tokenChecker, updateUtente);
 

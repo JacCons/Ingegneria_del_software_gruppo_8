@@ -1,6 +1,8 @@
 import segnalazioneModel from '../models/segnalazione.ts';
 import mongoose from 'mongoose';
+import { utenteRegistratoModel } from '../models/utenteRegistrato.ts';
 import express from 'express';
+
 /**
  * Recupera tutte le segnalazioni
  */
@@ -62,6 +64,69 @@ export const getSegnalazioneById = async (req, res) => {
     });
   }
 }
+
+/**
+ * Recupera le segnalazioni aperte nelle vicinanze di un utente FDO
+ */
+export const getSegnalazioniNearby = async (req, res) => {
+  try {
+    const { fdoId } = req.params;
+    const { radius = 5000 } = req.query;
+    
+    const fdoUser = await utenteRegistratoModel.findOne({
+      _id: fdoId,
+      tipoUtente: 'UtenteFDO'
+    }).lean() as any;
+    
+    if (!fdoUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Utente FDO non trovato'
+      });
+    }
+    
+    if (!fdoUser.coordinateGps || !fdoUser.coordinateGps.coordinates) {
+      return res.status(400).json({
+        success: false,
+        message: 'Posizione FDO non disponibile'
+      });
+    }
+
+    const segnalazioniNearby = await segnalazioneModel.find({
+      coordinateGps: {
+        $near: {
+          $geometry: fdoUser.coordinateGps,
+          $maxDistance: Number(radius)
+        }
+      },
+      $or: [
+        { stato: 'aperto' },
+        { stato: { $exists: false } },
+        { stato: undefined },
+        { stato: null }
+      ]
+    }).sort({ timeStamp: -1 });
+    
+    console.log('SEGNALAZIONI VICINE TROVATE:', segnalazioniNearby.length);
+    
+    return res.status(200).json({
+      success: true,
+      data: segnalazioniNearby,
+      fdoPosition: fdoUser.coordinateGps,
+      count: segnalazioniNearby.length,
+      searchRadius: Number(radius),
+      message: 'Segnalazioni vicine recuperate con successo'
+    });
+    
+  } catch (error) {
+    console.error('Errore getSegnalazioniNearby:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Errore nel recupero segnalazioni nel raggio d\'azione',
+      error: error.message
+    });
+  }
+};
 
 /**
  * Crea una nuova segnalazione
