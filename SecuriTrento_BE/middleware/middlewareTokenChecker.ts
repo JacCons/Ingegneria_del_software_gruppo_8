@@ -26,9 +26,10 @@ export const tokenChecker = (
     
     // decode token, verifies secret and checks expiration
     jwt.verify(token, process.env.SUPER_SECRET, function (err, decoded) {
-        if (err) res.status(403).json({ success: false, message: 'Token not valid' })
-        else {
-            // if everything is good, save in req object for use in other routes
+        if (err) {
+            return res.status(403).json({ success: false, message: 'Token not valid' });
+        } else {
+            console.log('Decoded JWT:', decoded); // <-- DEBUG: controlla cosa contiene
             req.loggedUser = decoded;
             next();
         }
