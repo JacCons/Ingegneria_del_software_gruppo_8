@@ -139,7 +139,7 @@ export class SegnalazioniPageComponent {
     }
   }
 
-  confermaNuovaSegnalazione() {
+confermaNuovaSegnalazione() {
   this.dialogService.showCustom(
     'Conferma Segnalazione',
     'Vuoi confermare la segnalazione?',
@@ -154,34 +154,80 @@ export class SegnalazioniPageComponent {
       const tipologia = this.firstFormGroup.get('newTipologiaSegnalazione')?.value;
       const descrizione = this.secondFormGroup.get('newDescrizione')?.value;
 
-      const segnalazione: Segnalazione = {
-        tipologia: tipologia as TipoSegnalazione,
-        descrizione: descrizione || ''
-      };
+      // Ottieni la posizione GPS dell'utente
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          
+          console.log('Coordinate GPS:', { lat, lng });
 
-      // Verifica che i dati siano validi prima di inviare
-      if (!tipologia) {
-        this.dialogService.showError('Tipologia segnalazione mancante');
-        return;
-      }
+          const segnalazione: Segnalazione = {
+            tipologia: tipologia as TipoSegnalazione,
+            descrizione: descrizione || '',
+            coordinateGps: {
+              type: 'Point',
+              coordinates: [lng, lat] // Nel formato GeoJSON è [longitudine, latitudine]
+            }
+          };
 
-      this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.dialogService.showSuccess("Operazione effettuata",'Segnalazione creata con successo!');
-            console.log('Segnalazione creata:', response.data);
-            // Aggiorna la mappa con i nuovi dati
-            this.caricaSegnalazioniCluster();
-            
-            // Reset dei form
-            this.firstFormGroup.reset();
-            this.secondFormGroup.reset();
-          } 
+          // Verifica che i dati siano validi prima di inviare
+          if (!tipologia) {
+            this.dialogService.showError('Tipologia segnalazione mancante');
+            return;
+          }
+
+          this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
+            next: (response) => {
+              if (response.success) {
+                this.dialogService.showSuccess("Operazione effettuata",'Segnalazione creata con successo!');
+                console.log('Segnalazione creata:', response.data);
+                // Aggiorna la mappa con i nuovi dati
+                this.caricaSegnalazioniCluster();
+                
+                // Reset dei form
+                this.firstFormGroup.reset();
+                this.secondFormGroup.reset();
+              } 
+            },
+          });
+
+          this.cdr.detectChanges();
         },
-      });
+        (error) => {
+          console.error('Errore nel recuperare le coordinate GPS:', error);
+          this.dialogService.showError('Impossibile ottenere la posizione GPS');
+          
+          // Procedi comunque con la creazione della segnalazione, ma senza coordinate
+          const segnalazione: Segnalazione = {
+            tipologia: tipologia as TipoSegnalazione,
+            descrizione: descrizione || ''
+          };
+          
+          if (!tipologia) {
+            this.dialogService.showError('Tipologia segnalazione mancante');
+            return;
+          }
 
-      this.cdr.detectChanges();
-
+          this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
+            next: (response) => {
+              if (response.success) {
+                this.dialogService.showSuccess("Operazione effettuata",'Segnalazione creata con successo!');
+                this.caricaSegnalazioniCluster();
+                this.firstFormGroup.reset();
+                this.secondFormGroup.reset();
+              } 
+            },
+          });
+          
+          this.cdr.detectChanges();
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+      );
     } else if (result === 'cancel') {
       console.log('Operazione annullata');
     }
