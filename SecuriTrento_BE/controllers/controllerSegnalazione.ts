@@ -104,11 +104,12 @@ export const createSegnalazione = async (req, res) => {
         message: 'ID utente non valido'
       });
     }
-
+    
     const segnalazioneData = {
       tipologia: dati.tipologia,
       descrizione: dati.descrizione || '',
       idUtente: dati.idUtente,
+      coordinateGps: dati.coordinateGps
     };
 
     const nuovaSegnalazione = await segnalazioneModel.create(segnalazioneData);
