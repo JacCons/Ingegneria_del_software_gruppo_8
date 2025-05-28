@@ -165,12 +165,13 @@ export const registerUser = async (req, res) => {
                 break;
 
             case 'fdo':
+                /*
                 if (!TipoFDO) {
                     return res.status(400).json({
                         success: false,
                         message: 'Il campo TipoFDO è obbligatorio per utenti FDO'
                     });
-                }
+                }*/
 
                 newUser = new utenteFDOModel({
                     nome,

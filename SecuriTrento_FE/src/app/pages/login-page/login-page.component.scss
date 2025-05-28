@@ -31,13 +31,21 @@ input.example-right-align::-webkit-inner-spin-button {
 }
 
 .form-container {
+    max-width: 400px;
+    margin: 48px auto;
+    padding: 32px 24px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
     display: flex;
     flex-direction: column;
-    align-items: normal;
-    justify-self: anchor-center;
+    gap: 24px;
+    align-items: stretch;
 }
 
 input.example-right-align {
+    appearance: textfield;
+    -webkit-appearance: textfield; // per Chrome/Safari
     -moz-appearance: textfield;
 }
 

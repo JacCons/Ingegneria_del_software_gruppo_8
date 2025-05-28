@@ -1,0 +1,27 @@
+.form-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 32px 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+button[type="submit"], button[mat-raised-button] {
+  margin-top: 16px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .form-container {
+    padding: 16px 8px;
+    max-width: 98vw;
+  }
+}

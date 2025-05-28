@@ -105,9 +105,8 @@ export class LoginPageComponent {
       this.utentiService.registerUser("standard", newUser).subscribe({
         next: (response) => {
           if (response.success) {
-            //this.clickAccedi(event);
             // Logga l'utente dopo la registrazione
-            this.autenticazioneService.setCurrentUser(response.data); //da spostare nell'endpoint
+            this.autenticazioneService.setCurrentUser(response.data);
             this.dialogService.showSuccess("Registrazione avvenuta con successo", "Premi Ok per proseguire").subscribe(result => {
               if (result === 'confirm') {
                 this.router.navigate(['/segnalazioni']);
