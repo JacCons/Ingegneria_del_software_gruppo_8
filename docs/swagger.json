@@ -86,6 +86,731 @@
         }
       }
     },
+    "/api/notifiche/notifiche-segnalazioni/destinatario/{utenteDestinatarioId}": {
+      "get": {
+        "summary": "Recupera notifiche segnalazioni per un utente FDO",
+        "description": "Recupera tutte le notifiche di segnalazioni per un utente FDO specifico. \nPuò opzionalmente controllare e creare nuove notifiche per segnalazioni \nrecenti (max 8 ore) nel raggio specificato.\n",
+        "tags": [
+          "Notifiche"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "utenteDestinatarioId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "64f1a2b3c4d5e6f7a8b9c0d1"
+            },
+            "description": "ID MongoDB dell'utente FDO destinatario delle notifiche"
+          },
+          {
+            "in": "query",
+            "name": "autoCheck",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "default": "false",
+              "example": "true"
+            },
+            "description": "Se true, controlla automaticamente segnalazioni recenti nel raggio \ne crea nuove notifiche se necessario. Se false, recupera solo \nnotifiche esistenti.\n"
+          },
+          {
+            "in": "query",
+            "name": "raggio",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "minimum": 1,
+              "maximum": 50000,
+              "default": "2500",
+              "example": "2500"
+            },
+            "description": "Raggio in metri per la ricerca di segnalazioni (solo se autoCheck=true).\nMinimo 1m, massimo 50km (50000m). Default 2.5km (2500m).\n"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notifiche recuperate con successo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "64f1a2b3c4d5e6f7a8b9c0d1"
+                          },
+                          "tipoNotifica": {
+                            "type": "string",
+                            "example": "segnalazione"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-05-29T10:30:00.000Z"
+                          },
+                          "destinatario": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "64f1a2b3c4d5e6f7a8b9c0d1"
+                              },
+                              "nome": {
+                                "type": "string",
+                                "example": "Mario"
+                              },
+                              "cognome": {
+                                "type": "string",
+                                "example": "Rossi"
+                              }
+                            }
+                          },
+                          "idSegnalazione": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "64f1a2b3c4d5e6f7a8b9c0d1"
+                              },
+                              "tipologia": {
+                                "type": "string",
+                                "example": "Furto"
+                              },
+                              "descrizione": {
+                                "type": "string",
+                                "example": "Furto di bicicletta in via Roma"
+                              },
+                              "coordinateGps": {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "example": "Point"
+                                  },
+                                  "coordinates": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "number"
+                                    },
+                                    "example": [
+                                      11.1219482,
+                                      46.0664014
+                                    ]
+                                  }
+                                }
+                              },
+                              "timeStamp": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2025-05-29T08:15:00.000Z"
+                              },
+                              "stato": {
+                                "type": "string",
+                                "example": "aperto"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 5,
+                      "description": "Numero totale di notifiche trovate"
+                    },
+                    "autoCheck": {
+                      "type": "boolean",
+                      "example": true,
+                      "description": "Indica se è stato richiesto il controllo automatico"
+                    },
+                    "controlloEffettuato": {
+                      "type": "boolean",
+                      "example": true,
+                      "description": "Indica se è stato effettuato il controllo automatico"
+                    },
+                    "nuoveNotificheCreate": {
+                      "type": "integer",
+                      "example": 2,
+                      "description": "Numero di nuove notifiche create con questo controllo"
+                    },
+                    "raggio": {
+                      "type": "integer",
+                      "example": 2500,
+                      "description": "Raggio utilizzato per la ricerca (in metri)"
+                    },
+                    "raggioKm": {
+                      "type": "string",
+                      "example": "2.5",
+                      "description": "Raggio utilizzato per la ricerca (in chilometri)"
+                    },
+                    "errorControllo": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": null,
+                      "description": "Eventuale errore durante il controllo automatico"
+                    },
+                    "destinatario": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "64f1a2b3c4d5e6f7a8b9c0d1"
+                        },
+                        "nome": {
+                          "type": "string",
+                          "example": "Mario"
+                        },
+                        "cognome": {
+                          "type": "string",
+                          "example": "Rossi"
+                        },
+                        "tipoUtente": {
+                          "type": "string",
+                          "example": "UtenteFDO"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Trovate 5 notifiche (2 nuove create nel raggio di 2.5km)"
+                    }
+                  }
+                },
+                "examples": {
+                  "con_autocheck": {
+                    "summary": "Risposta con autoCheck=true",
+                    "value": {
+                      "success": true,
+                      "data": [],
+                      "count": 3,
+                      "autoCheck": true,
+                      "controlloEffettuato": true,
+                      "nuoveNotificheCreate": 2,
+                      "raggio": 2500,
+                      "raggioKm": "2.5",
+                      "errorControllo": null,
+                      "destinatario": {
+                        "_id": "64f1a2b3c4d5e6f7a8b9c0d1",
+                        "nome": "Mario",
+                        "cognome": "Rossi",
+                        "tipoUtente": "UtenteFDO"
+                      },
+                      "message": "Trovate 3 notifiche (2 nuove create nel raggio di 2.5km)"
+                    }
+                  },
+                  "senza_autocheck": {
+                    "summary": "Risposta con autoCheck=false (default)",
+                    "value": {
+                      "success": true,
+                      "data": [],
+                      "count": 3,
+                      "autoCheck": false,
+                      "controlloEffettuato": false,
+                      "nuoveNotificheCreate": 0,
+                      "raggio": 2500,
+                      "raggioKm": "2.5",
+                      "errorControllo": null,
+                      "destinatario": {
+                        "_id": "64f1a2b3c4d5e6f7a8b9c0d1",
+                        "nome": "Mario",
+                        "cognome": "Rossi",
+                        "tipoUtente": "UtenteFDO"
+                      },
+                      "message": "Trovate 3 notifiche per Mario Rossi"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Errore nei parametri di input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "id_mancante": {
+                    "summary": "ID utente mancante",
+                    "value": {
+                      "success": false,
+                      "message": "utenteDestinatarioId è richiesto"
+                    }
+                  },
+                  "id_invalido": {
+                    "summary": "ID utente non valido",
+                    "value": {
+                      "success": false,
+                      "message": "utenteDestinatarioId non è un ID valido"
+                    }
+                  },
+                  "raggio_invalido": {
+                    "summary": "Raggio non valido",
+                    "value": {
+                      "success": false,
+                      "message": "Il raggio deve essere un numero positivo e massimo 50km (50000 metri)",
+                      "error": "INVALID_RADIUS"
+                    }
+                  },
+                  "utente_non_fdo": {
+                    "summary": "Utente non è FDO",
+                    "value": {
+                      "success": false,
+                      "message": "L'utente con ID 64f1a2b3c4d5e6f7a8b9c0d1 non è un UtenteFDO",
+                      "error": "USER_NOT_FDO"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "description": "Utente non trovato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Utente con ID 64f1a2b3c4d5e6f7a8b9c0d1 non trovato"
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "USER_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Errore interno del server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Errore interno del server"
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Database connection failed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/richieste-allocazione": {
+      "get": {
+        "summary": "Recupera tutte le richieste di allocazione",
+        "tags": [
+          "Richieste Allocazione"
+        ],
+        "description": "Restituisce un array contenente tutte le richieste di allocazione presenti nel database",
+        "responses": {
+          "200": {
+            "description": "Lista di richieste di allocazione recuperata con successo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RichiestaAllocazione"
+                      }
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Numero totale di richieste",
+                      "example": 15
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Richieste allocazione retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Accesso negato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Accesso negato"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Errore del server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Crea una nuova richiesta di allocazione",
+        "tags": [
+          "Richieste Allocazione"
+        ],
+        "description": "Crea una nuova richiesta di allocazione nel database",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RichiestaAllocazioneInput"
+              },
+              "example": {
+                "idRichiestaAllocazione": "REQ_001",
+                "zonaDiOperazione": {
+                  "coordinateGps": {
+                    "coordinates": [
+                      11.12,
+                      46.07
+                    ]
+                  },
+                  "fasciaOraria": "08:00-12:00",
+                  "giornoSettimana": "lunedì"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Richiesta di allocazione creata con successo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RichiestaAllocazione"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Richiesta allocazione creata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dati non validi"
+          },
+          "403": {
+            "description": "Accesso negato"
+          },
+          "500": {
+            "description": "Errore del server"
+          }
+        }
+      }
+    },
+    "/api/richieste-allocazione/{id}": {
+      "get": {
+        "summary": "Recupera una richiesta di allocazione specifica",
+        "tags": [
+          "Richieste Allocazione"
+        ],
+        "description": "Restituisce una richiesta di allocazione in base all'ID fornito",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID MongoDB della richiesta di allocazione",
+            "example": "60d21b4967d0d8992e610c85"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Richiesta di allocazione recuperata con successo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RichiestaAllocazione"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Richiesta allocazione retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Accesso negato"
+          },
+          "404": {
+            "description": "Richiesta di allocazione non trovata"
+          },
+          "500": {
+            "description": "Errore del server"
+          }
+        }
+      },
+      "put": {
+        "summary": "Aggiorna una richiesta di allocazione esistente",
+        "tags": [
+          "Richieste Allocazione"
+        ],
+        "description": "Aggiorna i dati di una richiesta di allocazione esistente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID MongoDB della richiesta di allocazione"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "stato": {
+                    "type": "string",
+                    "enum": [
+                      "pendente",
+                      "assegnata",
+                      "completata",
+                      "annullata"
+                    ],
+                    "example": "assegnata"
+                  },
+                  "zonaDiOperazione": {
+                    "type": "object",
+                    "properties": {
+                      "coordinateGps": {
+                        "type": "object",
+                        "properties": {
+                          "coordinates": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            },
+                            "example": [
+                              11.12,
+                              46.07
+                            ]
+                          }
+                        }
+                      },
+                      "fasciaOraria": {
+                        "type": "string",
+                        "example": "14:00-18:00"
+                      },
+                      "giornoSettimana": {
+                        "type": "string",
+                        "example": "martedì"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Richiesta di allocazione aggiornata con successo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RichiestaAllocazione"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Richiesta allocazione aggiornata con successo"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dati non validi"
+          },
+          "403": {
+            "description": "Accesso negato"
+          },
+          "404": {
+            "description": "Richiesta non trovata"
+          },
+          "500": {
+            "description": "Errore del server"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Elimina una richiesta di allocazione",
+        "tags": [
+          "Richieste Allocazione"
+        ],
+        "description": "Elimina una richiesta di allocazione dal sistema",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID MongoDB della richiesta di allocazione"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Richiesta di allocazione eliminata con successo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RichiestaAllocazione"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Richiesta allocazione deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Accesso negato"
+          },
+          "404": {
+            "description": "Richiesta non trovata"
+          },
+          "500": {
+            "description": "Errore del server"
+          }
+        }
+      }
+    },
     "/api/segnalazioni": {
       "get": {
         "summary": "Recupera tutte le segnalazioni",
@@ -215,7 +940,7 @@
         }
       }
     },
-    "/segnalazioni/nearby/{fdoId}": {
+    "/api/segnalazioni/nearby/{fdoId}": {
       "get": {
         "summary": "Recupera segnalazioni nelle vicinanze di un utente FDO",
         "tags": [
@@ -273,7 +998,6 @@
         }
       }
     },
-    "/segnalazioni/{id}": {
     "/api/segnalazioni/{id}": {
       "get": {
         "summary": "Recupera una segnalazione specifica",
@@ -450,7 +1174,7 @@
         }
       }
     },
-    "/utenti": {
+    "/api/utenti": {
       "get": {
         "summary": "Recupera tutti gli utenti",
         "tags": [
@@ -490,25 +1214,18 @@
             }
           },
           "500": {
-            "description": "Errore del server",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Errore del server"
           }
         }
       }
     },
-    "/utenti/{tipo}": {
+    "/api/utenti/{tipo}": {
       "get": {
         "summary": "Recupera utenti per tipo",
         "tags": [
           "Utenti"
         ],
-        "description": "Restituisce tutti gli utenti di un tipo specifico (standard, comunale, fdo)",
+        "description": "Restituisce tutti gli utenti di un tipo specifico attivi (standard, comunale, fdo)",
         "parameters": [
           {
             "in": "path",
@@ -567,19 +1284,12 @@
             }
           },
           "500": {
-            "description": "Errore del server",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Errore del server"
           }
         }
       }
     },
-    "/utenti/id/{id}": {
+    "/api/utenti/id/{id}": {
       "get": {
         "summary": "Recupera un utente specifico tramite ID",
         "tags": [
@@ -632,19 +1342,12 @@
             }
           },
           "500": {
-            "description": "Errore del server",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Errore del server"
           }
         }
       }
     },
-    "/utenti/register/{tipo}": {
+    "/api/utenti/register/{tipo}": {
       "post": {
         "summary": "Registra un nuovo utente",
         "tags": [
@@ -722,25 +1425,18 @@
             }
           },
           "500": {
-            "description": "Errore del server",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Errore del server"
           }
         }
       }
     },
-    "/utenti/{id}": {
+    "/api/utenti/{id}": {
       "delete": {
         "summary": "Elimina un utente",
         "tags": [
           "Utenti"
         ],
-        "description": "Elimina un utente specifico dal sistema",
+        "description": "Disattiva un utente specifico dal sistema",
         "parameters": [
           {
             "in": "path",
@@ -784,14 +1480,7 @@
             }
           },
           "500": {
-            "description": "Errore del server",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Errore del server"
           }
         }
       },
@@ -988,14 +1677,7 @@
             }
           },
           "500": {
-            "description": "Errore del server",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Errore del server"
           }
         }
       }
@@ -1003,6 +1685,134 @@
   },
   "components": {
     "schemas": {
+      "RichiestaAllocazione": {
+        "type": "object",
+        "required": [
+          "idRichiestaAllocazione",
+          "zonaDiOperazione"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "ID automatico generato da MongoDB",
+            "example": "60d21b4967d0d8992e610c85"
+          },
+          "idRichiestaAllocazione": {
+            "type": "string",
+            "description": "ID univoco della richiesta di allocazione",
+            "example": "REQ_001"
+          },
+          "zonaDiOperazione": {
+            "type": "object",
+            "required": [
+              "coordinateGps",
+              "fasciaOraria",
+              "giornoSettimana"
+            ],
+            "properties": {
+              "coordinateGps": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "Point"
+                    ],
+                    "description": "Tipo GeoJSON",
+                    "example": "Point"
+                  },
+                  "coordinates": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "description": "Coordinate [longitudine, latitudine]",
+                    "example": [
+                      11.12,
+                      46.07
+                    ]
+                  }
+                }
+              },
+              "fasciaOraria": {
+                "type": "string",
+                "description": "Fascia oraria dell'operazione",
+                "example": "08:00-12:00"
+              },
+              "giornoSettimana": {
+                "type": "string",
+                "description": "Giorno della settimana",
+                "example": "lunedì"
+              }
+            }
+          },
+          "stato": {
+            "type": "string",
+            "enum": [
+              "pendente",
+              "assegnata",
+              "completata",
+              "annullata"
+            ],
+            "description": "Stato attuale della richiesta",
+            "default": "pendente",
+            "example": "pendente"
+          },
+          "timeStampCreazione": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data e ora di creazione della richiesta",
+            "example": "2023-05-18T14:30:00Z"
+          }
+        }
+      },
+      "RichiestaAllocazioneInput": {
+        "type": "object",
+        "required": [
+          "idRichiestaAllocazione",
+          "zonaDiOperazione"
+        ],
+        "properties": {
+          "idRichiestaAllocazione": {
+            "type": "string",
+            "description": "ID univoco della richiesta di allocazione",
+            "example": "REQ_001"
+          },
+          "zonaDiOperazione": {
+            "type": "object",
+            "required": [
+              "coordinateGps",
+              "fasciaOraria",
+              "giornoSettimana"
+            ],
+            "properties": {
+              "coordinateGps": {
+                "type": "object",
+                "properties": {
+                  "coordinates": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "example": [
+                      11.12,
+                      46.07
+                    ]
+                  }
+                }
+              },
+              "fasciaOraria": {
+                "type": "string",
+                "example": "08:00-12:00"
+              },
+              "giornoSettimana": {
+                "type": "string",
+                "example": "lunedì"
+              }
+            }
+          }
+        }
+      },
       "Segnalazione": {
         "type": "object",
         "required": [
@@ -1311,6 +2121,10 @@
     }
   },
   "tags": [
+    {
+      "name": "Richieste Allocazione",
+      "description": "API per la gestione delle richieste di allocazione delle forze dell'ordine"
+    },
     {
       "name": "Segnalazioni",
       "description": "API per la gestione delle segnalazioni"
