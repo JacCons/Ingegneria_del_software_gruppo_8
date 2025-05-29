@@ -9,7 +9,7 @@ import { Utente, TipoUtente } from '../models/utente.model';
   providedIn: 'root'
 })
 export class UtentiService {
-  private apiBasePathUrl = 'http://localhost:3000';
+  private apiBasePathUrl = 'http://localhost:3000/api';
   constructor(private http: HttpClient) { }
 
   getAllUtenti(): Observable<ApiResponse<Utente[]>> {

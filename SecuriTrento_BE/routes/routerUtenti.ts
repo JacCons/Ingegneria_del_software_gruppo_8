@@ -13,7 +13,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /utenti:
+ * /api/utenti:
  *   get:
  *     summary: Recupera tutti gli utenti
  *     tags: [Utenti]
@@ -51,11 +51,11 @@ router.get('/', tokenChecker, getAllUtenti);
 
 /**
  * @swagger
- * /utenti/{tipo}:
+ * /api/utenti/{tipo}:
  *   get:
  *     summary: Recupera utenti per tipo
  *     tags: [Utenti]
- *     description: Restituisce tutti gli utenti di un tipo specifico (standard, comunale, fdo)
+ *     description: Restituisce tutti gli utenti di un tipo specifico attivi (standard, comunale, fdo)
  *     parameters:
  *       - in: path
  *         name: tipo
@@ -98,11 +98,12 @@ router.get('/', tokenChecker, getAllUtenti);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/:tipo', tokenChecker, getUtentiByType);
+//router.get('/:tipo', tokenChecker, getUtentiByType);
+router.get('/:tipo', getUtentiByType);
 
 /**
  * @swagger
- * /utenti/id/{id}:
+ * /api/utenti/id/{id}:
  *   get:
  *     summary: Recupera un utente specifico tramite ID
  *     tags: [Utenti]
@@ -147,7 +148,7 @@ router.get('/id/:id', tokenChecker, getUtenteById);
 
 /**
  * @swagger
- * /utenti/register/{tipo}:
+ * /api/utenti/register/{tipo}:
  *   post:
  *     summary: Registra un nuovo utente
  *     tags: [Utenti]
@@ -202,11 +203,11 @@ router.post('/register/:tipo', registerUser);
 
 /**
  * @swagger
- * /utenti/{id}:
+ * /api/utenti/{id}:
  *   delete:
  *     summary: Elimina un utente
  *     tags: [Utenti]
- *     description: Elimina un utente specifico dal sistema
+ *     description: Disattiva un utente specifico dal sistema
  *     parameters:
  *       - in: path
  *         name: id
@@ -245,7 +246,7 @@ router.delete('/:id', tokenChecker, deleteUtente);
 
 /**
  * @swagger
- * /utenti/{id}:
+ * /api/utenti/{id}:
  *   put:
  *     summary: Aggiorna i dati di un utente esistente
  *     tags: [Utenti]

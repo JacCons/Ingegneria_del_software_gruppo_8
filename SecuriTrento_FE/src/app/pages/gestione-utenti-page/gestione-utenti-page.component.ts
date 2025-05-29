@@ -37,7 +37,12 @@ export class GestioneUtentiPageComponent {
   surname: string = "";
   authPage: string = "register"; // "login" or "register"
   tipologiaUtente?: TipoUtente;
-  typeUtente:string = '';
+  typeUtente: string = '';
+  showForm = false;
+  showUsers = false
+
+  utentiFDO: Utente[] = [];
+  utentiComunali: Utente[] = [];
 
   corpoFDO?: TipoFDO;
   private utentiService = inject(UtentiService);
@@ -48,6 +53,47 @@ export class GestioneUtentiPageComponent {
   ) { }
 
   ngOnInit(): void {
+    this.utentiService.getUtentiByType('fdo').subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.utentiFDO = response.data;
+        } else {
+          this.dialogService.showError("Errore nel recupero degli utenti FDO");
+        }
+      },
+      error: (error) => {
+        this.dialogService.showError("Errore nel recupero degli utenti FDO");
+        console.error('Error fetching users:', error);
+      }
+    });
+
+    this.utentiService.getUtentiByType('comunale').subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.utentiComunali = response.data;
+        } else {
+          this.dialogService.showError("Errore nel recupero degli utenti Comunali");
+        }
+      },
+      error: (error) => {
+        this.dialogService.showError("Errore nel recupero degli utenti Comunali");
+        console.error('Error fetching users:', error);
+      }
+    });
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+    if (this.showForm) {
+      this.showUsers = false; 
+    }
+  }
+
+  toggleShow() {
+    this.showUsers = !this.showUsers;
+    if (this.showUsers){
+      this.showForm = false; 
+    }
   }
 
   clickEvent(event: MouseEvent) {
@@ -73,11 +119,11 @@ export class GestioneUtentiPageComponent {
 
     if (this.tipologiaUtente === TipoUtente.COMUNALE) {
       this.typeUtente = "comunale";
-    }else{
+    } else {
       this.typeUtente = "fdo";
     }
     console.log("typeUtente", this.typeUtente);
-    
+
     this.utentiService.registerUser(this.typeUtente, newUser).subscribe({
       next: (response) => {
         if (response.success) {

@@ -1,4 +1,8 @@
-<div class="form-container">
+<button mat-raised-button color="accent" (click)="toggleForm()">
+    {{ showForm ? 'Nascondi Form' : 'Nuovo Utente' }}
+</button>
+
+<div *ngIf="showForm" class="form-container">
 
     <mat-form-field class="example-full-width">
         <mat-label>Tipologia Utente:</mat-label>
@@ -47,8 +51,40 @@
         </button>
     </mat-form-field>
 
-    <button mat-raised-button color="primary" class="full-width" [disabled]="!checkRegisterNotEmpty()" (click)="creaUtente($event)">
+    <button mat-raised-button color="primary" class="full-width" [disabled]="!checkRegisterNotEmpty()"
+        (click)="creaUtente($event)">
         Crea Utente
     </button>
 
 </div>
+
+
+<div *ngIf="showUsers" class="users-list">
+    <div class="lista-utenti">
+        <h4>Utenti FDO</h4>
+        <div class="card" *ngFor="let utente of utentiFDO">
+            <div><strong>Nome:</strong> {{ utente.nome }}</div>
+            <div><strong>Cognome:</strong> {{ utente.cognome }}</div>
+            <div><strong>Telefono:</strong> {{ utente.telefono }}</div>
+            <div><strong>Tipo:</strong> {{ utente.tipoUtente }}</div>
+        </div>
+    </div>
+
+    <div class="lista-utenti">
+        <h4>Utenti Comunali:</h4>
+        <div class="card" *ngFor="let utente of utentiComunali">
+            <div><strong>Nome:</strong> {{ utente.nome }}</div>
+            <div><strong>Cognome:</strong> {{ utente.cognome }}</div>
+            <div><strong>Telefono:</strong> {{ utente.telefono }}</div>
+            <div><strong>Tipo:</strong> {{ utente.tipoUtente }}</div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<button mat-raised-button color="accent" (click)="toggleShow()">
+    {{ showUsers ? 'Nascondi Utenti' : 'Mostra Utenti' }}
+</button>

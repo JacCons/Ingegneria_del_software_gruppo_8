@@ -71,7 +71,7 @@ export class LoginPageComponent {
         });
       },
       error: (error) => {
-        this.dialogService.showError("Telefono o password errati");
+        this.dialogService.showError("Telefono o password errati OR Utente disattivato");
         console.error('Errore login:', error);
       }
     });

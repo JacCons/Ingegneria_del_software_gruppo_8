@@ -13,7 +13,7 @@ export class AutenticazioneService {
   private currentUserSubject: BehaviorSubject<Utente | null> = new BehaviorSubject<Utente | null>(null);
   public currentUser$: Observable<Utente | null> = this.currentUserSubject.asObservable();
 
-  private apiBasePathUrl = 'http://localhost:3000';
+  private apiBasePathUrl = 'http://localhost:3000/api';
 
   constructor(private router: Router, private http: HttpClient) {
     this.loadUserFromStorage();

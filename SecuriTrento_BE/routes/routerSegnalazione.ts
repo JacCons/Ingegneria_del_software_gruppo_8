@@ -81,7 +81,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /segnalazioni:
+ * /api/segnalazioni:
  *   get:
  *     summary: Recupera tutte le segnalazioni
  *     tags: [Segnalazioni]
@@ -108,7 +108,7 @@ router.get('/', getAllSegnalazioni);
 
 /**
  * @swagger
- * /segnalazioni/{id}:
+ * /api/segnalazioni/{id}:
  *   get:
  *     summary: Recupera una segnalazione specifica
  *     tags: [Segnalazioni]
@@ -142,7 +142,7 @@ router.get('/:id', getSegnalazioneById);
 
 /**
  * @swagger
- * /segnalazioni:
+ * /api/segnalazioni:
  *   post:
  *     summary: Crea una nuova segnalazione
  *     tags: [Segnalazioni]
@@ -202,7 +202,7 @@ router.post('/',generaCoordinateTrento, createSegnalazione);
 
 /**
  * @swagger
- * /segnalazioni/{id}:
+ * /api/segnalazioni/{id}:
  *   put:
  *     summary: Aggiorna una segnalazione esistente
  *     tags: [Segnalazioni]
@@ -254,7 +254,7 @@ router.put('/:id', updateSegnalazione);
 
 /**
  * @swagger
- * /segnalazioni/{id}:
+ * /api/segnalazioni/{id}:
  *   delete:
  *     summary: Elimina una segnalazione
  *     tags: [Segnalazioni]

@@ -22,10 +22,10 @@ const app = express();
 app.use(cors()); //abilito le richieste cross-origin
 app.use(express.json());
 
-app.use('/utenti', routerUtente); //imposto il route path
-app.use('/segnalazioni',tokenChecker, routerSegnalazione); //imposto il route path
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use('/login', routerAutenticazione);
+app.use('/api/utenti', routerUtente); //imposto il route path
+app.use('/api/segnalazioni',tokenChecker, routerSegnalazione); //imposto il route path
+app.use('/api/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/login', routerAutenticazione);
 
 app.listen(3000, () => {
   console.log(`Server running on port 3000`);

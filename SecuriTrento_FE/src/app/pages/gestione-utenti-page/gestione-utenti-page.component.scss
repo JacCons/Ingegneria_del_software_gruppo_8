@@ -1,6 +1,6 @@
 .form-container {
   max-width: 400px;
-  margin: 40px auto;
+  margin: 40px auto 32px auto; // spazio sotto il form
   padding: 32px 24px;
   background: #fff;
   border-radius: 16px;
@@ -17,6 +17,80 @@ mat-form-field {
 button[type="submit"], button[mat-raised-button] {
   margin-top: 16px;
   width: 100%;
+}
+
+.segnalazioni-title {
+  color: #2d3a4b;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.users-list {
+  margin-bottom: 32px;
+  margin-top: 24px;
+}
+
+.lista-utenti {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #f5f7fa;
+  border-radius: 12px;
+  padding: 16px;
+  width: 100%;
+  height: auto;
+  max-height: 25vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px; // spazio sotto la lista
+}
+
+.lista-utenti::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lista-utenti::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 8px;
+}
+
+.lista-utenti::-webkit-scrollbar-thumb {
+  background-color: #c1c9d6;
+  border-radius: 8px;
+}
+
+.lista-utenti::-webkit-scrollbar-thumb:hover {
+  background-color: #a0a8b5;
+}
+
+.card {
+  margin-bottom: 12px;
+  padding: 16px;
+  min-width: 280px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border-left: 5px solid #ccc;
+}
+
+.card div {
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+.card div strong {
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.card:last-child {
+  margin-bottom: 0;
 }
 
 @media (max-width: 600px) {

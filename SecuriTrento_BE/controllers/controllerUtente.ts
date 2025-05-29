@@ -39,10 +39,10 @@ export const getUtentiByType = async (req, res) => {
                 utenti = await utenteRegistratoModel.find({ tipoUtente: 'UtenteRegistrato' });
                 break;
             case 'comunale':
-                utenti = await utenteComunaleModel.find();
+                utenti = await utenteComunaleModel.find({stato: 'Attivo'});
                 break;
             case 'fdo':
-                utenti = await utenteFDOModel.find();
+                utenti = await utenteFDOModel.find({stato: 'Attivo'});
                 break;
             default:
                 return res.status(400).json({
@@ -215,12 +215,15 @@ export const registerUser = async (req, res) => {
 };
 
 /**
- * Elimina una segnalazione tramite ID
+ * Disattiva un utente esistente
  */
 export const deleteUtente = async (req, res) => {  //solo by ID
     try {
-        const segnalazione = await utenteRegistratoModel.findByIdAndDelete(req.params.id);
-        if (!segnalazione) {
+        let utente = await utenteRegistratoModel.findByIdAndUpdate(
+            req.params.id, 
+            {stato: 'Disattivato'}, 
+            { new: true });
+        if (!utente) {
             return res.status(404).json({
                 success: false,
                 message: 'Utente not found'
@@ -228,8 +231,8 @@ export const deleteUtente = async (req, res) => {  //solo by ID
         }
         return res.status(200).json({
             success: true,
-            data: segnalazione,
-            message: 'Utente deleted successfully'
+            data: utente,
+            message: 'Utente disabled successfully'
         });
     } catch (error) {
         return res.status(500).json({

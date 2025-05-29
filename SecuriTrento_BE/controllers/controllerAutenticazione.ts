@@ -15,6 +15,10 @@ export const verificaUtente = async (req, res) => {
             return res.status(401).json({ message: 'Utente non trovato' });
         }
 
+        if( utente.stato === 'Disattivato') {
+            return res.status(401).json({ message: 'Utente disattivato' });
+        } 
+
         const isPasswordValid = await bcrypt.compare(password, utente.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Password errata' });

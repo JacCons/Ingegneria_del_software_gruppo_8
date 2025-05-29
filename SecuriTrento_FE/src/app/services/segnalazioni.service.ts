@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SegnalazioniService {
-  private apiBasePathUrl = 'http://localhost:3000';
+  private apiBasePathUrl = 'http://localhost:3000/api';
   constructor(private http: HttpClient) { }
 
   getAllSegnalazioni(): Observable<ApiResponse<Segnalazione[]>> {

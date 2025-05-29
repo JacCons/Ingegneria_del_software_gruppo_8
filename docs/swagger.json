@@ -20,7 +20,7 @@
     }
   ],
   "paths": {
-    "/login": {
+    "/api/login": {
       "post": {
         "summary": "Verifica le credenziali dell'utente e restituisce un token JWT.",
         "tags": [
@@ -86,7 +86,7 @@
         }
       }
     },
-    "/segnalazioni": {
+    "/api/segnalazioni": {
       "get": {
         "summary": "Recupera tutte le segnalazioni",
         "tags": [
@@ -215,7 +215,7 @@
         }
       }
     },
-    "/segnalazioni/{id}": {
+    "/api/segnalazioni/{id}": {
       "get": {
         "summary": "Recupera una segnalazione specifica",
         "tags": [
@@ -391,7 +391,7 @@
         }
       }
     },
-    "/utenti": {
+    "/api/utenti": {
       "get": {
         "summary": "Recupera tutti gli utenti",
         "tags": [
@@ -443,13 +443,13 @@
         }
       }
     },
-    "/utenti/{tipo}": {
+    "/api/utenti/{tipo}": {
       "get": {
         "summary": "Recupera utenti per tipo",
         "tags": [
           "Utenti"
         ],
-        "description": "Restituisce tutti gli utenti di un tipo specifico (standard, comunale, fdo)",
+        "description": "Restituisce tutti gli utenti di un tipo specifico attivi (standard, comunale, fdo)",
         "parameters": [
           {
             "in": "path",
@@ -520,7 +520,7 @@
         }
       }
     },
-    "/utenti/id/{id}": {
+    "/api/utenti/id/{id}": {
       "get": {
         "summary": "Recupera un utente specifico tramite ID",
         "tags": [
@@ -585,7 +585,7 @@
         }
       }
     },
-    "/utenti/register/{tipo}": {
+    "/api/utenti/register/{tipo}": {
       "post": {
         "summary": "Registra un nuovo utente",
         "tags": [
@@ -675,13 +675,13 @@
         }
       }
     },
-    "/utenti/{id}": {
+    "/api/utenti/{id}": {
       "delete": {
         "summary": "Elimina un utente",
         "tags": [
           "Utenti"
         ],
-        "description": "Elimina un utente specifico dal sistema",
+        "description": "Disattiva un utente specifico dal sistema",
         "parameters": [
           {
             "in": "path",

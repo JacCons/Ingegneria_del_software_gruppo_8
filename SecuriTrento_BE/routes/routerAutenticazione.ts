@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /login:
+ * /api/login:
  *   post:
  *     summary: Verifica le credenziali dell'utente e restituisce un token JWT.
  *     tags:

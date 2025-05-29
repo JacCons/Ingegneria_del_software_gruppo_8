@@ -25,8 +25,13 @@ const utenteRegistratoSchema = new Schema({
     tipoUtente: {
         type: String,
         default: 'UtenteCittadino'
+    },
+    stato: {
+        type: String,
+        enum: ['Attivo', 'Disattivato'],
+        default: 'Attivo'
     }
-}, opzioniSchema);
+} , opzioniSchema);
 
 utenteRegistratoSchema.set('toJSON', {
     transform: function (doc, ret) {
