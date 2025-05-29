@@ -241,7 +241,7 @@ router.get('/:id', getSegnalazioneById);
  *       500:
  *         description: Errore del server
  */
-router.post('/',generaCoordinateTrento, createSegnalazione);
+router.post('/', createSegnalazione); //generaCoordinateTrento prima cera ma ora è da fare il ceck se le coordinate sono dentro trento è nel middlewhare GPS questo
 
 /**
  * @swagger
