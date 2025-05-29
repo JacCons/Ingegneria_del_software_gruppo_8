@@ -62,21 +62,34 @@
 <div *ngIf="showUsers" class="users-list">
     <div class="lista-utenti">
         <h4>Utenti FDO</h4>
+
         <div class="card" *ngFor="let utente of utentiFDO">
-            <div><strong>Nome:</strong> {{ utente.nome }}</div>
-            <div><strong>Cognome:</strong> {{ utente.cognome }}</div>
-            <div><strong>Telefono:</strong> {{ utente.telefono }}</div>
-            <div><strong>Tipo:</strong> {{ utente.tipoUtente }}</div>
+            <div class="card-content">
+                <div><strong>Nome:</strong> {{ utente.nome }}</div>
+                <div><strong>Cognome:</strong> {{ utente.cognome }}</div>
+                <div><strong>Telefono:</strong> {{ utente.telefono }}</div>
+                <div><strong>Tipo:</strong> {{ utente.tipoUtente }}</div>
+            </div>
+            <button mat-fab extended color="warn" class="disable-btn" (click)="disableUtente(utente)">
+                <mat-icon>person_off</mat-icon>
+                Disabilita Utente
+            </button>
         </div>
     </div>
 
     <div class="lista-utenti">
         <h4>Utenti Comunali:</h4>
         <div class="card" *ngFor="let utente of utentiComunali">
-            <div><strong>Nome:</strong> {{ utente.nome }}</div>
-            <div><strong>Cognome:</strong> {{ utente.cognome }}</div>
-            <div><strong>Telefono:</strong> {{ utente.telefono }}</div>
-            <div><strong>Tipo:</strong> {{ utente.tipoUtente }}</div>
+            <div class="card-content">
+                <div><strong>Nome:</strong> {{ utente.nome }}</div>
+                <div><strong>Cognome:</strong> {{ utente.cognome }}</div>
+                <div><strong>Telefono:</strong> {{ utente.telefono }}</div>
+                <div><strong>Tipo:</strong> {{ utente.tipoUtente }}</div>
+            </div>
+            <button mat-fab extended color="warn" class="disable-btn" (click)="disableUtente(utente)">
+                <mat-icon>person_off</mat-icon>
+                Disabilita Utente
+            </button>
         </div>
     </div>
 

@@ -85,14 +85,14 @@ export class GestioneUtentiPageComponent {
   toggleForm() {
     this.showForm = !this.showForm;
     if (this.showForm) {
-      this.showUsers = false; 
+      this.showUsers = false;
     }
   }
 
   toggleShow() {
     this.showUsers = !this.showUsers;
-    if (this.showUsers){
-      this.showForm = false; 
+    if (this.showUsers) {
+      this.showForm = false;
     }
   }
 
@@ -136,6 +136,39 @@ export class GestioneUtentiPageComponent {
         console.error('Error creating user:', error);
       }
     });
+  }
+
+  disableUtente(utente: Utente) {
+    this.dialogService.showCustom(
+      'Disabilita Utente',
+      `Sei sicuro di voler disabilitare l'utente ${utente.nome} ${utente.cognome} ${utente._id}?`,
+      'Disabilita',
+      'Annulla')
+      .subscribe(result => {
+        if (result === 'confirm') {
+          this.performDisableUtente(utente);
+        }
+      });
+  }
+
+  performDisableUtente(utente: Utente) {
+    if (utente._id) {
+      this.utentiService.deleteUtente(utente._id).subscribe({
+        next: (response) => {
+          // Aggiorna la lista utenti o mostra un messaggio di successo
+          // (opzionale) rimuovi l'utente dalla lista locale
+          this.utentiFDO = this.utentiFDO.filter(u => u._id !== utente._id);
+          this.utentiComunali = this.utentiComunali.filter(u => u._id !== utente._id);
+          window.location.reload();
+        },
+        error: (error) => {
+          this.dialogService.showError("Errore nella disabilitazione dell'utente");
+          console.error('Error disabling user:', error);
+        }
+      });
+    } else {
+      this.dialogService.showError("ID utente non valido");
+    }
   }
 
   checkRegisterNotEmpty() {

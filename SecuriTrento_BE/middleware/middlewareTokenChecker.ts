@@ -30,6 +30,7 @@ export const tokenChecker = (
         else {
             // if everything is good, save in req object for use in other routes
             req.loggedUser = decoded;
+            console.log('Logged user:', req.loggedUser);
             next();
         }
     });

@@ -98,8 +98,7 @@ router.get('/', tokenChecker, getAllUtenti);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-//router.get('/:tipo', tokenChecker, getUtentiByType);
-router.get('/:tipo', getUtentiByType);
+router.get('/:tipo', tokenChecker, getUtentiByType);
 
 /**
  * @swagger
@@ -242,7 +241,9 @@ router.post('/register/:tipo', registerUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
+
 router.delete('/:id', tokenChecker, deleteUtente);
+
 
 /**
  * @swagger

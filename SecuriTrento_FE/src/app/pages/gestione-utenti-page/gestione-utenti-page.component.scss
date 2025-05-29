@@ -67,6 +67,10 @@ button[type="submit"], button[mat-raised-button] {
 }
 
 .card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
   padding: 16px;
   min-width: 280px;
@@ -75,8 +79,19 @@ button[type="submit"], button[mat-raised-button] {
   font-family: 'Arial', sans-serif;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
   border-left: 5px solid #ccc;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.disable-btn {
+  margin-left: 16px;
+  min-width: 40px;
+  min-height: 40px;
 }
 
 .card div {

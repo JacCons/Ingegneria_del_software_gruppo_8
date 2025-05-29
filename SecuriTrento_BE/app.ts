@@ -29,7 +29,7 @@ app.use('/api/login', routerAutenticazione);
 
 app.listen(3000, () => {
   console.log(`Server running on port 3000`);
-  console.log(`Swagger documentation available at http://localhost:3000/api-docs`);
+  console.log(`Swagger documentation available at http://localhost:3000/api/api-docs`);
 });
 
 export default app;
