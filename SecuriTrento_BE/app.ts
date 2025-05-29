@@ -7,7 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import routerSegnalazione from './routes/routerSegnalazione.ts';
 import routerUtente from './routes/routerUtenti.ts';
 import routerAutenticazione from './routes/routerAutenticazione.ts';
-import router from './routes/routerSegnalazione.ts';
+import routerNotificazione from './routes/routerNotifiche.ts';
 import { tokenChecker } from './middleware/middlewareTokenChecker.ts';
 
 
@@ -24,12 +24,13 @@ app.use(express.json());
 
 app.use('/api/utenti', routerUtente); //imposto il route path
 app.use('/api/segnalazioni',tokenChecker, routerSegnalazione); //imposto il route path
-app.use('/api/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/login', routerAutenticazione);
+app.use('/api/notifiche', tokenChecker, routerNotificazione);
 
 app.listen(3000, () => {
   console.log(`Server running on port 3000`);
-  console.log(`Swagger documentation available at http://localhost:3000/api/api-docs`);
+  console.log(`Swagger documentation available at http://localhost:3000/api-docs`);
 });
 
 export default app;

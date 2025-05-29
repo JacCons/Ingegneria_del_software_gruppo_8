@@ -215,6 +215,65 @@
         }
       }
     },
+    "/segnalazioni/nearby/{fdoId}": {
+      "get": {
+        "summary": "Recupera segnalazioni nelle vicinanze di un utente FDO",
+        "tags": [
+          "Segnalazioni"
+        ],
+        "description": "Restituisce tutte le segnalazioni aperte in un raggio specifico dalla posizione corrente dell'utente FDO",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fdoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID MongoDB dell'utente FDO"
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 5000
+            },
+            "description": "Raggio di ricerca in metri"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Segnalazioni nearby recuperate con successo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Segnalazione"
+                      }
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 3
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/segnalazioni/{id}": {
     "/api/segnalazioni/{id}": {
       "get": {
         "summary": "Recupera una segnalazione specifica",
@@ -391,7 +450,7 @@
         }
       }
     },
-    "/api/utenti": {
+    "/utenti": {
       "get": {
         "summary": "Recupera tutti gli utenti",
         "tags": [
@@ -443,13 +502,13 @@
         }
       }
     },
-    "/api/utenti/{tipo}": {
+    "/utenti/{tipo}": {
       "get": {
         "summary": "Recupera utenti per tipo",
         "tags": [
           "Utenti"
         ],
-        "description": "Restituisce tutti gli utenti di un tipo specifico attivi (standard, comunale, fdo)",
+        "description": "Restituisce tutti gli utenti di un tipo specifico (standard, comunale, fdo)",
         "parameters": [
           {
             "in": "path",
@@ -520,7 +579,7 @@
         }
       }
     },
-    "/api/utenti/id/{id}": {
+    "/utenti/id/{id}": {
       "get": {
         "summary": "Recupera un utente specifico tramite ID",
         "tags": [
@@ -585,7 +644,7 @@
         }
       }
     },
-    "/api/utenti/register/{tipo}": {
+    "/utenti/register/{tipo}": {
       "post": {
         "summary": "Registra un nuovo utente",
         "tags": [
@@ -675,13 +734,13 @@
         }
       }
     },
-    "/api/utenti/{id}": {
+    "/utenti/{id}": {
       "delete": {
         "summary": "Elimina un utente",
         "tags": [
           "Utenti"
         ],
-        "description": "Disattiva un utente specifico dal sistema",
+        "description": "Elimina un utente specifico dal sistema",
         "parameters": [
           {
             "in": "path",

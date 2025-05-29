@@ -4,6 +4,7 @@ import {generaCoordinateTrento} from '../middleware/middlewareGPS.ts'
 import {
   getAllSegnalazioni,
   getSegnalazioneById,
+  getSegnalazioniNearby,
   createSegnalazione,
   updateSegnalazione,
   deleteSegnalazione
@@ -105,6 +106,48 @@ const router = express.Router();
  *         description: Errore del server
  */
 router.get('/', getAllSegnalazioni);
+
+/**
+ * @swagger
+ * /api/segnalazioni/nearby/{fdoId}:
+ *   get:
+ *     summary: Recupera segnalazioni nelle vicinanze di un utente FDO
+ *     tags: [Segnalazioni]
+ *     description: Restituisce tutte le segnalazioni aperte in un raggio specifico dalla posizione corrente dell'utente FDO
+ *     parameters:
+ *       - in: path
+ *         name: fdoId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID MongoDB dell'utente FDO
+ *       - in: query
+ *         name: radius
+ *         required: false
+ *         schema:
+ *           type: number
+ *           default: 5000
+ *         description: Raggio di ricerca in metri
+ *     responses:
+ *       200:
+ *         description: Segnalazioni nearby recuperate con successo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Segnalazione'
+ *                 count:
+ *                   type: integer
+ *                   example: 3
+ */
+router.get('/nearby/:fdoId', getSegnalazioniNearby);
 
 /**
  * @swagger

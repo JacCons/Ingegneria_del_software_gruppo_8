@@ -37,17 +37,20 @@ const swaggerDefinition = {
         },
       },
     },
-    securitySchemes: {
-      // If you add authentication later
-      /*
+    securitySchemes: {      
       bearerAuth: {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
+        description: 'Enter your JWT token'
       },
-      */
     },
   },
+  security: [
+    {
+      bearerAuth: []
+    }
+  ]
 };
 
 const options = {

@@ -1,1 +1,25 @@
-<p>notifiche-page works!</p>
+<div *ngIf="currentUser?.tipoUtente === TipoUtente.FDO" class="notifiche-container">
+    <h2>Notifiche per FDO</h2>
+
+    <div class="segnalazioni-container">
+        <h3 class="segnalazioni-title">Segnalazioni:</h3>
+        <div class="lista-segnalazioni">
+            <div class="card" [ngClass]="segnalazione.tipologia" *ngFor="let segnalazione of segnalazioni">
+                <div><strong>Nuova segnalazione: </strong> {{ segnalazione.timeStamp | date:'medium' }}</div>
+                <div><strong>Descrizione:</strong> {{ segnalazione.descrizione }}</div>
+                <div><strong>Tipo:</strong> {{ segnalazione.tipologia }}</div>
+                <div><strong>Coordinate:</strong> {{ segnalazione._id }}</div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="segnalazioni-container">
+        <h3 class="segnalazioni-title">Richieste di allocazione:</h3>
+        <div class="lista-allocazioni">
+            //LISTA NOTIFICHE RICHIESTE DI ALLOCAZIONE
+        </div>
+    </div>
+
+
+</div>
