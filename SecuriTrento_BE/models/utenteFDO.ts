@@ -39,6 +39,9 @@ const utenteFDOSchema = new Schema({
         type: Boolean, 
         default: true
     },
+    idRichiesteAllocazioneAccettate: [{
+        type: Schema.Types.ObjectId,
+    }],
     coordinateGps: {
         type: {
             type: String,

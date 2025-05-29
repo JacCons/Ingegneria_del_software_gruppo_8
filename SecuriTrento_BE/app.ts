@@ -9,6 +9,7 @@ import routerUtente from './routes/routerUtenti.ts';
 import routerAutenticazione from './routes/routerAutenticazione.ts';
 import routerNotificazione from './routes/routerNotifiche.ts';
 import { tokenChecker } from './middleware/middlewareTokenChecker.ts';
+import routerRichiestaAllocazione from './routes/routerRichiestaAllocazione.ts';
 
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use('/api/segnalazioni',tokenChecker, routerSegnalazione); //imposto il rout
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/login', routerAutenticazione);
 app.use('/api/notifiche', tokenChecker, routerNotificazione);
+app.use('/api/richieste-allocazione', tokenChecker, routerRichiestaAllocazione);
 
 app.listen(3000, () => {
   console.log(`Server running on port 3000`);
