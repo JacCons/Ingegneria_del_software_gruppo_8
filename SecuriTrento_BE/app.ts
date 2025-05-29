@@ -7,6 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import routerSegnalazione from './routes/routerSegnalazione.ts';
 import routerUtente from './routes/routerUtenti.ts';
 import routerAutenticazione from './routes/routerAutenticazione.ts';
+import routerNotificazione from './routes/routerNotifiche.ts';
 import router from './routes/routerSegnalazione.ts';
 import { tokenChecker } from './middleware/middlewareTokenChecker.ts';
 
@@ -23,6 +24,7 @@ app.use(cors()); //abilito le richieste cross-origin
 app.use(express.json());
 
 app.use('/utenti', routerUtente); //imposto il route path
+app.use('/api/notifiche', tokenChecker, routerNotificazione);
 app.use('/segnalazioni',tokenChecker, routerSegnalazione); //imposto il route path
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/login', routerAutenticazione);

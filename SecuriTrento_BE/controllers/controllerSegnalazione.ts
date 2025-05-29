@@ -1,6 +1,7 @@
 import segnalazioneModel from '../models/segnalazione.ts';
 import mongoose from 'mongoose';
 import { utenteRegistratoModel } from '../models/utenteRegistrato.ts';
+import { creaNotifichePerNuovaSegnalazione } from './controllerNotifiche.ts';
 import express from 'express';
 
 /**
@@ -151,8 +152,8 @@ export const createSegnalazione = async (req, res) => {
       });
     }
 
-    // Required fields validation
-    const requiredFields = ['tipologia', 'idUtente']; // Adjust based on your model
+    // check dei parametri obbligatori
+    const requiredFields = ['tipologia', 'idUtente', 'coordinateGps'];
     for (const field of requiredFields) {
       if (!dati[field]) {
         return res.status(400).json({
@@ -162,7 +163,6 @@ export const createSegnalazione = async (req, res) => {
       }
     }
 
-    // Verify idUtente is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(dati.idUtente)) {
       return res.status(400).json({
         success: false,
@@ -177,7 +177,17 @@ export const createSegnalazione = async (req, res) => {
     };
 
     const nuovaSegnalazione = await segnalazioneModel.create(segnalazioneData);
-    res.status(201).json({ message: 'Segnalazione creata', data: nuovaSegnalazione });
+
+    //creazione notifiche per la nuova segnalazione agli utentiFDO in un raggiod i 2.5km
+    creaNotifichePerNuovaSegnalazione(nuovaSegnalazione._id.toString())
+        .then((notificheCreate) => {
+          console.log(`Notifiche create per la segnalazione ${nuovaSegnalazione._id}:`, notificheCreate);
+        })
+        .catch((error) => {
+          console.error(`Errore creazione notifiche per segnalazione ${nuovaSegnalazione._id}:`, error);
+        });
+
+    res.status(201).json({ message: 'Segnalazione creata con successo e le FDO vicine sono state avvisate', data: nuovaSegnalazione });
   } catch (error) {
     return res.status(500).json({
       success: false,
