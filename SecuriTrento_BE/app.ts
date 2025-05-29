@@ -9,6 +9,7 @@ import routerUtente from './routes/routerUtenti.ts';
 import routerAutenticazione from './routes/routerAutenticazione.ts';
 import router from './routes/routerSegnalazione.ts';
 import { tokenChecker } from './middleware/middlewareTokenChecker.ts';
+import routerRichiestaAllocazione from './routes/routerRichiestaAllocazione.ts';
 
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use(express.json());
 
 app.use('/utenti', routerUtente); //imposto il route path
 app.use('/segnalazioni',tokenChecker, routerSegnalazione); //imposto il route path
+app.use('/api/richieste-allocazione', tokenChecker, routerRichiestaAllocazione); 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/login', routerAutenticazione);
 
