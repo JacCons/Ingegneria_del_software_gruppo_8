@@ -6,7 +6,7 @@ import express from 'express';
  * Recupera tutte le richieste allocazione
  */
 export const getAllRichiesteAllocazione = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.loggedUser?.ruolo;
   console.log('getall con Ruolo utente:', req.user);
   if (ruolo === 'UtenteCittadino') {
     return res.status(403).json({
@@ -37,7 +37,7 @@ export const getAllRichiesteAllocazione = async (req, res) => {
  * Recupera una richiesta allocazione specifica tramite ID
  */
 export const getRichiestaAllocazioneById = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.loggedUser?.ruolo;
 
   if (ruolo === 'UtenteCittadino') {
     return res.status(403).json({
@@ -72,14 +72,14 @@ export const getRichiestaAllocazioneById = async (req, res) => {
  * Crea una nuova richiesta allocazione
  */
 export const createRichiestaAllocazione = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
-    console.log('Ruolo utente:', ruolo);
-//   if (ruolo !== 'UtenteComunale') {
-//     return res.status(403).json({
-//       success: false,
-//       message: 'Accesso negato'
-//     });
-//   }
+  const ruolo = req.loggedUser?.ruolo;
+    console.log('Ruolo utente nella createRichiestaAllocazione:', ruolo);
+  if (ruolo !== 'UtenteComunale') {
+    return res.status(403).json({
+      success: false,
+      message: 'Accesso negato'
+    });
+  }
   
   try {
     const dati = req.body;
@@ -142,7 +142,7 @@ export const createRichiestaAllocazione = async (req, res) => {
  * Aggiorna una richiesta allocazione esistente
  */
 export const updateRichiestaAllocazione = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.loggedUser?.ruolo;
 
   if (ruolo !== 'UtenteFDO' && ruolo !== 'UtenteComunale') {
     return res.status(403).json({
@@ -200,7 +200,7 @@ export const updateRichiestaAllocazione = async (req, res) => {
  * Elimina una richiesta allocazione tramite ID
  */
 export const deleteRichiestaAllocazione = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.loggedUser?.ruolo;
 
   if (ruolo !== 'UtenteFDO' && ruolo !== 'UtenteComunale') {
     return res.status(403).json({
