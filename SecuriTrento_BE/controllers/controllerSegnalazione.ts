@@ -38,7 +38,7 @@ export const getAllSegnalazioni = async (req, res) => {
 }
 
 /**
- * Recupera una segnalazione specifica tramite ID
+ * Recupera una segnalazione specifica tramite ID della segnalazione
  */
 export const getSegnalazioneById = async (req, res) => {
   const ruolo = req.user?.ruolo;
@@ -128,6 +128,36 @@ export const getSegnalazioniNearby = async (req, res) => {
     });
   }
 };
+
+
+export const getSegnalazioniByUtente = async (req, res) => {
+  const ruolo = req.loggedUser?.ruolo;
+  const idUtente = req.loggedUser.id;
+  
+  if (ruolo === 'UtenteFDO' || ruolo === 'UtenteComunale') {
+    return res.status(403).json({
+      success: false,
+      message: 'Accesso negato'
+    });
+  }
+  
+  try {
+    const segnalazioni = await segnalazioneModel.find({idUtente});
+    return res.status(200).json({
+      success: true,
+      data: segnalazioni,
+      count: segnalazioni.length,
+      message: 'Segnalazioni retrieved successfully'
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+}
 
 /**
  * Crea una nuova segnalazione

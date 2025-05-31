@@ -1,6 +1,6 @@
 export enum TipoUtente {
     CITTADINO = 'UtenteCittadino',
-    COMUNALE = 'UtenteComune',
+    COMUNALE = 'UtenteComunale',
     FDO = 'UtenteFDO'
 }
 
