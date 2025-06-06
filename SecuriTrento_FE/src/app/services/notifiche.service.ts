@@ -21,4 +21,11 @@ export class NotificheService {
     );
   }
 
+  getNotificheConfermaRichiesteAllocazione(): Observable<ApiResponse<NotificaSegnalazione[]>> {
+    return this.http.get<ApiResponse<NotificaSegnalazione[]>>(
+      `${this.apiBasePathUrl}/notifiche/notifiche-conferma-richieste-allocazione`,
+      { headers: this.autenticazioneService.getAuthHeaders() }
+    );
+  }
+
 }

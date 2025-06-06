@@ -4,7 +4,8 @@
     <div class="segnalazioni-container">
         <h3 class="segnalazioni-title">Notifiche Segnalazioni:</h3>
         <div class="lista-segnalazioni">
-            <div class="card" *ngFor="let notifichaSegnalazione of notificheSegnalazioni"> //[ngClass]="segnalazione.tipologia"
+            <div class="card" *ngFor="let notifichaSegnalazione of notificheSegnalazioni">
+                //[ngClass]="segnalazione.tipologia"
                 <div><strong>Nuova segnalazione: </strong> {{ notifichaSegnalazione.timeStamp | date:'medium' }}</div>
                 <div><strong>Descrizione:</strong> {{ notifichaSegnalazione.idSegnalazione }}</div>
                 <div><strong>Tipo:</strong> {{ notifichaSegnalazione.tipoNotifica }}</div>
@@ -23,10 +24,12 @@
         <div class="lista-segnalazioni">
             <div class="card" [ngClass]="richiesta.stato" *ngFor="let richiesta of richiesteAllocazione">
                 <div><strong>Timestamp: </strong> {{ richiesta.timeStamp | date:'medium' }}</div>
-                <div><strong>Fascia oraria:</strong> {{ richiesta.zonaDiOperazione.fasciaOraria }}:00 - {{ richiesta.zonaDiOperazione.fasciaOraria + 1 }}:00</div>
+                <div><strong>Fascia oraria:</strong> {{ richiesta.zonaDiOperazione.fasciaOraria }}:00 - {{
+                    richiesta.zonaDiOperazione.fasciaOraria + 1 }}:00</div>
                 <div><strong>Giorno:</strong> {{ richiesta.zonaDiOperazione.giornoSettimana }}</div>
                 <div><strong>Stato:</strong> {{ richiesta.stato }}</div>
-                <div><strong>Coordinate:</strong> {{ richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[1] }}, {{ richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[0] }}</div>
+                <div><strong>Coordinate:</strong> {{ richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[1] }}, {{
+                    richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[0] }}</div>
                 <div class="azioni-richiesta">
                     <button (click)="onButtonClick(richiesta._id, richiesta)" class="btn-accetta">
                         Accetta Richiesta
@@ -35,6 +38,12 @@
             </div>
         </div>
     </div>
+</div>
 
-
+<div *ngIf="currentUser?.tipoUtente === TipoUtente.COMUNALE" class="notifiche-container">
+    <div class="segnalazioni-container">
+        <div class="card">
+            NOTIFICHE CONFERMA RICHIESTE
+        </div>
+    </div>
 </div>
