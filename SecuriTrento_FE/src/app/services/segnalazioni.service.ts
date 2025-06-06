@@ -5,6 +5,7 @@ import { ApiResponse } from '../models/api-response.model';
 import { AutenticazioneService } from './autenticazione.service';
 import { Observable } from 'rxjs';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,7 +39,7 @@ export class SegnalazioniService {
   getSegnalazioniByUtente(): Observable<ApiResponse<Segnalazione[]>> {
     return this.http.get<ApiResponse<Segnalazione[]>>(
       `${this.apiBasePathUrl}/segnalazioni/mySegnalazioni`,
-      { headers: this.getAuthHeaders() }
+      { headers: this.autenticazioneService.getAuthHeaders() }
     );
   }
 
