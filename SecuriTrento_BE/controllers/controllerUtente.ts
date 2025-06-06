@@ -9,6 +9,16 @@ import bcrypt from 'bcrypt';
  * Recupera tutti gli utenti
  */
 export const getAllUtenti = async (req, res) => {
+    
+    const ruolo = req.loggedUser?.tipoUtente;
+
+    if (ruolo === 'UtenteCittadino') {
+        return res.status(403).json({
+            success: false,
+            message: 'Accesso negato'
+        });
+    }
+    
     try {
         const utenti = await utenteRegistratoModel.find();
         return res.status(200).json({
@@ -30,6 +40,15 @@ export const getAllUtenti = async (req, res) => {
  * Recupera gli utenti per tipo specifico
  */
 export const getUtentiByType = async (req, res) => {
+    
+    const ruolo = req.loggedUser?.tipoUtente;
+    if (ruolo === 'UtenteCittadino') {
+        return res.status(403).json({
+            success: false,
+            message: 'Accesso negato'
+        });
+    }
+    
     try {
         const { tipo } = req.params;
         let utenti;
@@ -70,6 +89,17 @@ export const getUtentiByType = async (req, res) => {
  * Recupera un utente specifico tramite ID
  */
 export const getUtenteById = async (req, res) => {
+    
+    const ruolo = req.loggedUser?.tipoUtente;
+
+    if (ruolo === 'UtenteCittadino') {
+        return res.status(403).json({
+            success: false,
+            message: 'Accesso negato'
+        });
+    }
+    
+    
     try {
         const utente = await utenteRegistratoModel.findById(req.params.id);
 
@@ -218,6 +248,17 @@ export const registerUser = async (req, res) => {
  * Disattiva un utente esistente
  */
 export const deleteUtente = async (req, res) => {  //solo by ID
+    
+    const ruolo = req.loggedUser?.tipoUtente;
+
+    if (ruolo === 'UtenteCittadino' || ruolo === 'UtenteFDO') {
+        return res.status(403).json({
+            success: false,
+            message: 'Accesso negato'
+        });
+    }
+    
+    
     try {
         let utente = await utenteRegistratoModel.findByIdAndUpdate(
             req.params.id, 
@@ -249,6 +290,16 @@ export const deleteUtente = async (req, res) => {  //solo by ID
  * Per utenti FDO permette anche di aggiornare zoneDiOperazione e coordinateGps
  */
 export const updateUtente = async (req, res) => {
+    
+    const ruolo = req.loggedUser?.tipoUtente;
+
+    if (ruolo === 'UtenteCittadino') {
+        return res.status(403).json({
+            success: false,
+            message: 'Accesso negato'
+        });
+    }
+    
     try {
         const { id } = req.params;
         const { password, zoneDiOperazione, coordinateGps } = req.body;

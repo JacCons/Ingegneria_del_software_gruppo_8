@@ -226,7 +226,6 @@ export class SegnalazioniPageComponent {
             console.log('Coordinate GPS:', { lat, lng });
 
             const segnalazione: Segnalazione = {
-              idUtente: this.currentUser?._id,
               tipologia: tipologia as TipoSegnalazione,
               descrizione: descrizione || '',
               coordinateGps: {

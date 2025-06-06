@@ -10,7 +10,7 @@ import express from 'express';
 export const getAllSegnalazioni = async (req, res) => {
 
   const ruolo = req.loggedUser?.ruolo;
-  console.log('Ruolo utente nella getallsegnalazioni:', ruolo);
+  console.log('Ruolo utente:', ruolo);
 
   if (ruolo === 'UtenteCittadino') {
     return res.status(403).json({
@@ -165,7 +165,9 @@ export const getSegnalazioniByUtente = async (req, res) => {
 export const createSegnalazione = async (req, res) => {
   
   const ruolo = req.loggedUser?.ruolo;
-  console.log('Ruolo utenteeeeeeeeee:', ruolo);
+  console.log('Ruolo utente:', ruolo);
+  const idUtentetk = req.loggedUser.id;
+
   if (ruolo === 'UtenteFDO' || ruolo === 'UtenteComunale') {
     return res.status(403).json({
       success: false,
@@ -183,7 +185,7 @@ export const createSegnalazione = async (req, res) => {
     }
 
     // check dei parametri obbligatori
-    const requiredFields = ['tipologia', 'idUtente', 'coordinateGps'];
+    const requiredFields = ['tipologia', 'coordinateGps'];
     for (const field of requiredFields) {
       if (!dati[field]) {
         return res.status(400).json({
@@ -193,7 +195,7 @@ export const createSegnalazione = async (req, res) => {
       }
     }
 
-    if (!mongoose.Types.ObjectId.isValid(dati.idUtente)) {
+    if (!mongoose.Types.ObjectId.isValid(idUtentetk)) {
       return res.status(400).json({
         success: false,
         message: 'ID utente non valido'
@@ -203,7 +205,7 @@ export const createSegnalazione = async (req, res) => {
     const segnalazioneData = {
       tipologia: dati.tipologia,
       descrizione: dati.descrizione || '',
-      idUtente: dati.idUtente,
+      idUtente: idUtentetk,
       coordinateGps: dati.coordinateGps
     };
 
