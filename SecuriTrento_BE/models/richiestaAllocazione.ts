@@ -1,12 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
 const richiestaAllocazioneSchema = new Schema({
-    idRichiestaAllocazione: {
-        type: Number,
-        required: true,
-        unique: true
-    },
-    
     timeStamp: {
         type: Date,
         default: Date.now

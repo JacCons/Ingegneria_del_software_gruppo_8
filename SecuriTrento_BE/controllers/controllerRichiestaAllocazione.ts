@@ -1,5 +1,6 @@
 import richiestaAllocazioneModel from '../models/richiestaAllocazione.ts'; 
 import mongoose from 'mongoose';
+import {creaNotificaConfermaRichiestaAllocazione} from './controllerNotifiche.ts';
 import express from 'express';
 
 /**
@@ -7,7 +8,6 @@ import express from 'express';
  */
 export const getAllRichiesteAllocazione = async (req, res) => {
   const ruolo = req.loggedUser?.ruolo;
-  console.log('getall con Ruolo utente:', req.user);
   if (ruolo === 'UtenteCittadino') {
     return res.status(403).json({
       success: false,
@@ -16,7 +16,12 @@ export const getAllRichiesteAllocazione = async (req, res) => {
   }
 
   try {
-    const richieste = await richiestaAllocazioneModel.find();
+    const filter: any = {};
+    if (req.query.stato) {
+      filter.stato = req.query.stato;
+    }
+
+    const richieste = await richiestaAllocazioneModel.find(filter);
     return res.status(200).json({
       success: true,
       data: richieste,
@@ -143,8 +148,9 @@ export const createRichiestaAllocazione = async (req, res) => {
  */
 export const updateRichiestaAllocazione = async (req, res) => {
   const ruolo = req.loggedUser?.ruolo;
+  const idFDO = req.loggedUser?._id;
 
-  if (ruolo !== 'UtenteFDO' && ruolo !== 'UtenteComunale') {
+  if (ruolo !== 'UtenteFDO') {
     return res.status(403).json({
       success: false,
       message: 'Accesso negato'
@@ -152,21 +158,8 @@ export const updateRichiestaAllocazione = async (req, res) => {
   }
   
   try {
-    const allowedFields = ['stato', 'zonaDiOperazione'];
-    const dati = {};
-
-    for (const field of allowedFields) {
-      if (req.body[field] !== undefined) {
-        dati[field] = req.body[field];
-      }
-    }
-
-    if (Object.keys(dati).length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Nessun campo valido fornito'
-      });
-    }
+    // Imposta sempre lo stato a "accettato"
+    const dati = { stato: 'accettato' };
 
     const richiesta = await richiestaAllocazioneModel.findByIdAndUpdate(
       req.params.id,
@@ -180,6 +173,8 @@ export const updateRichiestaAllocazione = async (req, res) => {
         message: 'Richiesta allocazione non trovata'
       });
     }
+
+    await creaNotificaConfermaRichiestaAllocazione(idFDO, richiesta._id.toString());
 
     return res.status(200).json({
       success: true,

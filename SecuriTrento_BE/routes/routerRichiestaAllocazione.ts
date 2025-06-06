@@ -255,9 +255,9 @@ router.post('/', createRichiestaAllocazione);
  * @swagger
  * /api/richieste-allocazione/{id}:
  *   put:
- *     summary: Aggiorna una richiesta di allocazione esistente
+ *     summary: Accetta una richiesta di allocazione
  *     tags: [Richieste Allocazione]
- *     description: Aggiorna i dati di una richiesta di allocazione esistente
+ *     description: Imposta lo stato della richiesta di allocazione su "accettato"
  *     parameters:
  *       - in: path
  *         name: id
@@ -266,33 +266,7 @@ router.post('/', createRichiestaAllocazione);
  *         required: true
  *         description: ID MongoDB della richiesta di allocazione
  *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               stato:
- *                 type: string
- *                 enum: [pendente, assegnata, completata, annullata]
- *                 example: assegnata
- *               zonaDiOperazione:
- *                 type: object
- *                 properties:
- *                   coordinateGps:
- *                     type: object
- *                     properties:
- *                       coordinates:
- *                         type: array
- *                         items:
- *                           type: number
- *                         example: [11.12, 46.07]
- *                   fasciaOraria:
- *                     type: string
- *                     example: "14:00-18:00"
- *                   giornoSettimana:
- *                     type: string
- *                     example: "martedì"
+ *       required: false
  *     responses:
  *       200:
  *         description: Richiesta di allocazione aggiornata con successo
@@ -309,8 +283,6 @@ router.post('/', createRichiestaAllocazione);
  *                 message:
  *                   type: string
  *                   example: Richiesta allocazione aggiornata con successo
- *       400:
- *         description: Dati non validi
  *       403:
  *         description: Accesso negato
  *       404:
