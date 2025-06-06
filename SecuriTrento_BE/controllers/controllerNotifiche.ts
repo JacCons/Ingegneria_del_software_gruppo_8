@@ -10,12 +10,12 @@ const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string,
     try {
         // trova segnalazioni max 8 ore fa nel raggio specificato
         const timeLimit = new Date(Date.now() - 8 * 60 * 60 * 1000);
-        
+
         const segnalazioniVicine = await segnalazioneModel.find({
             coordinateGps: {
                 $near: {
                     $geometry: coordinateGps,
-                    $maxDistance: raggio 
+                    $maxDistance: raggio
                 }
             },
             timeStamp: { $gte: timeLimit },
@@ -50,14 +50,14 @@ const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string,
                 tipoNotifica: 'segnalazione',
                 timestamp: new Date()
             });
-            
+
             nuoveNotifiche.push(notifica);
-            
+
             const oreFA = Math.round((Date.now() - segnalazione.timeStamp.getTime()) / (1000 * 60 * 60));
         }
 
-        return { 
-            nuoveNotifiche: nuoveNotifiche, 
+        return {
+            nuoveNotifiche: nuoveNotifiche,
             count: nuoveNotifiche.length,
             segnalazioniTotaliVicine: segnalazioniVicine.length,
             raggio: raggio
@@ -120,7 +120,7 @@ export const getNotificheSegnalazione = async (req, res) => {
             // check delle segnalazioni solo se autoCheck = true
             if (autoCheck === 'true' && utenteEsistente.coordinateGps) {
                 controlloEffettuato = true;
-                
+
                 const risultatoControllo = await controllaECreaNotificheSegnalazioni(
                     utenteDestinatarioId,
                     utenteEsistente.coordinateGps,
@@ -139,7 +139,7 @@ export const getNotificheSegnalazione = async (req, res) => {
             }
 
             const notifiche = await notificaSegnalazioneModel
-                .find({ 
+                .find({
                     destinatario: utenteDestinatarioId,
                     tipoNotifica: 'segnalazione'
                 })
@@ -147,14 +147,16 @@ export const getNotificheSegnalazione = async (req, res) => {
                 .populate('destinatario', 'nome cognome')
                 .sort({ timestamp: -1 }); // ordina per data decrescente
 
+            const notificheConSegnalazioniComplete = await caricaSegnalazioniComplete(notifiche);
+
             res.status(200).json({
                 success: true,
-                data: notifiche,
-                count: notifiche.length,
+                data: notificheConSegnalazioniComplete,
+                count: notificheConSegnalazioniComplete.length,
                 autoCheck: autoCheck === 'true',
                 controlloEffettuato: controlloEffettuato,
                 nuoveNotificheCreate: nuoveNotificheCreate,
-                raggio: raggioUtilizzato, 
+                raggio: raggioUtilizzato,
                 raggioKm: (raggioUtilizzato / 1000).toFixed(1),
                 errorControllo: errorControllo,
                 destinatario: {
@@ -163,11 +165,11 @@ export const getNotificheSegnalazione = async (req, res) => {
                     cognome: utenteEsistente.cognome,
                     tipoUtente: utenteEsistente.tipoUtente
                 },
-                message: autoCheck === 'true' 
-                    ? controlloEffettuato 
-                        ? `Trovate ${notifiche.length} notifiche (${nuoveNotificheCreate} nuove create nel raggio di ${(raggioUtilizzato/1000).toFixed(1)}km)`
-                        : `Trovate ${notifiche.length} notifiche (auto-controllo non effettuato - no coordinate)`
-                    : `Trovate ${notifiche.length} notifiche per ${utenteEsistente.nome} ${utenteEsistente.cognome}`
+                message: autoCheck === 'true'
+                    ? controlloEffettuato
+                        ? `Trovate ${notificheConSegnalazioniComplete.length} notifiche (${nuoveNotificheCreate} nuove create nel raggio di ${(raggioUtilizzato / 1000).toFixed(1)}km)`
+                        : `Trovate ${notificheConSegnalazioniComplete.length} notifiche (auto-controllo non effettuato - no coordinate)`
+                    : `Trovate ${notificheConSegnalazioniComplete.length} notifiche per ${utenteEsistente.nome} ${utenteEsistente.cognome}`
             });
         } else {
             res.status(400).json({
@@ -186,6 +188,43 @@ export const getNotificheSegnalazione = async (req, res) => {
         });
     }
 }
+
+const caricaSegnalazioniComplete = async (notifiche: any[]): Promise<any[]> => {
+    try {
+        const segnalazioniIds = notifiche.map(notifica => 
+            notifica.idSegnalazione._id || notifica.idSegnalazione
+        );
+
+        console.log(`🔍 Caricamento ${segnalazioniIds.length} segnalazioni complete...`);
+
+        const segnalazioniComplete = await segnalazioneModel.find({
+            _id: { $in: segnalazioniIds }
+        }).lean(); // .lean() per performance migliori
+
+        const segnalazioniMap = new Map();
+        segnalazioniComplete.forEach(segnalazione => {
+            segnalazioniMap.set(segnalazione._id.toString(), segnalazione);
+        });
+
+        // aggiungi segnalazione completa a ogni notifica
+        const notificheArricchite = notifiche.map(notifica => {
+            const segnalazioneId = notifica.idSegnalazione._id || notifica.idSegnalazione;
+            const segnalazioneCompleta = segnalazioniMap.get(segnalazioneId.toString());
+
+            return {
+                ...notifica.toObject(),
+                segnalazioneCompleta: segnalazioneCompleta || null
+            };
+        });
+
+        return notificheArricchite;
+
+    } catch (error) {
+        console.error('❌ Errore caricamento segnalazioni complete:', error);
+        // ritorna le notifiche originali se fallisce
+        return notifiche.map(n => ({ ...n.toObject(), segnalazioneCompleta: null }));
+    }
+};
 
 export const creaNotifichePerNuovaSegnalazione = async (idSegnalazione: string) => {
     try {
@@ -268,14 +307,14 @@ export const getNotificheConfermaRichiesteAllocazione = async (req, res) => {
 
     try {
         const notifiche = [];
-        
+
         res.status(200).json({
             success: true,
             data: notifiche,
             count: notifiche.length,
             message: 'Funzionalità notifiche richieste allocazione in sviluppo'
         });
-        
+
     } catch (error) {
         console.error('Errore nel recupero notifiche richieste allocazione:', error);
         res.status(500).json({

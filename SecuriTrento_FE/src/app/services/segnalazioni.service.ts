@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Segnalazione } from '../models/segnalazione.model';
 import { ApiResponse } from '../models/api-response.model';
+import { AutenticazioneService } from './autenticazione.service';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -9,40 +10,35 @@ import { Observable } from 'rxjs';
 })
 export class SegnalazioniService {
   private apiBasePathUrl = 'http://localhost:3000/api';
-  constructor(private http: HttpClient) { }
-
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
+  constructor(private http: HttpClient,
+    private autenticazioneService: AutenticazioneService
+  ) { }
 
   getAllSegnalazioni(): Observable<ApiResponse<Segnalazione[]>> {
     return this.http.get<ApiResponse<Segnalazione[]>>(
       `${this.apiBasePathUrl}/segnalazioni`,
-      { headers: this.getAuthHeaders() }
+      { headers: this.autenticazioneService.getAuthHeaders() }
     );
   }
 
   getSegnalazioneById(segnalazioneID: String): Observable<ApiResponse<Segnalazione>> {
     return this.http.get<ApiResponse<Segnalazione>>(
       `${this.apiBasePathUrl}/segnalazioni/${segnalazioneID}`,
-      { headers: this.getAuthHeaders() }
+      { headers: this.autenticazioneService.getAuthHeaders() }
     );
   }
 
   getSegnalazioniNearby(utenteFdoID: String, radius: number): Observable<ApiResponse<Segnalazione[]>> {
     return this.http.get<ApiResponse<Segnalazione[]>>(
       `${this.apiBasePathUrl}/segnalazioni/nearby/${utenteFdoID}?radius=${radius}`,
-      { headers: this.getAuthHeaders() }
+      { headers: this.autenticazioneService.getAuthHeaders() }
     );
   }
 
   deleteSegnalazione(segnalazioneID: String): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(
       `${this.apiBasePathUrl}/segnalazioni/${segnalazioneID}`,
-      { headers: this.getAuthHeaders() }
+      { headers: this.autenticazioneService.getAuthHeaders() }
     );
   }
 
@@ -50,12 +46,12 @@ export class SegnalazioniService {
     return this.http.put<ApiResponse<Segnalazione>>(
       `${this.apiBasePathUrl}/segnalazioni/${segnalazioneID}`,
       segnalazione,
-      { headers: this.getAuthHeaders() }
+      { headers: this.autenticazioneService.getAuthHeaders() }
     );
   }
 
   createSegnalazione(segnalazione: Segnalazione): Observable<ApiResponse<Segnalazione>> {
-    const headers = this.getAuthHeaders().set('Content-Type', 'application/json');
+    const headers = this.autenticazioneService.getAuthHeaders().set('Content-Type', 'application/json');
     return this.http.post<ApiResponse<Segnalazione>>(
       `${this.apiBasePathUrl}/segnalazioni`,
       segnalazione,
