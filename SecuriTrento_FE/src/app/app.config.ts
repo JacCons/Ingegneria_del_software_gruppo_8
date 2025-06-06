@@ -13,16 +13,15 @@ import { RichiesteAllocazioneService } from './services/richieste-allocazione.se
 
 export const appConfig: ApplicationConfig = {
   providers: [
-  provideZoneChangeDetection({ eventCoalescing: true }),
-  provideRouter(routes),
-  provideHttpClient(),
-  DialogService,
-  SegnalazioniService,
-  MappaService,
-  UtentiService,
-  AutenticazioneService,
-  RichiesteAllocazioneService
-]
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideHttpClient(),
+    DialogService,
+    SegnalazioniService,
+    MappaService,
+    UtentiService,
+    AutenticazioneService,
+    RichiesteAllocazioneService,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(),
