@@ -7,6 +7,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { MappaService } from './services/mappa.service';
 import { UtentiService } from './services/utenti.service';
 import { AutenticazioneService } from './services/autenticazione.service';
+import { RichiesteAllocazioneService } from './services/richieste-allocazione.service';
 
 
 export const appConfig: ApplicationConfig = {
@@ -18,6 +19,7 @@ export const appConfig: ApplicationConfig = {
   SegnalazioniService,
   MappaService,
   UtentiService,
-  AutenticazioneService
+  AutenticazioneService,
+  RichiesteAllocazioneService
 ]
 };
