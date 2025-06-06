@@ -11,7 +11,7 @@ body, .main {
   display: flex;
   flex-direction: row;
   height: 100vh;
-min-width: 0;
+  min-width: 0;
 }
 
 /* Sidebar sinistra */
@@ -23,45 +23,181 @@ min-width: 0;
   box-shadow: 2px 0 16px rgba(44, 62, 80, 0.08);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 48px 0 0 0;
+  padding: 0; /* ✅ Rimuovi padding top per user-info */
   position: relative;
+}
+
+/* ✅ NUOVA SEZIONE: User Info */
+.user-info-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #77c3fd 0%, #449bff 100%);
+  color: white;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.25);
+  position: relative;
+  overflow: hidden;
+
+  /* Effetto glassmorphism */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    z-index: -1;
+  }
+
+  .user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+
+    &:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .user-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+
+    .user-name {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      line-height: 1.2;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      color: white;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .user-role {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.15);
+      padding: 4px 12px;
+      border-radius: 16px;
+      display: inline-block;
+      width: fit-content;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      text-transform: capitalize;
+      letter-spacing: 0.3px;
+    }
+
+    .user-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 2px;
+
+      .status-icon {
+        font-size: 12px;
+        width: 12px;
+        height: 12px;
+        color: #22c55e;
+        filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.6));
+        animation: pulse-status 2s infinite;
+      }
+    }
+  }
+}
+
+/* ✅ ANIMAZIONE STATO ONLINE */
+@keyframes pulse-status {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
 }
 
 /* Contenitore bottoni */
 .example-button-container {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 20px; /* ✅ Ridotto gap */
   width: 100%;
   align-items: center;
   flex: 1 1 auto;
   min-height: 0;
+  padding: 0 20px; /* ✅ Aggiungi padding laterale */
 }
 
 /* Bottoni sidebar */
 .example-button-container button {
-  width: 180px;
+  width: 100%; /* ✅ Cambio da 180px a 100% */
+  max-width: 200px; /* ✅ Aggiungi max-width */
   justify-content: flex-start;
-  padding-left: 24px;
-  font-size: 1.1rem;
+  padding: 12px 20px; /* ✅ Miglior padding */
+  font-size: 1rem; /* ✅ Ridotto font-size */
   font-weight: 500;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
   background: linear-gradient(90deg, #e3ecfa 60%, #c9e7ff 100%);
   color: #2d3a4b;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease; /* ✅ Migliorato transition */
+
+  mat-icon {
+    margin-right: 12px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .example-button-container button:hover {
   background: linear-gradient(90deg, #c9e7ff 0%, #e3ecfa 100%);
   box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
+  transform: translateY(-2px); /* ✅ Effetto hover */
 }
 
 /* Divider centrale */
 .divider {
   width: 2px;
-  background: #e3ecfa;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    #e3ecfa 20%,
+    #e3ecfa 80%,
+    transparent 100%
+  ); /* ✅ Gradiente per divider */
   margin: 0 32px;
   height: 90vh;
   align-self: center;
@@ -77,31 +213,150 @@ min-width: 0;
   overflow-y: auto;
 }
 
+/* ✅ STILE LOGO MIGLIORATO */
+.left-side > div:last-child {
+  margin-top: auto; /* ✅ Spinge il logo in basso */
+  padding: 20px;
+  text-align: center;
+  
+  img {
+    max-width: 200px; /* ✅ Ridotto da 250px */
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
 
-/* Responsive */
+/* ✅ RESPONSIVE MIGLIORATO */
 @media (max-width: 900px) {
   .content {
     flex-direction: column;
   }
+  
   .left-side {
-    flex-direction: row;
+    flex-direction: column;
     min-width: 100%;
     max-width: 100%;
-    padding: 16px 0;
-    box-shadow: none;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
     border-bottom: 2px solid #e3ecfa;
   }
+  
+  .user-info-section {
+    padding: 16px;
+    margin-bottom: 16px;
+    
+    .user-avatar {
+      width: 56px;
+      height: 56px;
+      
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+    
+    .user-details {
+      gap: 4px;
+      
+      .user-name {
+        font-size: 1.1rem;
+      }
+      
+      .user-role {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+      }
+    }
+  }
+  
   .example-button-container {
     flex-direction: row;
-    gap: 16px;
+    gap: 12px;
     width: 100%;
     justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 16px 16px;
+    
+    button {
+      max-width: 150px;
+      font-size: 0.9rem;
+      padding: 10px 16px;
+    }
   }
+  
   .divider {
     display: none;
   }
+  
   .right-side {
-    padding: 24px 8px;
+    padding: 24px 16px;
+  }
+  
+  .left-side > div:last-child {
+    padding: 16px;
+    
+    img {
+      max-width: 120px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .user-info-section {
+    padding: 12px;
+    gap: 12px;
+    
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+    
+    .user-details {
+      .user-name {
+        font-size: 1rem;
+      }
+      
+      .user-role {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+      }
+      
+      .user-status {
+        font-size: 0.7rem;
+      }
+    }
+  }
+  
+  .example-button-container {
+    gap: 8px;
+    
+    button {
+      max-width: 120px;
+      font-size: 0.8rem;
+      padding: 8px 12px;
+      
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+      }
+    }
   }
 }
 
@@ -110,6 +365,7 @@ min-width: 0;
     flex-direction: column;
     height: auto;
   }
+  
   .left-side {
     flex-direction: row;
     min-width: 100%;
@@ -120,24 +376,46 @@ min-width: 0;
     box-shadow: none;
     border-bottom: 2px solid #e3ecfa;
   }
+  
+  .user-info-section {
+    flex-direction: row;
+    margin-bottom: 0;
+    margin-right: 16px;
+    min-width: 200px;
+  }
+  
   .example-button-container {
     flex-direction: row;
     gap: 12px;
-    width: 100%;
-    justify-content: left;
+    width: auto;
+    justify-content: flex-start;
     padding-left: 12px;
   }
+  
   .divider {
     display: none;
   }
+  
   .right-side {
     padding: 16px 4px;
   }
+  
+  .left-side > div:last-child {
+    display: none; /* ✅ Nascondi logo in landscape mode */
+  }
 }
-/* Stile per logo */
-.left-side div img {
-  max-width: 250px;
-  height: auto;
-  display: block;
-  margin: 20px auto;
+
+/* ✅ ACCESSIBILITÀ */
+@media (prefers-reduced-motion: reduce) {
+  .user-info-section .user-avatar {
+    transition: none;
+  }
+  
+  .user-status .status-icon {
+    animation: none;
+  }
+  
+  .example-button-container button {
+    transition: none;
+  }
 }

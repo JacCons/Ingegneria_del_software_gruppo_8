@@ -1,21 +1,36 @@
 <main class="main">
   <div class="content">
-    <ng-container *ngIf= "showDashboard" >
-      <div class="left-side" >
+    <ng-container *ngIf="showDashboard">
+      <div class="left-side">
+
+        <div class="user-info-section">
+          <div class="user-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="user-details">
+            <h3 class="user-name">{{currentUser?.nome}} {{currentUser?.cognome}}</h3>
+            <p class="user-role">{{currentUser?.tipoUtente}}</p>
+            <span class="user-status">
+              <mat-icon class="status-icon">circle</mat-icon>
+              Online
+            </span>
+          </div>
+        </div>
+
         <div class="example-button-container">
-          <p>Utente: {{currentUser?.nome}} {{currentUser?.cognome}}</p>
-          <p>Tipo Utente: {{currentUser?.tipoUtente}}</p>
           <button (click)="clickSegnalazioni($event)" mat-fab extended>
             <mat-icon>maps</mat-icon>
             Segnalazioni
           </button>
 
-          <button (click)="clickNotifiche($event)" mat-fab extended>
+          <button (click)="clickNotifiche($event)" mat-fab extended
+                  *ngIf="currentUser?.tipoUtente === 'UtenteFDO' || currentUser?.tipoUtente === 'UtenteComunale'">
             <mat-icon>notifications</mat-icon>
             Notifiche
           </button>
 
-          <button (click)="clickUtenti($event)" mat-fab extended>
+          <button (click)="clickUtenti($event)" mat-fab extended
+                  *ngIf="currentUser?.tipoUtente === 'UtenteComunale'">
             <mat-icon>group</mat-icon>
             Gestione Utenti
           </button>
@@ -26,12 +41,15 @@
           </button>
 
         </div>
+        
         <div>
           <img src="logo.png" alt="Description of image">
         </div>
       </div>
+      
       <div class="divider" role="separator" aria-label="Divider"></div>
     </ng-container>
+    
     <div class="right-side">
       <router-outlet></router-outlet>
     </div>
