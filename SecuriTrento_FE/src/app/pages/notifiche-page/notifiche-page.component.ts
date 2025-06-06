@@ -80,5 +80,30 @@ export class NotifichePageComponent {
     console.log('Bottone cliccato per richiesta ID:', richiestaId);
     console.log('Dati richiesta:', richiesta);
     console.log('Stato attuale:', richiesta.stato);
+    
+    if (richiestaId) {
+      // Aggiorna lo stato della richiesta
+      richiesta.stato = 'accettato' as any;
+      
+      // Chiama il metodo update del service
+      this.richiesteAllocazioneService.updateRichiestaAllocazione(richiestaId, richiesta).subscribe({
+        next: (response) => {
+          if (response.success) {
+            console.log('Richiesta aggiornata con successo:', response.data);
+            // Ricarica le richieste per aggiornare la vista
+            this.caricaRichiesteAllocazione();
+          } else {
+            console.error('Errore nell\'aggiornamento della richiesta:', response.message);
+          }
+        },
+        error: (error) => {
+          console.error('Error updating richiesta:', error);
+          // Ripristina lo stato precedente in caso di errore
+          richiesta.stato = 'in attesa' as any;
+        }
+      });
+    }
+    this.caricaRichiesteAllocazione();
+    this.cdr.detectChanges();
   }
 }

@@ -16,12 +16,7 @@ export const getAllRichiesteAllocazione = async (req, res) => {
   }
 
   try {
-    const filter: any = {};
-    if (req.query.stato) {
-      filter.stato = req.query.stato;
-    }
-
-    const richieste = await richiestaAllocazioneModel.find(filter);
+    const richieste = await richiestaAllocazioneModel.find({stato: "in attesa" });
     return res.status(200).json({
       success: true,
       data: richieste,
@@ -148,7 +143,7 @@ export const createRichiestaAllocazione = async (req, res) => {
  */
 export const updateRichiestaAllocazione = async (req, res) => {
   const ruolo = req.loggedUser?.ruolo;
-  const idFDO = req.loggedUser?._id;
+  const idFDO = req.loggedUser.id;
 
   if (ruolo !== 'UtenteFDO') {
     return res.status(403).json({
@@ -173,8 +168,11 @@ export const updateRichiestaAllocazione = async (req, res) => {
         message: 'Richiesta allocazione non trovata'
       });
     }
+    
+    console.log("IDFDO = ",idFDO);
+    console.log("richiesta = ", richiesta._id)
 
-    await creaNotificaConfermaRichiestaAllocazione(idFDO, richiesta._id.toString());
+    const notifica = await creaNotificaConfermaRichiestaAllocazione(idFDO, richiesta._id.toString());
 
     return res.status(200).json({
       success: true,

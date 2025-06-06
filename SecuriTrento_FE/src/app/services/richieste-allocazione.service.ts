@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { ApiResponse } from '../models/api-response.model';
 import { Observable } from 'rxjs';
 import { RichiestaAllocazione } from '../models/richieste-allocazione.model';
@@ -18,11 +18,13 @@ export class RichiesteAllocazioneService {
     });
   }
 
-  // GET - Ottieni tutte le richieste di allocazione
-  getRichiesteAllocazione(): Observable<ApiResponse<RichiestaAllocazione[]>> {
+  // GET - Ottieni tutte le richieste di allocazione con lo stato in  attesa
+  getRichiesteAllocazione(stato?: string): Observable<ApiResponse<RichiestaAllocazione[]>> {
     return this.http.get<ApiResponse<RichiestaAllocazione[]>>(
       `${this.apiBasePathUrl}/richieste-allocazione`,
-      { headers: this.getAuthHeaders() }
+      { 
+        headers: this.getAuthHeaders(),
+      }
     );
   }
 

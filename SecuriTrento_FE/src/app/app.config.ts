@@ -22,14 +22,6 @@ export const appConfig: ApplicationConfig = {
     UtentiService,
     AutenticazioneService,
     RichiesteAllocazioneService,
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
-    provideHttpClient(),
-    DialogService,
-    SegnalazioniService,
-    MappaService,
-    UtentiService,
-    AutenticazioneService,
     NotificheService
   ]
 };

@@ -280,16 +280,26 @@ export const creaNotificaConfermaRichiestaAllocazione = async (idFDO: string, ri
     try {
         // Recupera la richiesta di allocazione
         const richiesta = await richiestaAllocazioneModel.findById(richiestaId);
+        console.log("Richiesta allocazione in creaNotifica: ", richiesta);
         if (!richiesta) {
             console.error(`Richiesta allocazione non trovata: ${richiestaId}`);
             return null;
+        }
+        // Controlla se esiste già una notifica per questa richiesta
+        const notificaEsistente = await notificaRichiestaAllocazioneModel.findOne({
+            richiestaAllocazioneId: richiesta._id
+        });
+
+        if (notificaEsistente) {
+            console.log(`Notifica già esistente per richiesta allocazione ${richiesta._id}`);
+            return notificaEsistente;
         }
 
         // Crea la notifica associata
         const notificaConfermaRichiestaAllocazione = await notificaRichiestaAllocazioneModel.create({
             richiestaAllocazioneId: richiesta._id,
             timestamp: new Date(),
-            idUtenteFDO: idFDO // Assumendo che la richiesta abbia un campo idUtenteFDO
+            idUtenteFDO: idFDO
         });
 
         return notificaConfermaRichiestaAllocazione;
