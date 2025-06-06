@@ -10,9 +10,9 @@ import bcrypt from 'bcrypt';
  */
 export const getAllUtenti = async (req, res) => {
     
-    const ruolo = req.loggedUser?.tipoUtente;
+    const ruolo = req.loggedUser?.ruolo;
 
-    if (ruolo === 'UtenteCittadino') {
+    if (ruolo !== 'UtenteComunale') {
         return res.status(403).json({
             success: false,
             message: 'Accesso negato'
@@ -41,8 +41,8 @@ export const getAllUtenti = async (req, res) => {
  */
 export const getUtentiByType = async (req, res) => {
     
-    const ruolo = req.loggedUser?.tipoUtente;
-    if (ruolo === 'UtenteCittadino') {
+    const ruolo = req.loggedUser?.ruolo;
+    if (ruolo !== 'UtenteComunale') {
         return res.status(403).json({
             success: false,
             message: 'Accesso negato'
@@ -90,9 +90,9 @@ export const getUtentiByType = async (req, res) => {
  */
 export const getUtenteById = async (req, res) => {
     
-    const ruolo = req.loggedUser?.tipoUtente;
+    const ruolo = req.loggedUser?.ruolo;
 
-    if (ruolo === 'UtenteCittadino') {
+    if (ruolo !== 'UtenteComunale') {
         return res.status(403).json({
             success: false,
             message: 'Accesso negato'
@@ -249,9 +249,9 @@ export const registerUser = async (req, res) => {
  */
 export const deleteUtente = async (req, res) => {  //solo by ID
     
-    const ruolo = req.loggedUser?.tipoUtente;
+    const ruolo = req.loggedUser?.ruolo;
 
-    if (ruolo === 'UtenteCittadino' || ruolo === 'UtenteFDO') {
+    if (ruolo !== 'UtenteComunale') {
         return res.status(403).json({
             success: false,
             message: 'Accesso negato'
@@ -291,9 +291,9 @@ export const deleteUtente = async (req, res) => {  //solo by ID
  */
 export const updateUtente = async (req, res) => {
     
-    const ruolo = req.loggedUser?.tipoUtente;
+    const ruolo = req.loggedUser?.ruolo;
 
-    if (ruolo === 'UtenteCittadino') {
+    if (ruolo !== 'UtenteComunale') {
         return res.status(403).json({
             success: false,
             message: 'Accesso negato'
