@@ -41,9 +41,21 @@
 </div>
 
 <div *ngIf="currentUser?.tipoUtente === TipoUtente.COMUNALE" class="notifiche-container">
+    <h2>Conferme richieste di allocazione:</h2>
+
     <div class="segnalazioni-container">
-        <div class="card">
-            NOTIFICHE CONFERMA RICHIESTE
+        <div class="lista-segnalazioni">
+            <div class="card"
+                *ngFor="let notificaConfermaRichiestaAllocazione of notificheConfermaRichiesteAllocazione">
+                <div><strong>Nuova conferma: </strong> {{ notificaConfermaRichiestaAllocazione.timeStamp | date:'medium'
+                    }}</div>
+                <div><strong>Descrizione:</strong> {{ notificaConfermaRichiestaAllocazione.idUtenteFDO }}</div>
+                <div><strong>Coordinate:</strong> {{ notificaConfermaRichiestaAllocazione._id }}</div>
+            </div>
+
+            <div *ngIf="notificheConfermaRichiesteAllocazione.length === 0" class="empty-state">
+                <p class="no-notifications">Nessuna richiesta di allocazione è stata accettata</p>
+            </div>
         </div>
     </div>
 </div>

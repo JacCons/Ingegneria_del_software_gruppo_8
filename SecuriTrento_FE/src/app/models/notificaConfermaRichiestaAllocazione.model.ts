@@ -3,5 +3,5 @@ export interface NotificaConfermaRichiestaAllocazione {
     timeStamp: Date;
     utenteCompleto: string;
     RichiestaAllocazioneId: string;
-    UtenteDestinatarioId: string;
+    idUtenteFDO : string;
 }

@@ -313,7 +313,7 @@ export const getNotificheConfermaRichiesteAllocazione = async (req, res) => {
     try {
         const ruolo = req.loggedUser?.ruolo;
 
-        if (ruolo === 'UtenteCittadino' || ruolo === 'UtenteFDO') {
+        if (ruolo !== 'UtenteComunale') {
             return res.status(403).json({
                 success: false,
                 message: 'Accesso negato'

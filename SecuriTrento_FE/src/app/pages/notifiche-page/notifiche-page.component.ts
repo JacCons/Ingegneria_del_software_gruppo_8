@@ -10,6 +10,7 @@ import { NotificheService } from '../../services/notifiche.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { RichiesteAllocazioneService } from '../../services/richieste-allocazione.service';
 import { RichiestaAllocazione } from '../../models/richieste-allocazione.model';
+import { NotificaConfermaRichiestaAllocazione } from '../../models/notificaConfermaRichiestaAllocazione.model';
 
 @Component({
   selector: 'notifiche-page',
@@ -29,6 +30,7 @@ export class NotifichePageComponent {
   segnalazioni: Segnalazione[] = [];
   richiesteAllocazione: RichiestaAllocazione[] = [];
   notificheSegnalazioni: NotificaSegnalazione[] = [];
+  notificheConfermaRichiesteAllocazione: NotificaConfermaRichiestaAllocazione[] = [];
 
   ngOnInit(): void {
     this.autenticazioneService.currentUser$.subscribe(user => {
@@ -36,8 +38,12 @@ export class NotifichePageComponent {
       console.log("currentUser", this.currentUser);
     });
 
-    this.caricaNotificheSegnalazioni();
-    this.caricaRichiesteAllocazione();
+    if (this.currentUser?.tipoUtente === TipoUtente.FDO) {
+      this.caricaNotificheSegnalazioni();
+      this.caricaRichiesteAllocazione();
+    }else if (this.currentUser?.tipoUtente === TipoUtente.COMUNALE) {
+      this.caricaNotificheConfermaRichiesteAllocazione();
+    }
   }
 
   caricaNotificheSegnalazioni() {
@@ -74,6 +80,25 @@ export class NotifichePageComponent {
         console.error('Error fetching richieste allocazione:', error);
       }
     });
+  }
+
+  caricaNotificheConfermaRichiesteAllocazione(){
+    this.notificheService.getNotificheConfermaRichiesteAllocazione().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.notificheConfermaRichiesteAllocazione = response.data;
+            console.log("notifiche conferma segnalazioni: ", this.notificheSegnalazioni);
+          } else {
+            console.error('Errore nel recupero delle notifiche conferma richiesta segnalazione:', response.message);
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching segnalazioni:', error);
+        }
+      });
+
+      this.cdr.detectChanges();
+
   }
 
   onButtonClick(richiestaId: string | undefined, richiesta: RichiestaAllocazione) {
