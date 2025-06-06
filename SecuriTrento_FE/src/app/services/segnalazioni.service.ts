@@ -35,6 +35,13 @@ export class SegnalazioniService {
     );
   }
 
+  getSegnalazioniByUtente(): Observable<ApiResponse<Segnalazione[]>> {
+    return this.http.get<ApiResponse<Segnalazione[]>>(
+      `${this.apiBasePathUrl}/segnalazioni/mySegnalazioni`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
   deleteSegnalazione(segnalazioneID: String): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(
       `${this.apiBasePathUrl}/segnalazioni/${segnalazioneID}`,

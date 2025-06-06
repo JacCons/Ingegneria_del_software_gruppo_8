@@ -11,7 +11,7 @@
   <div class="segnalazioniPage">
     <div class="segnalazioneSection">
       <div id="map"></div>
-      <div class="segnalazioniButtons">
+      <div class="segnalazioniButtons"  *ngIf="currentUser?.tipoUtente === TipoUtente.CITTADINO">
         <button mat-fab extended (click)="creaSegnalazione('urgente')">
           <mat-icon>add</mat-icon>
           Segnalazione Urgente

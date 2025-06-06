@@ -17,7 +17,7 @@ import { SegnalazioniService } from '../../services/segnalazioni.service';
 import { Segnalazione, TipoSegnalazione } from '../../models/segnalazione.model';
 import { MappaService } from '../../services/mappa.service';
 import { AutenticazioneService } from '../../services/autenticazione.service';
-import { Utente } from '../../models/utente.model';
+import { Utente, TipoUtente } from '../../models/utente.model';
 
 @Component({
   selector: 'app-segnalazioni-page',
@@ -54,30 +54,17 @@ export class SegnalazioniPageComponent {
   private segnalazioniService = inject(SegnalazioniService);
   private _formBuilder = inject(FormBuilder);
   disableSelect = new FormControl(false);
-  tipoSegnalazione : string = '';
+  tipoSegnalazione: string = '';
   showSegnalazioneForm = false;
   segnalazioni: Segnalazione[] = [];
+  TipoUtente = TipoUtente;
 
   ngOnInit(): void {
     this.autenticazioneService.currentUser$.subscribe(user => {
       this.currentUser = user;
       console.log("currentUser", this.currentUser);
     });
-    this.segnalazioniService.getAllSegnalazioni().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.segnalazioni = response.data;
-          this.cdr.detectChanges();
-        } else {
-          this.dialogService.showError('Errore nel recupero delle segnalazioni');
-        }
-        console.log("segnalazioni: ", this.segnalazioni);
-      },
-      error: (error) => {
-        console.error('Error fetching segnalazioni:', error);
-        this.dialogService.showError('Errore nel recupero delle segnalazioni');
-      }
-    });
+    this.caricaSegnalazioni();
   }
 
   firstFormGroup = this._formBuilder.group({
@@ -93,36 +80,104 @@ export class SegnalazioniPageComponent {
     this.caricaSegnalazioniCluster();
   }
 
-  caricaSegnalazioniCluster() {
-  this.segnalazioniService.getAllSegnalazioni().subscribe({
-    next: (response) => {
-      if (response.success) {
-        this.segnalazioni = response.data;
-        // Prima pulisci tutti i marker esistenti
-        this.mappaService.clearMarkers();
-
-        // Aggiungi i marker con clustering
-        if (this.segnalazioni && this.segnalazioni.length) {
-          this.segnalazioni.forEach(s => {
-            const lon = Number(s.coordinateGps?.coordinates?.at(0));
-            const lat = Number(s.coordinateGps?.coordinates?.at(1));
-            if (lon && lat) {
-              this.mappaService.addMarkerToCluster([lat, lon])
-                .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
-            }
-          });
+  caricaSegnalazioni() {
+    console.log("Tipo utente corrente:", this.currentUser?.tipoUtente);
+    if (this.currentUser?.tipoUtente === TipoUtente.FDO || this.currentUser?.tipoUtente === TipoUtente.COMUNALE) {
+      this.segnalazioniService.getAllSegnalazioni().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.segnalazioni = response.data;
+            this.cdr.detectChanges();
+          } else {
+            this.dialogService.showError('Errore nel recupero di tutte segnalazioni');
+          }
+          console.log("segnalazioni: ", this.segnalazioni);
+        },
+        error: (error) => {
+          console.error('Error fetching segnalazioni:', error);
+          this.dialogService.showError('Errore nel recupero di tutte le segnalazioni');
         }
-        this.cdr.detectChanges();
-      } else {
-        this.dialogService.showError('Errore nel recupero delle segnalazioni');
-      }
-    },
-    error: (error) => {
-      console.error('Error fetching segnalazioni:', error);
-      this.dialogService.showError('Errore nel recupero delle segnalazioni');
+      });
+    } else if (this.currentUser?.tipoUtente === TipoUtente.CITTADINO) {
+      this.segnalazioniService.getSegnalazioniByUtente().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.segnalazioni = response.data;
+            this.cdr.detectChanges();
+          } else {
+            this.dialogService.showError('Errore nel recupero delle segnalazioni Utente');
+          }
+          console.log("segnalazioni: ", this.segnalazioni);
+        },
+        error: (error) => {
+          console.error('Error fetching segnalazioni:', error);
+          this.dialogService.showError('Errore nel recupero delle segnalazioni Utente');
+        }
+      });
     }
-  });
-}
+  }
+
+  caricaSegnalazioniCluster() {
+    if (this.currentUser?.tipoUtente === TipoUtente.FDO || this.currentUser?.tipoUtente === TipoUtente.COMUNALE) {
+      this.segnalazioniService.getAllSegnalazioni().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.segnalazioni = response.data;
+            // Prima pulisci tutti i marker esistenti
+            this.mappaService.clearMarkers();
+
+            // Aggiungi i marker con clustering
+            if (this.segnalazioni && this.segnalazioni.length) {
+              this.segnalazioni.forEach(s => {
+                const lon = Number(s.coordinateGps?.coordinates?.at(0));
+                const lat = Number(s.coordinateGps?.coordinates?.at(1));
+                if (lon && lat) {
+                  this.mappaService.addMarkerToCluster([lat, lon])
+                    .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
+                }
+              });
+            }
+            this.cdr.detectChanges();
+          } else {
+            this.dialogService.showError('Errore nel recupero delle segnalazioni');
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching segnalazioni:', error);
+          this.dialogService.showError('Errore nel recupero delle segnalazioni');
+        }
+      });
+    } else if (this.currentUser?.tipoUtente === TipoUtente.CITTADINO) {
+      this.segnalazioniService.getSegnalazioniByUtente().subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.segnalazioni = response.data;
+            // Prima pulisci tutti i marker esistenti
+            this.mappaService.clearMarkers();
+
+            // Aggiungi i marker con clustering
+            if (this.segnalazioni && this.segnalazioni.length) {
+              this.segnalazioni.forEach(s => {
+                const lon = Number(s.coordinateGps?.coordinates?.at(0));
+                const lat = Number(s.coordinateGps?.coordinates?.at(1));
+                if (lon && lat) {
+                  this.mappaService.addMarkerToCluster([lat, lon])
+                    .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
+                }
+              });
+            }
+            this.cdr.detectChanges();
+          } else {
+            this.dialogService.showError('Errore nel recupero delle segnalazioni Utente');
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching segnalazioni:', error);
+          this.dialogService.showError('Errore nel recupero delle segnalazioni Utente');
+        }
+      });
+    }
+  }
 
 
   aggiungiMarkerSegnalazioni() {
@@ -130,7 +185,7 @@ export class SegnalazioniPageComponent {
       this.segnalazioni.forEach(s => {
         const lon = Number(s.coordinateGps?.coordinates?.at(0));
         const lat = Number(s.coordinateGps?.coordinates?.at(1));
-        if ( lon && lat ) {
+        if (lon && lat) {
           this.mappaService.addMarker([lat, lon])
             .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
         }
@@ -147,103 +202,102 @@ export class SegnalazioniPageComponent {
     }
   }
 
-confermaNuovaSegnalazione() {
-  this.dialogService.showCustom(
-    'Conferma Segnalazione',
-    'Vuoi confermare la segnalazione?',
-    'Conferma',
-    'Annulla'
-  ).subscribe(result => {
-    if (result === 'confirm') {
-      this.showSegnalazioneForm = false;
-      console.log('Segnalazione confermata!');
+  confermaNuovaSegnalazione() {
+    this.dialogService.showCustom(
+      'Conferma Segnalazione',
+      'Vuoi confermare la segnalazione?',
+      'Conferma',
+      'Annulla'
+    ).subscribe(result => {
+      if (result === 'confirm') {
+        this.showSegnalazioneForm = false;
+        console.log('Segnalazione confermata!');
 
-      // Recupera i valori dai form groups
-      const tipologia = this.firstFormGroup.get('newTipologiaSegnalazione')?.value;
-      const descrizione = this.secondFormGroup.get('newDescrizione')?.value;
+        // Recupera i valori dai form groups
+        const tipologia = this.firstFormGroup.get('newTipologiaSegnalazione')?.value;
+        const descrizione = this.secondFormGroup.get('newDescrizione')?.value;
 
-      // Ottieni la posizione GPS dell'utente
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
+        // Ottieni la posizione GPS dell'utente
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
 
-          console.log('Coordinate GPS:', { lat, lng });
+            console.log('Coordinate GPS:', { lat, lng });
 
-          const segnalazione: Segnalazione = {
-            idUtente: this.currentUser?._id,
-            tipologia: tipologia as TipoSegnalazione,
-            descrizione: descrizione || '',
-            coordinateGps: {
-              type: 'Point',
-              coordinates: [lng, lat]
+            const segnalazione: Segnalazione = {
+              tipologia: tipologia as TipoSegnalazione,
+              descrizione: descrizione || '',
+              coordinateGps: {
+                type: 'Point',
+                coordinates: [lng, lat]
+              }
+            };
+            // AGGIUNGI QUESTO DEBUG
+            console.log('Segnalazione completa prima dell\'invio:', JSON.stringify(segnalazione, null, 2));
+            console.log('Coordinate specifiche:', segnalazione.coordinateGps?.coordinates);
+
+            // Verifica che i dati siano validi prima di inviare
+            if (!tipologia) {
+              this.dialogService.showError('Tipologia segnalazione mancante');
+              return;
             }
-          };
-          // AGGIUNGI QUESTO DEBUG
-          console.log('Segnalazione completa prima dell\'invio:', JSON.stringify(segnalazione, null, 2));
-          console.log('Coordinate specifiche:', segnalazione.coordinateGps?.coordinates);
 
-          // Verifica che i dati siano validi prima di inviare
-          if (!tipologia) {
-            this.dialogService.showError('Tipologia segnalazione mancante');
-            return;
+            this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
+              next: (response) => {
+                if (response.success) {
+                  this.dialogService.showSuccess("Operazione effettuata", 'Segnalazione creata con successo!');
+                  console.log('Segnalazione creata:', response.data);
+                  // Aggiorna la mappa con i nuovi dati
+                  this.caricaSegnalazioniCluster();
+
+                  // Reset dei form
+                  this.firstFormGroup.reset();
+                  this.secondFormGroup.reset();
+                }
+              },
+            });
+
+            this.cdr.detectChanges();
+          },
+          (error) => {
+            console.error('Errore nel recuperare le coordinate GPS:', error);
+            this.dialogService.showError('Impossibile ottenere la posizione GPS');
+
+            // Procedi comunque con la creazione della segnalazione, ma senza coordinate
+            const segnalazione: Segnalazione = {
+              tipologia: tipologia as TipoSegnalazione,
+              descrizione: descrizione || ''
+            };
+
+            if (!tipologia) {
+              this.dialogService.showError('Tipologia segnalazione mancante');
+              return;
+            }
+
+            this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
+              next: (response) => {
+                if (response.success) {
+                  this.dialogService.showSuccess("Operazione effettuata", 'Segnalazione creata con successo!');
+                  this.caricaSegnalazioniCluster();
+                  this.firstFormGroup.reset();
+                  this.secondFormGroup.reset();
+                }
+              },
+            });
+
+            this.cdr.detectChanges();
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
           }
-
-          this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
-            next: (response) => {
-              if (response.success) {
-                this.dialogService.showSuccess("Operazione effettuata",'Segnalazione creata con successo!');
-                console.log('Segnalazione creata:', response.data);
-                // Aggiorna la mappa con i nuovi dati
-                this.caricaSegnalazioniCluster();
-
-                // Reset dei form
-                this.firstFormGroup.reset();
-                this.secondFormGroup.reset();
-              }
-            },
-          });
-
-          this.cdr.detectChanges();
-        },
-        (error) => {
-          console.error('Errore nel recuperare le coordinate GPS:', error);
-          this.dialogService.showError('Impossibile ottenere la posizione GPS');
-
-          // Procedi comunque con la creazione della segnalazione, ma senza coordinate
-          const segnalazione: Segnalazione = {
-            tipologia: tipologia as TipoSegnalazione,
-            descrizione: descrizione || ''
-          };
-
-          if (!tipologia) {
-            this.dialogService.showError('Tipologia segnalazione mancante');
-            return;
-          }
-
-          this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
-            next: (response) => {
-              if (response.success) {
-                this.dialogService.showSuccess("Operazione effettuata",'Segnalazione creata con successo!');
-                this.caricaSegnalazioniCluster();
-                this.firstFormGroup.reset();
-                this.secondFormGroup.reset();
-              }
-            },
-          });
-
-          this.cdr.detectChanges();
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0
-        }
-      );
-    } else if (result === 'cancel') {
-      console.log('Operazione annullata');
-    }
-  });
-}
+        );
+      } else if (result === 'cancel') {
+        console.log('Operazione annullata');
+      }
+    });
+  }
 
 }
