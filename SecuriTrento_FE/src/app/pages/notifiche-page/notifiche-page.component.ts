@@ -5,6 +5,8 @@ import { Utente, TipoUtente } from '../../models/utente.model';
 import { CommonModule } from '@angular/common';
 import { SegnalazioniService } from '../../services/segnalazioni.service';
 import { Segnalazione } from '../../models/segnalazione.model';
+import { NotificaSegnalazione } from '../../models/notificaSegnalazione.model';
+import { NotificheService } from '../../services/notifiche.service';
 import { ChangeDetectorRef } from '@angular/core';
 
 
@@ -17,12 +19,12 @@ import { ChangeDetectorRef } from '@angular/core';
 export class NotifichePageComponent {
   private autenticazioneService = inject(AutenticazioneService);
   private segnalazioniService = inject(SegnalazioniService);
+  private notificheService = inject(NotificheService);
   private cdr = inject(ChangeDetectorRef);
 
   currentUser: Utente | null = null;
   TipoUtente = TipoUtente;
-  segnalazioni: Segnalazione[] = [];
-
+  notificheSegnalazioni: NotificaSegnalazione[] = [];
 
   ngOnInit(): void {
     this.autenticazioneService.currentUser$.subscribe(user => {
@@ -35,13 +37,13 @@ export class NotifichePageComponent {
 
   caricaNotificheSegnalazioni() {
     if (this.currentUser && this.currentUser.tipoUtente === TipoUtente.FDO && this.currentUser._id) {
-      this.segnalazioniService.getSegnalazioniNearby(this.currentUser._id, 2000).subscribe({
+      this.notificheService.getNotificheSegnalazioni(this.currentUser._id).subscribe({
         next: (response) => {
           if (response.success) {
-            this.segnalazioni = response.data;
-            console.log("segnalazioni: ", this.segnalazioni);
+            this.notificheSegnalazioni = response.data;
+            console.log("notifiche segnalazioni: ", this.notificheSegnalazioni);
           } else {
-            console.error('Errore nel recupero delle segnalazioni');
+            console.error('Errore nel recupero delle notifiche segnalazioni:', response.message);
           }
         },
         error: (error) => {

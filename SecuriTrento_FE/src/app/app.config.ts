@@ -7,17 +7,19 @@ import { provideHttpClient } from '@angular/common/http';
 import { MappaService } from './services/mappa.service';
 import { UtentiService } from './services/utenti.service';
 import { AutenticazioneService } from './services/autenticazione.service';
+import { NotificheService } from './services/notifiche.service';
 
 
 export const appConfig: ApplicationConfig = {
   providers: [
-  provideZoneChangeDetection({ eventCoalescing: true }),
-  provideRouter(routes),
-  provideHttpClient(),
-  DialogService,
-  SegnalazioniService,
-  MappaService,
-  UtentiService,
-  AutenticazioneService
-]
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideHttpClient(),
+    DialogService,
+    SegnalazioniService,
+    MappaService,
+    UtentiService,
+    AutenticazioneService,
+    NotificheService
+  ]
 };
