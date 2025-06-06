@@ -57,3 +57,31 @@ button {
     display: flex;
     justify-content: center;
 }
+.form-container {
+    max-width: 400px;
+    margin: 48px auto;
+    padding: 32px 24px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: none; // Rimuove il bordo/ombra
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: stretch;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 5px; // Ridotto ulteriormente da 10px a 5px
+}
+
+.logo {
+  max-width: 300px; // Dimensione fissa
+  max-height: 300px; // Dimensione fissa
+  
+  // Rimuovo l'animazione per renderlo fisso
+  // animation: shrink 3s ease-out;
+}
