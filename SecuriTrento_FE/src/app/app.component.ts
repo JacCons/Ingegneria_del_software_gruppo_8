@@ -6,9 +6,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { AutenticazioneService } from './services/autenticazione.service';
+import { MappaService } from './services/mappa.service';
 import { Utente } from './models/utente.model';
 import { interval, Subscription } from 'rxjs';
-
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-root',
@@ -22,8 +23,12 @@ export class AppComponent implements OnInit, OnDestroy {
   showDashboard = true;
   currentUser: Utente | null = null;
   private autenticazioneService = inject(AutenticazioneService);
+  private mappaService = inject(MappaService);
   private intervalSubscription: Subscription | null = null;
-  
+  private currentAgentMarker: L.Marker | null = null;
+  private currentAgentCircle: L.Circle | null = null;
+  private isFirstPositionUpdate: boolean = true;
+
   ngOnInit(): void {
     this.autenticazioneService.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -44,12 +49,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   
   // Funzione eseguita ogni 5 secondi
-  controllaPosizioneUtente(): void {
-    //console.log(`Coordinate GPS agente` + this.currentUser?.tipoUtente);
-    // Controllo se l'utente è di tipo forze dell'ordine
+controllaPosizioneUtente(): void {
     if (this.currentUser && this.currentUser.tipoUtente === 'UtenteFDO') {
-      
-      // Ottieni le coordinate GPS dell'utente
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const lat = position.coords.latitude;
@@ -57,8 +58,59 @@ export class AppComponent implements OnInit, OnDestroy {
           
           console.log(`Coordinate GPS agente ${this.currentUser?.TipoFDO}:`, { lat, lng });
           
-          // Qui puoi aggiungere la logica per inviare le coordinate al server
-          // this.inviaPosizioneAgente(lat, lng);
+          // Rimuovi il marker e il cerchio precedenti se esistono
+          if (this.currentAgentMarker && this.mappaService.getMap()) {
+            this.mappaService.getMap()?.removeLayer(this.currentAgentMarker);
+          }
+          if (this.currentAgentCircle && this.mappaService.getMap()) {
+            this.mappaService.getMap()?.removeLayer(this.currentAgentCircle);
+          }
+          
+          // Aggiungi il nuovo marker e cerchio dell'agente
+          if (this.mappaService.getMap()) {
+            // Crea l'icona personalizzata per l'agente
+            const agentIcon = L.icon({
+              iconUrl: 'm2.png',
+              iconSize: [45, 45],
+              iconAnchor: [22, 22],
+              popupAnchor: [0, -22],
+              shadowSize: [32, 32]
+            });
+            
+            // Aggiungi il marker
+            this.currentAgentMarker = this.mappaService.addMarker(
+              [lat, lng], 
+              { 
+                icon: agentIcon,
+                title: `Agente ${this.currentUser?.TipoFDO}`
+              }
+            );
+            
+            // Aggiungi il cerchio attorno al marker
+            this.currentAgentCircle = L.circle([lat, lng], {
+              color: '#F44336',
+              fillColor: '#F44336',
+              fillOpacity: 0.2,
+              radius: 2500,
+              weight: 2
+            }).addTo(this.mappaService.getMap()!);
+            
+            // CENTRA LA MAPPA SOLO LA PRIMA VOLTA
+            if (this.isFirstPositionUpdate) {
+              console.log("Prima posizione aggiornata, centrando la mappa pper FDO...");
+              this.mappaService.getMap()?.setView([lat, lng], 14);
+              this.isFirstPositionUpdate = false; // Imposta a false dopo il primo aggiornamento
+            }
+            
+            // Aggiungi popup al marker
+            this.currentAgentMarker.bindPopup(
+              `<b>Agente ${this.currentUser?.TipoFDO}</b><br>
+               Lat: ${lat.toFixed(6)}<br>
+               Lng: ${lng.toFixed(6)}<br>
+               Raggio copertura: 2,5 km<br>
+               Ultimo aggiornamento: ${new Date().toLocaleTimeString()}`
+            );
+          }
         },
         (error) => {
           console.error('Errore nel recuperare le coordinate GPS:', error);
