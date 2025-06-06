@@ -8,7 +8,8 @@ import { Segnalazione } from '../../models/segnalazione.model';
 import { NotificaSegnalazione } from '../../models/notificaSegnalazione.model';
 import { NotificheService } from '../../services/notifiche.service';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { RichiesteAllocazioneService } from '../../services/richieste-allocazione.service';
+import { RichiestaAllocazione } from '../../models/richieste-allocazione.model';
 
 @Component({
   selector: 'notifiche-page',
@@ -20,10 +21,13 @@ export class NotifichePageComponent {
   private autenticazioneService = inject(AutenticazioneService);
   private segnalazioniService = inject(SegnalazioniService);
   private notificheService = inject(NotificheService);
+  private richiesteAllocazioneService = inject(RichiesteAllocazioneService);
   private cdr = inject(ChangeDetectorRef);
 
   currentUser: Utente | null = null;
   TipoUtente = TipoUtente;
+  segnalazioni: Segnalazione[] = [];
+  richiesteAllocazione: RichiestaAllocazione[] = [];
   notificheSegnalazioni: NotificaSegnalazione[] = [];
 
   ngOnInit(): void {
@@ -33,6 +37,7 @@ export class NotifichePageComponent {
     });
 
     this.caricaNotificheSegnalazioni();
+    this.caricaRichiesteAllocazione();
   }
 
   caricaNotificheSegnalazioni() {
@@ -53,7 +58,27 @@ export class NotifichePageComponent {
 
       this.cdr.detectChanges();
     }
-
   }
 
+  caricaRichiesteAllocazione() {
+    this.richiesteAllocazioneService.getRichiesteAllocazione().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.richiesteAllocazione = response.data;
+          console.log("richieste allocazione: ", this.richiesteAllocazione);
+        } else {
+          console.error('Errore nel recupero delle richieste di allocazione');
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching richieste allocazione:', error);
+      }
+    });
+  }
+
+  onButtonClick(richiestaId: string | undefined, richiesta: RichiestaAllocazione) {
+    console.log('Bottone cliccato per richiesta ID:', richiestaId);
+    console.log('Dati richiesta:', richiesta);
+    console.log('Stato attuale:', richiesta.stato);
+  }
 }

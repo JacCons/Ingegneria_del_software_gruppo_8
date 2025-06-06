@@ -5,6 +5,7 @@ import {
   getAllSegnalazioni,
   getSegnalazioneById,
   getSegnalazioniNearby,
+  getSegnalazioniByUtente,
   createSegnalazione,
   updateSegnalazione,
   deleteSegnalazione
@@ -148,6 +149,33 @@ router.get('/', getAllSegnalazioni);
  *                   example: 3
  */
 router.get('/nearby/:fdoId', getSegnalazioniNearby);
+
+
+
+/**
+ * @swagger
+ * /api/segnalazioni/mySegnalazioni:
+ *   get:
+ *     summary: Recupera le segnalazioni dell'utente corrente
+ *     tags: [Segnalazioni]
+ *     description: Restituisce tutte le segnalazioni effettuate dall'utente autenticato
+ *     responses:
+ *       200:
+ *         description: Segnalazioni recuperate con successo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Segnalazione'
+ */
+router.get('/mySegnalazioni', getSegnalazioniByUtente)
 
 /**
  * @swagger

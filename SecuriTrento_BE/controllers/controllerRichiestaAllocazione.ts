@@ -1,13 +1,13 @@
 import richiestaAllocazioneModel from '../models/richiestaAllocazione.ts'; 
 import mongoose from 'mongoose';
+import {creaNotificaConfermaRichiestaAllocazione} from './controllerNotifiche.ts';
 import express from 'express';
 
 /**
  * Recupera tutte le richieste allocazione
  */
 export const getAllRichiesteAllocazione = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
-  console.log('getall con Ruolo utente:', req.user);
+  const ruolo = req.loggedUser?.ruolo;
   if (ruolo === 'UtenteCittadino') {
     return res.status(403).json({
       success: false,
@@ -16,7 +16,12 @@ export const getAllRichiesteAllocazione = async (req, res) => {
   }
 
   try {
-    const richieste = await richiestaAllocazioneModel.find();
+    const filter: any = {};
+    if (req.query.stato) {
+      filter.stato = req.query.stato;
+    }
+
+    const richieste = await richiestaAllocazioneModel.find(filter);
     return res.status(200).json({
       success: true,
       data: richieste,
@@ -37,7 +42,7 @@ export const getAllRichiesteAllocazione = async (req, res) => {
  * Recupera una richiesta allocazione specifica tramite ID
  */
 export const getRichiestaAllocazioneById = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.loggedUser?.ruolo;
 
   if (ruolo === 'UtenteCittadino') {
     return res.status(403).json({
@@ -72,14 +77,14 @@ export const getRichiestaAllocazioneById = async (req, res) => {
  * Crea una nuova richiesta allocazione
  */
 export const createRichiestaAllocazione = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
-    console.log('Ruolo utente:', ruolo);
-//   if (ruolo !== 'UtenteComunale') {
-//     return res.status(403).json({
-//       success: false,
-//       message: 'Accesso negato'
-//     });
-//   }
+  const ruolo = req.loggedUser?.ruolo;
+    console.log('Ruolo utente nella createRichiestaAllocazione:', ruolo);
+  if (ruolo !== 'UtenteComunale') {
+    return res.status(403).json({
+      success: false,
+      message: 'Accesso negato'
+    });
+  }
   
   try {
     const dati = req.body;
@@ -142,9 +147,10 @@ export const createRichiestaAllocazione = async (req, res) => {
  * Aggiorna una richiesta allocazione esistente
  */
 export const updateRichiestaAllocazione = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.loggedUser?.ruolo;
+  const idFDO = req.loggedUser?._id;
 
-  if (ruolo !== 'UtenteFDO' && ruolo !== 'UtenteComunale') {
+  if (ruolo !== 'UtenteFDO') {
     return res.status(403).json({
       success: false,
       message: 'Accesso negato'
@@ -152,21 +158,8 @@ export const updateRichiestaAllocazione = async (req, res) => {
   }
   
   try {
-    const allowedFields = ['stato', 'zonaDiOperazione'];
-    const dati = {};
-
-    for (const field of allowedFields) {
-      if (req.body[field] !== undefined) {
-        dati[field] = req.body[field];
-      }
-    }
-
-    if (Object.keys(dati).length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Nessun campo valido fornito'
-      });
-    }
+    // Imposta sempre lo stato a "accettato"
+    const dati = { stato: 'accettato' };
 
     const richiesta = await richiestaAllocazioneModel.findByIdAndUpdate(
       req.params.id,
@@ -180,6 +173,8 @@ export const updateRichiestaAllocazione = async (req, res) => {
         message: 'Richiesta allocazione non trovata'
       });
     }
+
+    await creaNotificaConfermaRichiestaAllocazione(idFDO, richiesta._id.toString());
 
     return res.status(200).json({
       success: true,
@@ -200,7 +195,7 @@ export const updateRichiestaAllocazione = async (req, res) => {
  * Elimina una richiesta allocazione tramite ID
  */
 export const deleteRichiestaAllocazione = async (req, res) => {
-  const ruolo = req.user?.tipoUtente;
+  const ruolo = req.loggedUser?.ruolo;
 
   if (ruolo !== 'UtenteFDO' && ruolo !== 'UtenteComunale') {
     return res.status(403).json({

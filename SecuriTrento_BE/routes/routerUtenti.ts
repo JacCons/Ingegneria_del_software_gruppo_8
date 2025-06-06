@@ -92,6 +92,7 @@ router.get('/', tokenChecker, getAllUtenti);
  */
 router.get('/:tipo', tokenChecker, getUtentiByType);
 
+
 /**
  * @swagger
  * /api/utenti/id/{id}:

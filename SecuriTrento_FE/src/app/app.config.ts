@@ -8,6 +8,7 @@ import { MappaService } from './services/mappa.service';
 import { UtentiService } from './services/utenti.service';
 import { AutenticazioneService } from './services/autenticazione.service';
 import { NotificheService } from './services/notifiche.service';
+import { RichiesteAllocazioneService } from './services/richieste-allocazione.service';
 
 
 export const appConfig: ApplicationConfig = {
@@ -22,4 +23,14 @@ export const appConfig: ApplicationConfig = {
     AutenticazioneService,
     NotificheService
   ]
+  provideZoneChangeDetection({ eventCoalescing: true }),
+  provideRouter(routes),
+  provideHttpClient(),
+  DialogService,
+  SegnalazioniService,
+  MappaService,
+  UtentiService,
+  AutenticazioneService,
+  RichiesteAllocazioneService
+]
 };

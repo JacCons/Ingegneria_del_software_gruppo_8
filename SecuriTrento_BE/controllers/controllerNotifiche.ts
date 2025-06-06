@@ -2,6 +2,8 @@ import notificaSegnalazioneModel from "../models/notificaSegnalazione.ts";
 import { utenteRegistratoModel } from "../models/utenteRegistrato.ts";
 import mongoose from "mongoose";
 import segnalazioneModel from "../models/segnalazione.ts";
+import richiestaAllocazioneModel from "../models/richiestaAllocazione.ts";
+import notificaRichiestaAllocazioneModel from "../models/notificaRichiestaAllocazione.ts";
 import express from 'express';
 
 const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string, coordinateGps: any, raggio: number = 2500) => {
@@ -274,10 +276,34 @@ export const creaNotifichePerNuovaSegnalazione = async (idSegnalazione: string) 
     }
 }
 
-export const getNotificheRichiesteAllocazione = async (req, res) => {
+export const creaNotificaConfermaRichiestaAllocazione = async (idFDO: string, richiestaId: string) => {
+    try {
+        // Recupera la richiesta di allocazione
+        const richiesta = await richiestaAllocazioneModel.findById(richiestaId);
+        if (!richiesta) {
+            console.error(`Richiesta allocazione non trovata: ${richiestaId}`);
+            return null;
+        }
+
+        // Crea la notifica associata
+        const notificaConfermaRichiestaAllocazione = await notificaRichiestaAllocazioneModel.create({
+            richiestaAllocazioneId: richiesta._id,
+            timestamp: new Date(),
+            idUtenteFDO: idFDO // Assumendo che la richiesta abbia un campo idUtenteFDO
+        });
+
+        return notificaConfermaRichiestaAllocazione;
+    } catch (error) {
+        console.error('Errore creazione notifica per nuova richiesta allocazione:', error);
+        return null;
+    }
+};
+
+export const getNotificheConfermaRichiesteAllocazione = async (req, res) => {
     //restituire le notifiche CONFERMA RICHIESTA ALLOCAZIONE (IGNORA IL CAMPO DESTINATARIO,
     //  per le richieste allocazione non è necessario, devi restituire TUTTE le notifiche di tipo "richiestaAllocazione"
     // che rappresentano la CONFERMA RICHIESTA ALLOCAZIONE)
+    // viene chiamato dall'utente comunale
 
     try {
         const notifiche = [];

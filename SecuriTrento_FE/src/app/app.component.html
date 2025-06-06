@@ -4,6 +4,7 @@
       <div class="left-side" >
         <div class="example-button-container">
           <p>Utente: {{currentUser?.nome}} {{currentUser?.cognome}}</p>
+          <p>Tipo Utente: {{currentUser?.tipoUtente}}</p>
           <button (click)="clickSegnalazioni($event)" mat-fab extended>
             <mat-icon>maps</mat-icon>
             Segnalazioni
