@@ -4,12 +4,11 @@
     <div class="segnalazioni-container">
         <h3 class="segnalazioni-title">Notifiche Segnalazioni:</h3>
         <div class="lista-segnalazioni">
-            <div class="card" *ngFor="let notifichaSegnalazione of notificheSegnalazioni"> //[ngClass]="segnalazione.tipologia"
-                <div><strong>Nuova segnalazione: </strong> {{ notifichaSegnalazione.timeStamp | date:'medium' }}</div>
-                <div><strong>Descrizione:</strong> {{ notifichaSegnalazione.idSegnalazione }}</div>
-                <div><strong>Tipo:</strong> {{ notifichaSegnalazione.tipoNotifica }}</div>
-                <div><strong>Coordinate:</strong> {{ notifichaSegnalazione._id }}</div>
-
+            <div class="card" [ngClass]="notificaSegnalazione.segnalazioneCompleta.tipologia" *ngFor="let notificaSegnalazione of notificheSegnalazioni">
+                <div><strong>Nuova segnalazione: </strong> {{ notificaSegnalazione.timeStamp  }}</div>
+                <div><strong>Descrizione segnalazione:</strong> {{ notificaSegnalazione.segnalazioneCompleta.descrizione }}</div>
+                <div><strong>Tipo:</strong> {{ notificaSegnalazione.segnalazioneCompleta.tipologia }}</div>
+                <div><strong>Data Segnalazione:</strong> {{ notificaSegnalazione.segnalazioneCompleta.timeStamp | date:'medium'}}</div>
             </div>
 
             <div *ngIf="notificheSegnalazioni.length === 0" class="empty-state">

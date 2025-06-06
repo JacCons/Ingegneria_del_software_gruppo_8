@@ -8,6 +8,8 @@ import express from 'express';
 
 const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string, coordinateGps: any, raggio: number = 2500) => {
     try {
+        console.log(`🔍 Controllo segnalazioni per FDO ${utenteDestinatarioId} nel raggio di ${raggio} metri...`);
+
         // trova segnalazioni max 8 ore fa nel raggio specificato
         const timeLimit = new Date(Date.now() - 8 * 60 * 60 * 1000);
 
@@ -34,7 +36,7 @@ const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string,
         const segnalazioniIds = segnalazioniVicine.map(s => s._id);
         const notificheEsistenti = await notificaSegnalazioneModel.find({
             idSegnalazione: { $in: segnalazioniIds },
-            destinatario: utenteDestinatarioId
+            utenteDestinatarioId: utenteDestinatarioId
         });
 
         const segnalazioniGiaNotificate = notificheEsistenti.map(n => n.idSegnalazione.toString());
@@ -46,7 +48,7 @@ const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string,
         for (const segnalazione of segnalazioniDaNotificare) {
             const notifica = await notificaSegnalazioneModel.create({
                 idSegnalazione: segnalazione._id,
-                destinatario: utenteDestinatarioId,
+                utenteDestinatarioId: utenteDestinatarioId,
                 tipoNotifica: 'segnalazione',
                 timestamp: new Date()
             });
@@ -140,11 +142,11 @@ export const getNotificheSegnalazione = async (req, res) => {
 
             const notifiche = await notificaSegnalazioneModel
                 .find({
-                    destinatario: utenteDestinatarioId,
+                    utenteDestinatarioId: utenteDestinatarioId,
                     tipoNotifica: 'segnalazione'
                 })
-                .populate('idSegnalazione', 'tipologia descrizione coordinateGps timeStamp stato')
-                .populate('destinatario', 'nome cognome')
+                // .populate('idSegnalazione', 'tipologia descrizione coordinateGps timeStamp stato')
+                // .populate('utenteDestinatarioId', 'nome cognome')
                 .sort({ timestamp: -1 }); // ordina per data decrescente
 
             const notificheConSegnalazioniComplete = await caricaSegnalazioniComplete(notifiche);
@@ -251,13 +253,13 @@ export const creaNotifichePerNuovaSegnalazione = async (idSegnalazione: string) 
             // controlla se esiste già una notifica
             const notificaEsistente = await notificaSegnalazioneModel.findOne({
                 idSegnalazione: idSegnalazione,
-                destinatario: fdo._id
+                utenteDestinatarioId: fdo._id
             });
 
             if (!notificaEsistente) {
                 const notifica = await notificaSegnalazioneModel.create({
                     idSegnalazione: idSegnalazione,
-                    destinatario: fdo._id,
+                    utenteDestinatarioId: fdo._id,
                     tipoNotifica: 'segnalazione',
                     timestamp: new Date()
                 });

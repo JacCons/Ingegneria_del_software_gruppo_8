@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { ApiResponse } from '../models/api-response.model';
 import { Observable } from 'rxjs';
 import { AutenticazioneService } from './autenticazione.service';
@@ -14,10 +14,22 @@ export class NotificheService {
     private autenticazioneService: AutenticazioneService
   ) { }
 
-  getNotificheSegnalazioni(utenteID: string): Observable<ApiResponse<NotificaSegnalazione[]>> {
+  getNotificheSegnalazioni(utenteID: string, autoCheck?: boolean, raggio?: number): Observable<ApiResponse<NotificaSegnalazione[]>> {
+    let params = new HttpParams();
+
+    if (autoCheck !== undefined) {
+      params = params.set('autoCheck', autoCheck.toString());
+    }
+    
+    if (raggio !== undefined) {
+      params = params.set('raggio', raggio.toString());
+    }
+
     return this.http.get<ApiResponse<NotificaSegnalazione[]>>(
       `${this.apiBasePathUrl}/notifiche/notifiche-segnalazioni/destinatario/${utenteID}`,
-      { headers: this.autenticazioneService.getAuthHeaders() }
+      { headers: this.autenticazioneService.getAuthHeaders(),
+        params: params
+       }
     );
   }
 
