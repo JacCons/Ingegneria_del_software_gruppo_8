@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
+import { icon, Marker } from 'leaflet';
 import 'leaflet.markercluster';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -19,14 +19,29 @@ export class MappaService {
    * @returns L.Map - L'istanza della mappa Leaflet
    */
   initMap(elementId: string): L.Map {
+    const iconRetinaUrl = 'marker-icon-2x.png';
+    const iconUrl = 'marker-icon.png';
+    const shadowUrl = 'marker-shadow.png';
+    const iconDefault = icon({
+      iconRetinaUrl,
+      iconUrl,
+      shadowUrl,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      tooltipAnchor: [16, -28],
+      shadowSize: [41, 41]
+    });
+    Marker.prototype.options.icon = iconDefault
+
     // Crea un'istanza della mappa nel contenitore specificato
     this.map = L.map(elementId).setView(this.TRENTO_COORDINATES, this.DEFAULT_ZOOM);
 
     // PER MODIFICARE LO STILE DELLA MAPPA
-// L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-//       attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-//       maxZoom: 18
-//     }).addTo(this.map);
+    // L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    //       attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    //       maxZoom: 18
+    //     }).addTo(this.map);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>',

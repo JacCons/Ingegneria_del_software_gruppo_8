@@ -4,6 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MappaService } from '../../services/mappa.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -33,6 +34,7 @@ export class LoginPageComponent {
   private dialogService = inject(DialogService);
   private utentiService = inject(UtentiService);
   private autenticazioneService = inject(AutenticazioneService);
+  private mappaService = inject(MappaService);
 
   constructor(
     private router: Router
@@ -75,6 +77,8 @@ export class LoginPageComponent {
         console.error('Errore login:', error);
       }
     });
+
+    this.mappaService.initMap("map"); // inizializza la mappa dopo il login
   }
 
   switchToLogin() {
