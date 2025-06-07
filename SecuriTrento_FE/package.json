@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build_prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "clean-modules": "rm -rf node_modules package-lock.json && npm install && npx ng serve"
@@ -22,6 +23,7 @@
     "@angular/router": "^19.2.0",
     "@types/leaflet": "^1.9.18",
     "@types/leaflet.markercluster": "^1.5.5",
+    "dotenv": "^16.5.0",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "rxjs": "~7.8.0",

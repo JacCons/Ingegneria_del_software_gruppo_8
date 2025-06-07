@@ -4,13 +4,14 @@ import { Segnalazione } from '../models/segnalazione.model';
 import { ApiResponse } from '../models/api-response.model';
 import { AutenticazioneService } from './autenticazione.service';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SegnalazioniService {
-  private apiBasePathUrl = 'http://localhost:3000/api';
+  //private apiBasePathUrl = 'http://localhost:3000/api';
+  private apiBasePathUrl = environment.apiBasePathUrl;
   constructor(private http: HttpClient,
     private autenticazioneService: AutenticazioneService
   ) { }
