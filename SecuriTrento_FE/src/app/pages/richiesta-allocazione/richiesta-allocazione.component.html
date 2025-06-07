@@ -1,0 +1,49 @@
+<div class="page-container">
+  <div id="map"></div>
+
+  <form #richiestaForm="ngForm">
+    <mat-form-field appearance="fill">
+      <mat-label>Giorno della settimana</mat-label>
+       <mat-select [(ngModel)]="giornoSelezionato" name="giornoSelezionato">
+            <mat-option [value]="GiornoSettimana.LUNEDI">Lunedì</mat-option>
+            <mat-option [value]="GiornoSettimana.MARTEDI">Martedì</mat-option>
+            <mat-option [value]="GiornoSettimana.MERCOLEDI">Mercoledì</mat-option>
+            <mat-option [value]="GiornoSettimana.GIOVEDI">Giovedì</mat-option>
+            <mat-option [value]="GiornoSettimana.VENERDI">Venerdì</mat-option>
+            <mat-option [value]="GiornoSettimana.SABATO">Sabato</mat-option>
+            <mat-option [value]="GiornoSettimana.DOMENICA">Domenica</mat-option>    
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Orario di inizio</mat-label>
+      <mat-select name="orario" [(ngModel)]="orarioSelezionato" required>
+        <mat-option *ngFor="let ora of [
+          '00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:00',
+          '08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00',
+          '16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'
+        ]" [value]="ora">
+          {{ora}}
+        </mat-option>
+      </mat-select>
+      <mat-hint>L'allocazione durerà un'ora</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Coordinate selezionate</mat-label>
+      <input matInput
+             [value]="coordinates[1].toFixed(6) + ', ' + coordinates[0].toFixed(6)"
+             readonly
+             placeholder="Clicca sulla mappa per selezionare">
+      <mat-hint>Latitudine, Longitudine</mat-hint>
+    </mat-form-field>
+
+    <button mat-raised-button 
+            color="primary" 
+            type="submit" 
+            [disabled]="!richiestaForm.valid || coordinates[0] === 0"
+            (click)="inviaRichiestaAllocazione()">
+      Invia richiesta
+    </button>
+  </form>
+</div>

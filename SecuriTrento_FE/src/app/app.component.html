@@ -35,21 +35,27 @@
             Gestione Utenti
           </button>
 
+          <button (click)="clickRichiestaAllocazione($event)" mat-fab extended
+                  *ngIf="currentUser?.tipoUtente === 'UtenteComunale'">
+            <mat-icon>assignment</mat-icon>
+            Richiesta Allocazione
+          </button>
+
           <button (click)="clickLogout($event)" mat-fab extended>
             <mat-icon>logout</mat-icon>
             Logout
           </button>
 
         </div>
-        
+
         <div>
           <img src="logo.png" alt="Description of image">
         </div>
       </div>
-      
+
       <div class="divider" role="separator" aria-label="Divider"></div>
     </ng-container>
-    
+
     <div class="right-side">
       <router-outlet></router-outlet>
     </div>

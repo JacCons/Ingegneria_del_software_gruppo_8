@@ -22,7 +22,7 @@ export class RichiesteAllocazioneService {
   getRichiesteAllocazione(stato?: string): Observable<ApiResponse<RichiestaAllocazione[]>> {
     return this.http.get<ApiResponse<RichiestaAllocazione[]>>(
       `${this.apiBasePathUrl}/richieste-allocazione`,
-      { 
+      {
         headers: this.getAuthHeaders(),
       }
     );
@@ -39,10 +39,11 @@ export class RichiesteAllocazioneService {
   // POST - Crea una nuova richiesta di allocazione
   createRichiestaAllocazione(richiesta: RichiestaAllocazione): Observable<ApiResponse<RichiestaAllocazione>> {
     const headers = this.getAuthHeaders().set('Content-Type', 'application/json');
+    console.log("createRichiestaAllocazione", richiesta);
     return this.http.post<ApiResponse<RichiestaAllocazione>>(
       `${this.apiBasePathUrl}/richieste-allocazione`,
       richiesta,
-      { headers }
+      { headers: this.getAuthHeaders() }
     );
   }
 
