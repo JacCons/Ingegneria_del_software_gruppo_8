@@ -20,9 +20,11 @@ export interface RichiestaAllocazione {
     coordinateGps?: {
       type?: string;
       coordinates?: number[];
+      raggio?: number;
     };
     fasciaOraria: number;
     giornoSettimana: GiornoSettimana;
   };
   stato?: StatoRichiesta;
+
 }

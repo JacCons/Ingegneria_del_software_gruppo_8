@@ -34,20 +34,20 @@ export class AppComponent implements OnInit, OnDestroy {
       this.currentUser = user;
       console.log("currentUser", this.currentUser);
     });
-    
+
     // Inizia l'intervallo che esegue la funzione ogni 5 secondi
     this.intervalSubscription = interval(5000).subscribe(() => {
       this.controllaPosizioneUtente();
     });
   }
-  
+
   ngOnDestroy(): void {
     // Cancella la sottoscrizione quando il componente viene distrutto
     if (this.intervalSubscription) {
       this.intervalSubscription.unsubscribe();
     }
   }
-  
+
   // Funzione eseguita ogni 5 secondi
 controllaPosizioneUtente(): void {
     if (this.currentUser && this.currentUser.tipoUtente === 'UtenteFDO') {
@@ -55,9 +55,9 @@ controllaPosizioneUtente(): void {
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          
+
           console.log(`Coordinate GPS agente ${this.currentUser?.TipoFDO}:`, { lat, lng });
-          
+
           // Rimuovi il marker e il cerchio precedenti se esistono
           if (this.currentAgentMarker && this.mappaService.getMap()) {
             this.mappaService.getMap()?.removeLayer(this.currentAgentMarker);
@@ -65,7 +65,7 @@ controllaPosizioneUtente(): void {
           if (this.currentAgentCircle && this.mappaService.getMap()) {
             this.mappaService.getMap()?.removeLayer(this.currentAgentCircle);
           }
-          
+
           // Aggiungi il nuovo marker e cerchio dell'agente
           if (this.mappaService.getMap()) {
             // Crea l'icona personalizzata per l'agente
@@ -76,16 +76,16 @@ controllaPosizioneUtente(): void {
               popupAnchor: [0, -22],
               shadowSize: [32, 32]
             });
-            
+
             // Aggiungi il marker
             this.currentAgentMarker = this.mappaService.addMarker(
-              [lat, lng], 
-              { 
+              [lat, lng],
+              {
                 icon: agentIcon,
                 title: `Agente ${this.currentUser?.TipoFDO}`
               }
             );
-            
+
             // Aggiungi il cerchio attorno al marker
             this.currentAgentCircle = L.circle([lat, lng], {
               color: '#F44336',
@@ -94,14 +94,14 @@ controllaPosizioneUtente(): void {
               radius: 2500,
               weight: 2
             }).addTo(this.mappaService.getMap()!);
-            
+
             // CENTRA LA MAPPA SOLO LA PRIMA VOLTA
             if (this.isFirstPositionUpdate) {
               console.log("Prima posizione aggiornata, centrando la mappa pper FDO...");
               this.mappaService.getMap()?.setView([lat, lng], 14);
               this.isFirstPositionUpdate = false; // Imposta a false dopo il primo aggiornamento
             }
-            
+
             // Aggiungi popup al marker
             this.currentAgentMarker.bindPopup(
               `<b>Agente ${this.currentUser?.TipoFDO}</b><br>
@@ -132,7 +132,7 @@ controllaPosizioneUtente(): void {
       }
     });
   }
-  
+
   clickSegnalazioni(event: MouseEvent) {
     console.log("ho cliccato segnalazioni");
     this.router.navigate(['/segnalazioni']);
@@ -146,6 +146,11 @@ controllaPosizioneUtente(): void {
   clickUtenti(event: MouseEvent) {
     console.log("ho cliccato utenti");
     this.router.navigate(['/gestioneUtenti']);
+  }
+
+  clickRichiestaAllocazione(event: MouseEvent) {
+    console.log("ho cliccato richiesta allocazione");
+    this.router.navigate(['/richiesteAllocazione']);
   }
 
   clickLogout(event: MouseEvent) {

@@ -23,17 +23,12 @@ const router = express.Router();
  *     RichiestaAllocazione:
  *       type: object
  *       required:
- *         - idRichiestaAllocazione
  *         - zonaDiOperazione
  *       properties:
  *         _id:
  *           type: string
  *           description: ID automatico generato da MongoDB
  *           example: 60d21b4967d0d8992e610c85
- *         idRichiestaAllocazione:
- *           type: string
- *           description: ID univoco della richiesta di allocazione
- *           example: REQ_001
  *         zonaDiOperazione:
  *           type: object
  *           required:
@@ -43,6 +38,9 @@ const router = express.Router();
  *           properties:
  *             coordinateGps:
  *               type: object
+ *               required:
+ *                 - type
+ *                 - coordinates
  *               properties:
  *                 type:
  *                   type: string
@@ -56,20 +54,21 @@ const router = express.Router();
  *                   description: Coordinate [longitudine, latitudine]
  *                   example: [11.12, 46.07]
  *             fasciaOraria:
- *               type: string
- *               description: Fascia oraria dell'operazione
- *               example: "08:00-12:00"
+ *               type: integer
+ *               description: Ora di inizio (0-23)
+ *               example: 8
  *             giornoSettimana:
  *               type: string
  *               description: Giorno della settimana
- *               example: "lunedì"
+ *               enum: [LUNEDI, MARTEDI, MERCOLEDI, GIOVEDI, VENERDI, SABATO, DOMENICA]
+ *               example: LUNEDI
  *         stato:
  *           type: string
- *           enum: [pendente, assegnata, completata, annullata]
+ *           enum: [IN_ATTESA, APPROVATA, RIFIUTATA]
  *           description: Stato attuale della richiesta
- *           default: pendente
- *           example: pendente
- *         timeStampCreazione:
+ *           default: IN_ATTESA
+ *           example: IN_ATTESA
+ *         timeStamp:
  *           type: string
  *           format: date-time
  *           description: Data e ora di creazione della richiesta
@@ -78,13 +77,8 @@ const router = express.Router();
  *     RichiestaAllocazioneInput:
  *       type: object
  *       required:
- *         - idRichiestaAllocazione
  *         - zonaDiOperazione
  *       properties:
- *         idRichiestaAllocazione:
- *           type: string
- *           description: ID univoco della richiesta di allocazione
- *           example: REQ_001
  *         zonaDiOperazione:
  *           type: object
  *           required:
@@ -94,7 +88,14 @@ const router = express.Router();
  *           properties:
  *             coordinateGps:
  *               type: object
+ *               required:
+ *                 - type
+ *                 - coordinates
  *               properties:
+ *                 type:
+ *                   type: string
+ *                   enum: [Point]
+ *                   example: Point
  *                 coordinates:
  *                   type: array
  *                   items:
@@ -218,7 +219,6 @@ router.get('/:id', getRichiestaAllocazioneById);
  *       content:
  *         application/json:
  *           example:
- *             idRichiestaAllocazione: "REQ_001"
  *             zonaDiOperazione:
  *               coordinateGps:
  *                 coordinates: [11.12, 46.07]

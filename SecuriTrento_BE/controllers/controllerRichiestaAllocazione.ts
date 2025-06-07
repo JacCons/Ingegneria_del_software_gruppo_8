@@ -72,6 +72,8 @@ export const getRichiestaAllocazioneById = async (req, res) => {
  * Crea una nuova richiesta allocazione
  */
 export const createRichiestaAllocazione = async (req, res) => {
+  
+  
   const ruolo = req.loggedUser?.ruolo;
     console.log('Ruolo utente nella createRichiestaAllocazione:', ruolo);
   if (ruolo !== 'UtenteComunale') {
@@ -80,6 +82,8 @@ export const createRichiestaAllocazione = async (req, res) => {
       message: 'Accesso negato'
     });
   }
+
+  console.log('Richiesta di allocazione ricevuta:', req.body);
   
   try {
     const dati = req.body;
@@ -91,7 +95,7 @@ export const createRichiestaAllocazione = async (req, res) => {
     }
 
     // Required fields validation
-    const requiredFields = ['idRichiestaAllocazione', 'zonaDiOperazione'];
+    const requiredFields = ['zonaDiOperazione'];
     for (const field of requiredFields) {
       if (!dati[field]) {
         return res.status(400).json({
@@ -112,11 +116,11 @@ export const createRichiestaAllocazione = async (req, res) => {
     }
 
     const richiestaData = {
-      idRichiestaAllocazione: dati.idRichiestaAllocazione,
       zonaDiOperazione: {
         coordinateGps: {
           type: 'Point',
-          coordinates: dati.zonaDiOperazione.coordinateGps.coordinates
+          coordinates: dati.zonaDiOperazione.coordinateGps.coordinates,
+          raggio: dati.zonaDiOperazione.coordinateGps.raggio  // Default radius if not provided
         },
         fasciaOraria: dati.zonaDiOperazione.fasciaOraria,
         giornoSettimana: dati.zonaDiOperazione.giornoSettimana

@@ -15,6 +15,10 @@ const richiestaAllocazioneSchema = new Schema({
             coordinates: {
                 type: [Number],
                 required: true
+            },
+            raggio: {
+                type: Number,
+                required: true
             }
         },
         fasciaOraria: {
