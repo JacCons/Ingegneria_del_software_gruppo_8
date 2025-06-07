@@ -116,7 +116,6 @@ export const createRichiestaAllocazione = async (req, res) => {
     }
 
     const richiestaData = {
-      idRichiestaAllocazione: dati.idRichiestaAllocazione,
       zonaDiOperazione: {
         coordinateGps: {
           type: 'Point',
