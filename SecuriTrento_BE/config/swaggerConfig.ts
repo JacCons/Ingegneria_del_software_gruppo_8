@@ -18,25 +18,6 @@ const swaggerDefinition = {
     },
   ],
   components: {
-    schemas: {
-      ErrorResponse: {
-        type: 'object',
-        properties: {
-          success: {
-            type: 'boolean',
-            example: false,
-          },
-          message: {
-            type: 'string',
-            example: 'Error message',
-          },
-          error: {
-            type: 'string',
-            example: 'Detailed error description',
-          },
-        },
-      },
-    },
     securitySchemes: {      
       bearerAuth: {
         type: 'http',

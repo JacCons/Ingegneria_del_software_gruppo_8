@@ -10,19 +10,6 @@ servers:
   - url: http://localhost:3000
     description: Development server
 components:
-  schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        message:
-          type: string
-          example: Error message
-        error:
-          type: string
-          example: Detailed error description
   securitySchemes: {}
 paths: {}
 tags: []

@@ -460,7 +460,6 @@ router.get('/notifiche-segnalazioni/destinatario/:utenteDestinatarioId', tokenCh
  *                   count: 1
  *                   message: "Trovate 1 notifiche di conferma richieste allocazione"
  *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
  *       500:
  *         description: Errore interno del server
  *         content:

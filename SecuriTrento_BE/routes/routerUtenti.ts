@@ -154,10 +154,6 @@ router.get('/id/:id', tokenChecker, getUtenteById);
  *       content:
  *         application/json:
  *           schema:
- *             oneOf:
- *               - $ref: '#/components/schemas/UtenteRegistratoInput'
- *               - $ref: '#/components/schemas/UtenteComunaleInput'
- *               - $ref: '#/components/schemas/UtenteFDOInput'
  *     responses:
  *       201:
  *         description: Utente registrato con successo
@@ -350,31 +346,6 @@ router.put('/:id', tokenChecker, updateUtente);
  * @swagger
  * components:
  *   schemas:
- *     Utente:
- *       type: object
- *       properties:
- *         _id:
- *           type: string
- *           description: ID MongoDB dell'utente
- *           example: 60d21b4667d0d8992e610c85
- *         nome:
- *           type: string
- *           description: Nome dell'utente
- *           example: Mario
- *         cognome:
- *           type: string
- *           description: Cognome dell'utente
- *           example: Rossi
- *         telefono:
- *           type: string
- *           description: Numero di telefono dell'utente
- *           example: "3401234567"
- *         tipoUtente:
- *           type: string
- *           description: Tipo di utente (discriminator)
- *           enum: [UtenteRegistrato, UtenteComune, UtenteFDO]
- *           example: UtenteRegistrato
- *
  *     UtenteRegistrato:
  *       type: object
  *       required:
