@@ -4,6 +4,7 @@ import { ApiResponse } from '../models/api-response.model';
 import { Observable } from 'rxjs';
 import { AutenticazioneService } from './autenticazione.service';
 import { NotificaSegnalazione } from '../models/notificaSegnalazione.model';
+import { NotificaConfermaRichiestaAllocazione } from '../models/notificaConfermaRichiestaAllocazione.model';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,13 @@ export class NotificheService {
       { headers: this.autenticazioneService.getAuthHeaders(),
         params: params
        }
+    );
+  }
+
+  getNotificheConfermaRichiesteAllocazione(): Observable<ApiResponse<NotificaConfermaRichiestaAllocazione[]>> {
+    return this.http.get<ApiResponse<NotificaConfermaRichiestaAllocazione[]>>(
+      `${this.apiBasePathUrl}/notifiche/notifiche-conferma-richieste-allocazione`,
+      { headers: this.autenticazioneService.getAuthHeaders() }
     );
   }
 

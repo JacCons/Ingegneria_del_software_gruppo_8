@@ -22,10 +22,12 @@
         <div class="lista-segnalazioni">
             <div class="card" [ngClass]="richiesta.stato" *ngFor="let richiesta of richiesteAllocazione">
                 <div><strong>Timestamp: </strong> {{ richiesta.timeStamp | date:'medium' }}</div>
-                <div><strong>Fascia oraria:</strong> {{ richiesta.zonaDiOperazione.fasciaOraria }}:00 - {{ richiesta.zonaDiOperazione.fasciaOraria + 1 }}:00</div>
+                <div><strong>Fascia oraria:</strong> {{ richiesta.zonaDiOperazione.fasciaOraria }}:00 - {{
+                    richiesta.zonaDiOperazione.fasciaOraria + 1 }}:00</div>
                 <div><strong>Giorno:</strong> {{ richiesta.zonaDiOperazione.giornoSettimana }}</div>
                 <div><strong>Stato:</strong> {{ richiesta.stato }}</div>
-                <div><strong>Coordinate:</strong> {{ richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[1] }}, {{ richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[0] }}</div>
+                <div><strong>Coordinate:</strong> {{ richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[1] }}, {{
+                    richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[0] }}</div>
                 <div class="azioni-richiesta">
                     <button (click)="onButtonClick(richiesta._id, richiesta)" class="btn-accetta">
                         Accetta Richiesta
@@ -34,6 +36,24 @@
             </div>
         </div>
     </div>
+</div>
 
+<div *ngIf="currentUser?.tipoUtente === TipoUtente.COMUNALE" class="notifiche-container">
+    <h2>Conferme richieste di allocazione:</h2>
 
+    <div class="segnalazioni-container">
+        <div class="lista-segnalazioni">
+            <div class="card"
+                *ngFor="let notificaConfermaRichiestaAllocazione of notificheConfermaRichiesteAllocazione">
+                <div><strong>Nuova conferma: </strong> {{ notificaConfermaRichiestaAllocazione.timeStamp | date:'medium'
+                    }}</div>
+                <div><strong>Descrizione:</strong> {{ notificaConfermaRichiestaAllocazione.idUtenteFDO }}</div>
+                <div><strong>Coordinate:</strong> {{ notificaConfermaRichiestaAllocazione._id }}</div>
+            </div>
+
+            <div *ngIf="notificheConfermaRichiesteAllocazione.length === 0" class="empty-state">
+                <p class="no-notifications">Nessuna richiesta di allocazione è stata accettata</p>
+            </div>
+        </div>
+    </div>
 </div>

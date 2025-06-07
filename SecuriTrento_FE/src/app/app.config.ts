@@ -13,15 +13,15 @@ import { NotificheService } from './services/notifiche.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-  provideZoneChangeDetection({ eventCoalescing: true }),
-  provideRouter(routes),
-  provideHttpClient(),
-  DialogService,
-  SegnalazioniService,
-  MappaService,
-  UtentiService,
-  AutenticazioneService,
-  RichiesteAllocazioneService,
-  NotificheService
-]
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideHttpClient(),
+    DialogService,
+    SegnalazioniService,
+    MappaService,
+    UtentiService,
+    AutenticazioneService,
+    RichiesteAllocazioneService,
+    NotificheService
+  ]
 };

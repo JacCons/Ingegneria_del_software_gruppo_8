@@ -1,6 +1,6 @@
 import express from 'express';
 import { tokenChecker } from '../middleware/middlewareTokenChecker.ts';
-import { getNotificheSegnalazione } from '../controllers/controllerNotifiche.ts';
+import { getNotificheSegnalazione, getNotificheConfermaRichiesteAllocazione } from '../controllers/controllerNotifiche.ts';
 
 const router = express.Router();
 
@@ -277,4 +277,219 @@ const router = express.Router();
  */
 router.get('/notifiche-segnalazioni/destinatario/:utenteDestinatarioId', tokenChecker, getNotificheSegnalazione);
 
+/**
+ * @swagger
+ * /api/notifiche/notifiche-conferma-richieste-allocazione:
+ *   get:
+ *     summary: Recupera tutte le notifiche di conferma richieste allocazione
+ *     description: |
+ *       Recupera tutte le notifiche di conferma per richieste di allocazione con i dati correlati:
+ *       - Dettagli dell'utente FDO che ha accettato la richiesta
+ *       - Dati completi della richiesta di allocazione
+ *     tags:
+ *       - Notifiche
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Notifiche di conferma recuperate con successo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: "64f1a2b3c4d5e6f7a8b9c0d1"
+ *                         description: ID della notifica di conferma
+ *                       richiestaAllocazioneId:
+ *                         type: string
+ *                         example: "64f1a2b3c4d5e6f7a8b9c0d2"
+ *                         description: ID della richiesta di allocazione
+ *                       idUtenteFDO:
+ *                         type: string
+ *                         example: "64f1a2b3c4d5e6f7a8b9c0d3"
+ *                         description: ID dell'utente FDO che ha accettato
+ *                       timestamp:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-06-06T14:30:00.000Z"
+ *                         description: Data e ora della conferma
+ *                       utenteFDO:
+ *                         type: object
+ *                         nullable: true
+ *                         description: Dati dell'utente FDO che ha accettato la richiesta
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                             example: "64f1a2b3c4d5e6f7a8b9c0d3"
+ *                           nome:
+ *                             type: string
+ *                             example: "Marco"
+ *                           cognome:
+ *                             type: string
+ *                             example: "Bianchi"
+ *                           email:
+ *                             type: string
+ *                             example: "marco.bianchi@fdo.it"
+ *                           tipoUtente:
+ *                             type: string
+ *                             example: "UtenteFDO"
+ *                       richiestaAllocazione:
+ *                         type: object
+ *                         nullable: true
+ *                         description: Dati completi della richiesta di allocazione
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                             example: "64f1a2b3c4d5e6f7a8b9c0d2"
+ *                           idSegnalazione:
+ *                             type: string
+ *                             example: "64f1a2b3c4d5e6f7a8b9c0d4"
+ *                           stato:
+ *                             type: string
+ *                             example: "accettata"
+ *                           dataRichiesta:
+ *                             type: string
+ *                             format: date-time
+ *                             example: "2025-06-06T12:00:00.000Z"
+ *                           segnalazione:
+ *                             type: object
+ *                             nullable: true
+ *                             description: Dati della segnalazione associata alla richiesta
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                                 example: "64f1a2b3c4d5e6f7a8b9c0d4"
+ *                               tipologia:
+ *                                 type: string
+ *                                 example: "Furto"
+ *                               descrizione:
+ *                                 type: string
+ *                                 example: "Furto di bicicletta in centro storico"
+ *                               coordinateGps:
+ *                                 type: object
+ *                                 properties:
+ *                                   type:
+ *                                     type: string
+ *                                     example: "Point"
+ *                                   coordinates:
+ *                                     type: array
+ *                                     items:
+ *                                       type: number
+ *                                     example: [11.1219482, 46.0664014]
+ *                               timeStamp:
+ *                                 type: string
+ *                                 format: date-time
+ *                                 example: "2025-06-06T10:30:00.000Z"
+ *                               stato:
+ *                                 type: string
+ *                                 example: "in_gestione"
+ *                       errore:
+ *                         type: string
+ *                         nullable: true
+ *                         example: null
+ *                         description: Eventuale errore nel caricamento dei dati correlati
+ *                 count:
+ *                   type: integer
+ *                   example: 15
+ *                   description: Numero totale di notifiche di conferma trovate
+ *                 message:
+ *                   type: string
+ *                   example: "Trovate 15 notifiche di conferma richieste allocazione"
+ *             examples:
+ *               successo_con_dati:
+ *                 summary: Risposta con notifiche trovate
+ *                 value:
+ *                   success: true
+ *                   data:
+ *                     - _id: "64f1a2b3c4d5e6f7a8b9c0d1"
+ *                       richiestaAllocazioneId: "64f1a2b3c4d5e6f7a8b9c0d2"
+ *                       idUtenteFDO: "64f1a2b3c4d5e6f7a8b9c0d3"
+ *                       timestamp: "2025-06-06T14:30:00.000Z"
+ *                       utenteFDO:
+ *                         _id: "64f1a2b3c4d5e6f7a8b9c0d3"
+ *                         nome: "Marco"
+ *                         cognome: "Bianchi"
+ *                         email: "marco.bianchi@fdo.it"
+ *                         tipoUtente: "UtenteFDO"
+ *                       richiestaAllocazione:
+ *                         _id: "64f1a2b3c4d5e6f7a8b9c0d2"
+ *                         idSegnalazione: "64f1a2b3c4d5e6f7a8b9c0d4"
+ *                         stato: "accettata"
+ *                         dataRichiesta: "2025-06-06T12:00:00.000Z"
+ *                         segnalazione:
+ *                           _id: "64f1a2b3c4d5e6f7a8b9c0d4"
+ *                           tipologia: "Furto"
+ *                           descrizione: "Furto di bicicletta in centro storico"
+ *                           coordinateGps:
+ *                             type: "Point"
+ *                             coordinates: [11.1219482, 46.0664014]
+ *                           timeStamp: "2025-06-06T10:30:00.000Z"
+ *                           stato: "in_gestione"
+ *                       errore: null
+ *                   count: 1
+ *                   message: "Trovate 1 notifiche di conferma richieste allocazione"
+ *               nessuna_notifica:
+ *                 summary: Nessuna notifica trovata
+ *                 value:
+ *                   success: true
+ *                   data: []
+ *                   count: 0
+ *                   message: "Nessuna notifica di conferma trovata"
+ *               dati_parziali:
+ *                 summary: Notifica con dati mancanti
+ *                 value:
+ *                   success: true
+ *                   data:
+ *                     - _id: "64f1a2b3c4d5e6f7a8b9c0d1"
+ *                       richiestaAllocazioneId: "64f1a2b3c4d5e6f7a8b9c0d2"
+ *                       idUtenteFDO: "64f1a2b3c4d5e6f7a8b9c0d3"
+ *                       timestamp: "2025-06-06T14:30:00.000Z"
+ *                       utenteFDO: null
+ *                       richiestaAllocazione: null
+ *                       errore: "Utente FDO non trovato"
+ *                   count: 1
+ *                   message: "Trovate 1 notifiche di conferma richieste allocazione"
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       500:
+ *         description: Errore interno del server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Errore interno del server"
+ *                 error:
+ *                   type: string
+ *                   example: "Database connection failed"
+ *             examples:
+ *               errore_database:
+ *                 summary: Errore di connessione al database
+ *                 value:
+ *                   success: false
+ *                   message: "Errore interno del server"
+ *                   error: "Database connection failed"
+ *               errore_generico:
+ *                 summary: Errore generico del server
+ *                 value:
+ *                   success: false
+ *                   message: "Errore interno del server nel recupero notifiche richieste allocazione"
+ *                   error: "Internal server error"
+ */
+router.get('/notifiche-conferma-richieste-allocazione', tokenChecker, getNotificheConfermaRichiesteAllocazione);
 export default router;

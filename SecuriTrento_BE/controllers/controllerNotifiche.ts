@@ -193,7 +193,7 @@ export const getNotificheSegnalazione = async (req, res) => {
 
 const caricaSegnalazioniComplete = async (notifiche: any[]): Promise<any[]> => {
     try {
-        const segnalazioniIds = notifiche.map(notifica => 
+        const segnalazioniIds = notifiche.map(notifica =>
             notifica.idSegnalazione._id || notifica.idSegnalazione
         );
 
@@ -282,16 +282,26 @@ export const creaNotificaConfermaRichiestaAllocazione = async (idFDO: string, ri
     try {
         // Recupera la richiesta di allocazione
         const richiesta = await richiestaAllocazioneModel.findById(richiestaId);
+        console.log("Richiesta allocazione in creaNotifica: ", richiesta);
         if (!richiesta) {
             console.error(`Richiesta allocazione non trovata: ${richiestaId}`);
             return null;
+        }
+        // Controlla se esiste già una notifica per questa richiesta
+        const notificaEsistente = await notificaRichiestaAllocazioneModel.findOne({
+            richiestaAllocazioneId: richiesta._id
+        });
+
+        if (notificaEsistente) {
+            console.log(`Notifica già esistente per richiesta allocazione ${richiesta._id}`);
+            return notificaEsistente;
         }
 
         // Crea la notifica associata
         const notificaConfermaRichiestaAllocazione = await notificaRichiestaAllocazioneModel.create({
             richiestaAllocazioneId: richiesta._id,
             timestamp: new Date(),
-            idUtenteFDO: idFDO // Assumendo che la richiesta abbia un campo idUtenteFDO
+            idUtenteFDO: idFDO
         });
 
         return notificaConfermaRichiestaAllocazione;
@@ -302,23 +312,80 @@ export const creaNotificaConfermaRichiestaAllocazione = async (idFDO: string, ri
 };
 
 export const getNotificheConfermaRichiesteAllocazione = async (req, res) => {
-    //restituire le notifiche CONFERMA RICHIESTA ALLOCAZIONE (IGNORA IL CAMPO DESTINATARIO,
-    //  per le richieste allocazione non è necessario, devi restituire TUTTE le notifiche di tipo "richiestaAllocazione"
-    // che rappresentano la CONFERMA RICHIESTA ALLOCAZIONE)
-    // viene chiamato dall'utente comunale
-
     try {
-        const notifiche = [];
+        const ruolo = req.loggedUser?.ruolo;
+
+        if (ruolo !== 'UtenteComunale') {
+            return res.status(403).json({
+                success: false,
+                message: 'Accesso negato'
+            });
+        }
+
+        const notificheConferma = await notificaRichiestaAllocazioneModel
+            .find({})
+            .sort({ timestamp: -1 })
+            .lean();
+
+        if (notificheConferma.length === 0) {
+            return res.status(200).json({
+                success: true,
+                data: [],
+                count: 0,
+                message: 'Nessuna notifica di conferma trovata'
+            });
+        }
+
+        const notificheArricchite = await Promise.all(
+            notificheConferma.map(async (notifica) => {
+                try {
+                    let utenteFDO: any = null;
+                    if (notifica.idUtenteFDO) {
+                        utenteFDO = await utenteRegistratoModel
+                            .findById(notifica.idUtenteFDO)
+                            .select('nome cognome email tipoUtente')
+                            .lean();
+                    }
+
+                    let richiestaAllocazione: any = null;
+                    if (notifica.richiestaAllocazioneId) {
+                        richiestaAllocazione = await richiestaAllocazioneModel
+                            .findById(notifica.richiestaAllocazioneId)
+                            .lean();
+
+                    }
+
+                    return {
+                        _id: notifica._id,
+                        richiestaAllocazioneId: notifica.richiestaAllocazioneId,
+                        idUtenteFDO: notifica.idUtenteFDO,
+                        timestamp: notifica.timestamp,
+                        utenteFDO: utenteFDO,
+                        richiestaAllocazione: richiestaAllocazione
+                    };
+
+                } catch (error) {
+                    return {
+                        _id: notifica._id,
+                        richiestaAllocazioneId: notifica.richiestaAllocazioneId,
+                        idUtenteFDO: notifica.idUtenteFDO,
+                        timestamp: notifica.timestamp,
+                        utenteFDO: null,
+                        richiestaAllocazione: null,
+                        errore: error.message
+                    };
+                }
+            })
+        );
 
         res.status(200).json({
             success: true,
-            data: notifiche,
-            count: notifiche.length,
-            message: 'Funzionalità notifiche richieste allocazione in sviluppo'
+            data: notificheArricchite,
+            count: notificheArricchite.length,
+            message: `Trovate ${notificheArricchite.length} notifiche di conferma richieste allocazione`
         });
 
     } catch (error) {
-        console.error('Errore nel recupero notifiche richieste allocazione:', error);
         res.status(500).json({
             success: false,
             message: 'Errore interno del server',
