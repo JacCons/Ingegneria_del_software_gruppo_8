@@ -5,12 +5,14 @@ import { Observable } from 'rxjs';
 import { AutenticazioneService } from './autenticazione.service';
 import { NotificaSegnalazione } from '../models/notificaSegnalazione.model';
 import { NotificaConfermaRichiestaAllocazione } from '../models/notificaConfermaRichiestaAllocazione.model';
-
+import { environment } from '../../environments/environment';
+  
 @Injectable({
   providedIn: 'root'
 })
 export class NotificheService {
-  private apiBasePathUrl = 'http://localhost:3000/api';
+  //private apiBasePathUrl = 'http://localhost:3000/api';
+  private apiBasePathUrl = environment.apiBasePathUrl;
   constructor(private http: HttpClient,
     private autenticazioneService: AutenticazioneService
   ) { }

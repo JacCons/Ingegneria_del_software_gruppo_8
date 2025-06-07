@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Utente } from '../models/utente.model';
 import { Router } from '@angular/router';
 import { ApiResponse } from '../models/api-response.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AutenticazioneService {
   private currentUserSubject: BehaviorSubject<Utente | null> = new BehaviorSubject<Utente | null>(null);
   public currentUser$: Observable<Utente | null> = this.currentUserSubject.asObservable();
 
-  private apiBasePathUrl = 'http://localhost:3000/api';
+  private apiBasePathUrl = environment.apiBasePathUrl;
 
   constructor(private router: Router, private http: HttpClient) {
     this.loadUserFromStorage();

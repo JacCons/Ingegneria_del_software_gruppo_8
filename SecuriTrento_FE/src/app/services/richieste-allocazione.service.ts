@@ -3,12 +3,14 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { ApiResponse } from '../models/api-response.model';
 import { Observable } from 'rxjs';
 import { RichiestaAllocazione } from '../models/richieste-allocazione.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RichiesteAllocazioneService {
-  private apiBasePathUrl = 'http://localhost:3000/api';
+  //private apiBasePathUrl = 'http://localhost:3000/api';
+  private apiBasePathUrl = environment.apiBasePathUrl;
   constructor(private http: HttpClient) { }
 
   private getAuthHeaders(): HttpHeaders {

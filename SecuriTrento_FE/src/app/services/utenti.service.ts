@@ -5,12 +5,14 @@ import { ApiResponse } from '../models/api-response.model';
 import { Observable } from 'rxjs';
 import { Utente, TipoUtente } from '../models/utente.model';
 import { AutenticazioneService } from './autenticazione.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtentiService {
-  private apiBasePathUrl = 'http://localhost:3000/api';
+  //private apiBasePathUrl = 'http://localhost:3000/api';
+  private apiBasePathUrl = environment.apiBasePathUrl ;
   constructor(
     private http: HttpClient,
     private autenticazioneService: AutenticazioneService
