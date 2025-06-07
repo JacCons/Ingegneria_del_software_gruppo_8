@@ -87,7 +87,13 @@ export class SegnalazioniPageComponent {
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
-            this.cdr.detectChanges();
+            this.segnalazioni.sort((a, b) => {
+              const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
+              const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
+              return dateB.getTime() - dateA.getTime(); 
+            });// ordina in ordine decrescente
+
+            this.cdr .detectChanges();
           } else {
             this.dialogService.showError('Errore nel recupero di tutte segnalazioni');
           }
@@ -103,6 +109,12 @@ export class SegnalazioniPageComponent {
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
+            this.segnalazioni.sort((a, b) => {
+              const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
+              const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
+              return dateB.getTime() - dateA.getTime(); 
+            });// ordina in ordine decrescente
+
             this.cdr.detectChanges();
           } else {
             this.dialogService.showError('Errore nel recupero delle segnalazioni Utente');
@@ -123,6 +135,14 @@ export class SegnalazioniPageComponent {
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
+            this.segnalazioni.sort((a, b) => {
+              const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
+              const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
+              return dateB.getTime() - dateA.getTime(); 
+            });// ordina in ordine decrescente
+
+            this.cdr.detectChanges();
+            
             // Prima pulisci tutti i marker esistenti
             this.mappaService.clearMarkers();
 
@@ -152,6 +172,13 @@ export class SegnalazioniPageComponent {
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
+            this.segnalazioni.sort((a, b) => {
+              const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
+              const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
+              return dateB.getTime() - dateA.getTime(); 
+            });// ordina in ordine decrescente
+
+            this.cdr.detectChanges();
             // Prima pulisci tutti i marker esistenti
             this.mappaService.clearMarkers();
 
