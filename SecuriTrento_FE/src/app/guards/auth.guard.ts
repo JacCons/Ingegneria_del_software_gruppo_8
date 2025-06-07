@@ -28,10 +28,10 @@ export class AuthGuard implements CanActivate {
   }
 
   private checkAuthenticationAndRole(route: ActivatedRouteSnapshot, url: string): boolean | UrlTree {
-    console.log(`🛡️ AuthGuard: Controllo accesso a ${url}`);
+    console.log(`AuthGuard: Controllo accesso a ${url}`);
     
     if (this.authService.isTokenExpired()) {
-      console.log('🔓 Token scaduto/mancante - Reindirizzo al login');
+      console.log('Token scaduto/mancante - Reindirizzo al login');
       
       localStorage.removeItem('token');
       localStorage.removeItem('currentUser');
@@ -53,7 +53,7 @@ export class AuthGuard implements CanActivate {
     const requiredRoles = route.data['roles'] as string[];
     
     if (!requiredRoles || requiredRoles.length === 0) {
-      console.log('✅ Route pubblica per utenti autenticati - Accesso consentito');
+      console.log('Route pubblica per utenti autenticati - Accesso consentito');
       return true;
     }
 

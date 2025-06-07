@@ -10,7 +10,7 @@ import { AuthGuard } from './guards/auth.guard';
 export const routes: Routes = [
     { path: "login", component: LoginPageComponent },
     { path: "segnalazioni", component: SegnalazioniPageComponent, canActivate: [AuthGuard] },
-    { path: "notifiche", component: NotifichePageComponent, canActivate: [AuthGuard], data: { roles: ['UtenteFdo', 'UtenteComunale'] } },
+    { path: "notifiche", component: NotifichePageComponent, canActivate: [AuthGuard], data: { roles: ['UtenteFDO', 'UtenteComunale'] } },
     { path: "gestioneUtenti", component: GestioneUtentiPageComponent, canActivate: [AuthGuard], data: { roles: ['UtenteComunale'] } },
     { path: '**', redirectTo: '/login'}
 ];
