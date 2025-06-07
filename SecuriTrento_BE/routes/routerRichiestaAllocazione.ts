@@ -217,8 +217,6 @@ router.get('/:id', getRichiestaAllocazioneById);
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/RichiestaAllocazioneInput'
  *           example:
  *             idRichiestaAllocazione: "REQ_001"
  *             zonaDiOperazione:

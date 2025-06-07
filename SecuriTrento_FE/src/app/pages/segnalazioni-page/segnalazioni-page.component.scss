@@ -11,7 +11,7 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  gap: 16px; 
+  gap: 16px;
 }
 
 .segnalazioniPage {
@@ -23,9 +23,9 @@
 
 #map {
   margin: 15px;
-  height: 50vh;   
-  width: 70vw; 
-  border-radius: 15px; 
+  height: 50vh;
+  width: 70vw;
+  border-radius: 15px;
 }
 
 .page-title {
@@ -177,4 +177,75 @@ button {
 .card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(5, 91, 240, 0.15);
+}
+// ...existing code...
+
+.filtri {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: nowrap;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.example-form-field,
+.filtri mat-form-field {
+  margin: 0;
+  min-width: 180px;
+  flex: 1;
+}
+
+.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 150px;
+}
+
+.btn::before {
+  content: "Stato:";
+  font-size: 14px;
+  color: #495057;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.filtri-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.filtri-actions button {
+  height: 40px;
+  font-size: 12px;
+}
+
+.filtri-actions button mat-icon {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+// Media query per responsive
+@media (max-width: 768px) {
+  .filtri {
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .example-form-field,
+  .filtri mat-form-field {
+    min-width: 120px;
+  }
+
+  .btn,
+  .filtri-actions {
+    min-width: 100px;
+  }
 }

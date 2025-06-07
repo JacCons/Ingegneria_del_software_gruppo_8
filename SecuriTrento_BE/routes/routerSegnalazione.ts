@@ -54,9 +54,9 @@ const router = express.Router();
  *               example: [11.12, 46.07]
  *         tipologia:
  *           type: string
- *           enum: [rissa, spaccio, furto, degrado su mezzo pubblico, disturbo della quiete, vandalismo, altro]
+ *           enum: [RISSA, SPACCIO, FURTO, DEGRADO, DISTURBO, VANDALISMO, ALTRO]
  *           description: Tipo di segnalazione
- *           example: furto
+ *           example: FURTO
  *         stato:
  *           type: string
  *           enum: [aperto, chiuso]
@@ -85,12 +85,136 @@ const router = express.Router();
  * @swagger
  * /api/segnalazioni:
  *   get:
- *     summary: Recupera tutte le segnalazioni
+ *     summary: Recupera tutte le segnalazioni con filtri opzionali
  *     tags: [Segnalazioni]
- *     description: Restituisce un array contenente tutte le segnalazioni presenti nel database
+ *     description: |
+ *       Restituisce un array contenente le segnalazioni filtrate in base ai parametri forniti.
+ *       
+ *       **Filtro Date:**
+ *       - Se non vengono forniti parametri di data, vengono restituite le segnalazioni degli ultimi 30 giorni
+ *       - È possibile specificare un range personalizzato usando dataDa e/o dataA
+ *       - Le date vengono automaticamente impostate all'inizio (00:00:00) e fine giornata (23:59:59)
+ *       
+ *       **Filtro Tipologie (Multi-Select):**
+ *       - È possibile filtrare per una o più tipologie contemporaneamente
+ *       - Usa parametri multipli con lo stesso nome: ?tipologia=FURTO&tipologia=SPACCIO
+ *       - Se nessuna tipologia viene specificata, vengono restituite tutte le tipologie
+ *       - Tipologie non valide vengono ignorate con un warning
+ *       
+ *       **Permessi:**
+ *       - Accessibile solo a UtenteFDO e UtenteComunale
+ *       - UtenteCittadino: accesso negato (403)
+ *     parameters:
+ *       - in: query
+ *         name: dataDa
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: "2024-05-01"
+ *         description: |
+ *           Data di inizio del range di ricerca (formato YYYY-MM-DD o ISO string).
+ *           Se omesso, viene utilizzata la data di 30 giorni fa come default.
+ *       - in: query
+ *         name: dataA
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: "2024-05-31"
+ *         description: |
+ *           Data di fine del range di ricerca (formato YYYY-MM-DD o ISO string).
+ *           Se omesso, viene utilizzata la data odierna come default.
+ *       - in: query
+ *         name: tipologia
+ *         required: false
+ *         style: form
+ *         explode: true
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum: [RISSA, SPACCIO, FURTO, DEGRADO, DISTURBO, VANDALISMO, ALTRO]
+ *           example: ["FURTO", "SPACCIO"]
+ *         description: |
+ *           Filtra per una o più tipologie di segnalazione (case-insensitive).
+ *           
+ *           **Modalità di utilizzo:**
+ *           - Singola tipologia: `?tipologia=FURTO`
+ *           - Multiple tipologie: `?tipologia=FURTO&tipologia=SPACCIO&tipologia=RISSA`
+ *           
+ *           **Comportamento:**
+ *           - Se omesso: vengono restituite tutte le tipologie
+ *           - Tipologie non valide vengono ignorate automaticamente
+ *           - Se tutte le tipologie sono non valide, viene restituito errore 400
+ *       - in: query
+ *         name: stato
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [aperto, chiuso]
+ *           example: aperto
+ *         description: Filtra per stato della segnalazione (case-insensitive)
  *     responses:
  *       200:
  *         description: Lista di segnalazioni recuperata con successo
+ *         content:
+ *           application/json:
+ *             examples:
+ *               default_range:
+ *                 summary: Esempio con range di default (ultimi 30 giorni)
+ *                 value:
+ *                   success: true
+ *                   data: []
+ *                   count: 15
+ *                   filtri:
+ *                     tipologie: null
+ *                     stato: null
+ *                     dataDa: "2024-05-07T00:00:00.000Z"
+ *                     dataA: "2024-06-06T23:59:59.999Z"
+ *                     isDefaultRange: true
+ *                   message: "15 segnalazioni trovate (ultimi 30 giorni)"
+ *               single_tipologia:
+ *                 summary: Esempio con singola tipologia
+ *                 value:
+ *                   success: true
+ *                   data: []
+ *                   count: 8
+ *                   filtri:
+ *                     tipologie: ["FURTO"]
+ *                     stato: null
+ *                     dataDa: "2024-05-07T00:00:00.000Z"
+ *                     dataA: "2024-06-06T23:59:59.999Z"
+ *                     isDefaultRange: true
+ *                   message: "8 segnalazioni trovate (ultimi 30 giorni)"
+ *               multiple_tipologie:
+ *                 summary: Esempio con multiple tipologie
+ *                 value:
+ *                   success: true
+ *                   data: []
+ *                   count: 12
+ *                   filtri:
+ *                     tipologie: ["FURTO", "SPACCIO", "RISSA"]
+ *                     stato: "aperto"
+ *                     dataDa: "2024-05-01T00:00:00.000Z"
+ *                     dataA: "2024-05-31T23:59:59.999Z"
+ *                     isDefaultRange: false
+ *                   message: "12 segnalazioni trovate"
+ *               custom_filter:
+ *                 summary: Esempio con tutti i filtri personalizzati
+ *                 value:
+ *                   success: true
+ *                   data: []
+ *                   count: 5
+ *                   filtri:
+ *                     tipologie: ["FURTO", "VANDALISMO"]
+ *                     stato: "aperto"
+ *                     dataDa: "2024-05-01T00:00:00.000Z"
+ *                     dataA: "2024-05-31T23:59:59.999Z"
+ *                     isDefaultRange: false
+ *                   message: "5 segnalazioni trovate"
+ *       400:
+ *         description: Parametri non validi
  *         content:
  *           application/json:
  *             schema:
@@ -98,13 +222,54 @@ const router = express.Router();
  *               properties:
  *                 success:
  *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Segnalazione'
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               all_tipologie_invalid:
+ *                 summary: Tutte le tipologie sono non valide
+ *                 value:
+ *                   success: false
+ *                   message: "Tipologie non valide: INVALID1, INVALID2. Valori consentiti: RISSA, SPACCIO, FURTO, DEGRADO, DISTURBO, VANDALISMO, ALTRO"
+ *               invalid_stato:
+ *                 summary: Stato non valido
+ *                 value:
+ *                   success: false
+ *                   message: "Stato non valido. Valori consentiti: aperto, chiuso"
+ *               invalid_date:
+ *                 summary: Data non valida
+ *                 value:
+ *                   success: false
+ *                   message: "DataDa non valida. Formato richiesto: YYYY-MM-DD o ISO string"
+ *       403:
+ *         description: Accesso negato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Accesso negato"
  *       500:
  *         description: Errore del server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Errore interno del server"
+ *                 error:
+ *                   type: string
+ *                   example: "Database connection failed"
  */
 router.get('/', getAllSegnalazioni);
 
@@ -229,8 +394,8 @@ router.get('/:id', getSegnalazioneById);
  *             properties:
  *               tipologia:
  *                 type: string
- *                 enum: [rissa, spaccio, furto, degrado su mezzo pubblico, disturbo della quiete, vandalismo, altro]
- *                 example: furto
+ *                 enum: [RISSA, SPACCIO, FURTO, DEGRADO, DISTURBO, VANDALISMO, ALTRO]
+ *                 example: FURTO
  *               descrizione:
  *                 type: string
  *                 example: "Ho visto una persona che rubava uno zaino"
@@ -293,7 +458,7 @@ router.post('/', createSegnalazione); //generaCoordinateTrento prima cera ma ora
  *             properties:
  *               tipologia:
  *                 type: string
- *                 enum: [rissa, spaccio, furto, degrado su mezzo pubblico, disturbo della quiete, vandalismo, altro]
+ *                 enum: [RISSA, SPACCIO, FURTO, DEGRADO, DISTURBO, VANDALISMO, ALTRO]
  *               descrizione:
  *                 type: string
  *               stato:
