@@ -150,6 +150,7 @@ controllaPosizioneUtente(): void {
 
   clickLogout(event: MouseEvent) {
     console.log("ho cliccato logout");
+    this.autenticazioneService.logout();
     this.router.navigate(['/login']);
   }
 }
