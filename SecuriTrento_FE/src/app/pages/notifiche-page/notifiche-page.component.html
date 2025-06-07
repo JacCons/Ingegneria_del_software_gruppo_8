@@ -2,22 +2,36 @@
     <h2>Notifiche per FDO</h2>
 
     <div class="segnalazioni-container">
-        <h3 class="segnalazioni-title">Segnalazioni:</h3>
+        <h3 class="segnalazioni-title">Notifiche Segnalazioni:</h3>
         <div class="lista-segnalazioni">
-            <div class="card" [ngClass]="segnalazione.tipologia" *ngFor="let segnalazione of segnalazioni">
-                <div><strong>Nuova segnalazione: </strong> {{ segnalazione.timeStamp | date:'medium' }}</div>
-                <div><strong>Descrizione:</strong> {{ segnalazione.descrizione }}</div>
-                <div><strong>Tipo:</strong> {{ segnalazione.tipologia }}</div>
-                <div><strong>Coordinate:</strong> {{ segnalazione._id }}</div>
+            <div class="card" [ngClass]="notificaSegnalazione.segnalazioneCompleta.tipologia" *ngFor="let notificaSegnalazione of notificheSegnalazioni">
+                <div><strong>Nuova segnalazione: </strong> {{ notificaSegnalazione.timeStamp  }}</div>
+                <div><strong>Descrizione segnalazione:</strong> {{ notificaSegnalazione.segnalazioneCompleta.descrizione }}</div>
+                <div><strong>Tipo:</strong> {{ notificaSegnalazione.segnalazioneCompleta.tipologia }}</div>
+                <div><strong>Data Segnalazione:</strong> {{ notificaSegnalazione.segnalazioneCompleta.timeStamp | date:'medium'}}</div>
+            </div>
 
+            <div *ngIf="notificheSegnalazioni.length === 0" class="empty-state">
+                <p class="no-notifications">Nessuna notifica segnalazioni disponibile</p>
             </div>
         </div>
     </div>
 
     <div class="segnalazioni-container">
         <h3 class="segnalazioni-title">Richieste di allocazione:</h3>
-        <div class="lista-allocazioni">
-            //LISTA NOTIFICHE RICHIESTE DI ALLOCAZIONE
+        <div class="lista-segnalazioni">
+            <div class="card" [ngClass]="richiesta.stato" *ngFor="let richiesta of richiesteAllocazione">
+                <div><strong>Timestamp: </strong> {{ richiesta.timeStamp | date:'medium' }}</div>
+                <div><strong>Fascia oraria:</strong> {{ richiesta.zonaDiOperazione.fasciaOraria }}:00 - {{ richiesta.zonaDiOperazione.fasciaOraria + 1 }}:00</div>
+                <div><strong>Giorno:</strong> {{ richiesta.zonaDiOperazione.giornoSettimana }}</div>
+                <div><strong>Stato:</strong> {{ richiesta.stato }}</div>
+                <div><strong>Coordinate:</strong> {{ richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[1] }}, {{ richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[0] }}</div>
+                <div class="azioni-richiesta">
+                    <button (click)="onButtonClick(richiesta._id, richiesta)" class="btn-accetta">
+                        Accetta Richiesta
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

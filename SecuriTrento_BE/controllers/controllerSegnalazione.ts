@@ -38,10 +38,10 @@ export const getAllSegnalazioni = async (req, res) => {
 }
 
 /**
- * Recupera una segnalazione specifica tramite ID
+ * Recupera una segnalazione specifica tramite ID della segnalazione
  */
 export const getSegnalazioneById = async (req, res) => {
-  const ruolo = req.user?.ruolo;
+  const ruolo = req.loggedUser?.ruolo;
 
   if (ruolo === 'UtenteCittadino') {
     return res.status(403).json({
@@ -129,12 +129,44 @@ export const getSegnalazioniNearby = async (req, res) => {
   }
 };
 
+
+export const getSegnalazioniByUtente = async (req, res) => {
+  const ruolo = req.loggedUser?.ruolo;
+  const idUtente = req.loggedUser.id;
+  
+  if (ruolo === 'UtenteFDO' || ruolo === 'UtenteComunale') {
+    return res.status(403).json({
+      success: false,
+      message: 'Accesso negato'
+    });
+  }
+  
+  try {
+    const segnalazioni = await segnalazioneModel.find({idUtente});
+    return res.status(200).json({
+      success: true,
+      data: segnalazioni,
+      count: segnalazioni.length,
+      message: 'Segnalazioni retrieved successfully'
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+}
+
 /**
  * Crea una nuova segnalazione
  */
 export const createSegnalazione = async (req, res) => {
   
-  const ruolo = req.user?.ruolo;
+  const ruolo = req.loggedUser?.ruolo;
+  console.log('Ruolo utente:', ruolo);
+  const idUtentetk = req.loggedUser.id;
 
   if (ruolo === 'UtenteFDO' || ruolo === 'UtenteComunale') {
     return res.status(403).json({
@@ -153,7 +185,7 @@ export const createSegnalazione = async (req, res) => {
     }
 
     // check dei parametri obbligatori
-    const requiredFields = ['tipologia', 'idUtente', 'coordinateGps'];
+    const requiredFields = ['tipologia', 'coordinateGps'];
     for (const field of requiredFields) {
       if (!dati[field]) {
         return res.status(400).json({
@@ -163,7 +195,7 @@ export const createSegnalazione = async (req, res) => {
       }
     }
 
-    if (!mongoose.Types.ObjectId.isValid(dati.idUtente)) {
+    if (!mongoose.Types.ObjectId.isValid(idUtentetk)) {
       return res.status(400).json({
         success: false,
         message: 'ID utente non valido'
@@ -173,7 +205,7 @@ export const createSegnalazione = async (req, res) => {
     const segnalazioneData = {
       tipologia: dati.tipologia,
       descrizione: dati.descrizione || '',
-      idUtente: dati.idUtente,
+      idUtente: idUtentetk,
       coordinateGps: dati.coordinateGps
     };
 
@@ -203,7 +235,7 @@ export const createSegnalazione = async (req, res) => {
  */
 export const updateSegnalazione = async (req, res) => {
   
-  const ruolo = req.user?.ruolo;
+  const ruolo = req.loggedUser?.ruolo;
 
   if (ruolo === 'UtenteFDO' || ruolo === 'UtenteComunale') {
     return res.status(403).json({

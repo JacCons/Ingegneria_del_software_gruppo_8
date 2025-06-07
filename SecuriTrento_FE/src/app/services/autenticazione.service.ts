@@ -19,6 +19,13 @@ export class AutenticazioneService {
     this.loadUserFromStorage();
   }
 
+  public getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
   public setCurrentUser(user: Utente): void { //serve per avere l'utente a disposizione in tutta l'app
     this.currentUserSubject.next(user);
 
