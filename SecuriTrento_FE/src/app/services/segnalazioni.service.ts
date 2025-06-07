@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Segnalazione } from '../models/segnalazione.model';
 import { ApiResponse } from '../models/api-response.model';
 import { AutenticazioneService } from './autenticazione.service';
@@ -15,12 +15,33 @@ export class SegnalazioniService {
     private autenticazioneService: AutenticazioneService
   ) { }
 
-  getAllSegnalazioni(): Observable<ApiResponse<Segnalazione[]>> {
-    return this.http.get<ApiResponse<Segnalazione[]>>(
-      `${this.apiBasePathUrl}/segnalazioni`,
-      { headers: this.autenticazioneService.getAuthHeaders() }
-    );
+getAllSegnalazioni(date?: Date[], tipologie?: string[], stati?: string[]): Observable<ApiResponse<Segnalazione[]>> {
+  let params = new HttpParams();
+
+  // Array di date [dataInizio, dataFine]
+  if (date && date.length >= 2) {
+    params = params.set('dataInizio', date[0].toISOString());
+    params = params.set('dataFine', date[1].toISOString());
   }
+
+  // Array di tipologie
+  if (tipologie && tipologie.length > 0) {
+    params = params.set('tipologie', tipologie.join(','));
+  }
+
+  // Array di stati
+  if (stati && stati.length > 0) {
+    params = params.set('stati', stati.join(','));
+  }
+
+  return this.http.get<ApiResponse<Segnalazione[]>>(
+    `${this.apiBasePathUrl}/segnalazioni`,
+    {
+      headers: this.autenticazioneService.getAuthHeaders(),
+      params: params
+    }
+  );
+}
 
   getSegnalazioneById(segnalazioneID: String): Observable<ApiResponse<Segnalazione>> {
     return this.http.get<ApiResponse<Segnalazione>>(

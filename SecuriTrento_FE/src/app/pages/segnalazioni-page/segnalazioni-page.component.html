@@ -93,6 +93,49 @@
   </div>
   <div class="segnalazioni-container">
     <h3 class="segnalazioni-title">Segnalazioni:</h3>
+    <div class="filtri">
+      <mat-form-field class="example-form-field">
+        <mat-label>Periodo</mat-label>
+        <mat-date-range-input
+          [formGroup]="campaignOne"
+          [rangePicker]="campaignOnePicker"
+          [comparisonStart]="campaignTwo.value?.start"
+          [comparisonEnd]="campaignTwo.value?.end">
+          <input matStartDate placeholder="Data inizio" formControlName="start">
+          <input matEndDate placeholder="Data fine" formControlName="end">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="campaignOnePicker"></mat-datepicker-toggle>
+        <mat-date-range-picker #campaignOnePicker></mat-date-range-picker>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Tipologia</mat-label>
+        <mat-select [formControl]="toppings" multiple>
+          @for (topping of toppingList; track topping) {
+            <mat-option [value]="topping">{{topping}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="btn">
+        <mat-button-toggle-group
+        name="stato-segnalazioni"
+        aria-label="Stato segnalazioni"
+        [formControl]="statoSegnalazioni"
+        [hideMultipleSelectionIndicator]="hideMultipleSelectionIndicator()"
+        multiple>
+          <mat-button-toggle value="aperte">Aperte</mat-button-toggle>
+          <mat-button-toggle value="chiuse">Chiuse</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <div class="filtri-actions">
+        <button mat-raised-button color="primary" (click)="applicaFiltri()">
+          <mat-icon>filter_list</mat-icon>
+          Applica Filtri
+        </button>
+      </div>
+    </div>
     <div class="lista-segnalazioni">
       <div class="card" [ngClass]="segnalazione.tipologia" *ngFor="let segnalazione of segnalazioni">
         <div><strong>ID:</strong> {{ segnalazione._id }}</div>

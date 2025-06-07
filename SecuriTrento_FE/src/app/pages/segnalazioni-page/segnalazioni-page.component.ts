@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject, OnInit, AfterViewInit, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,8 +7,7 @@ import { Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
-import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FormControl } from '@angular/forms';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CommonModule } from '@angular/common';
@@ -18,10 +17,18 @@ import { Segnalazione, TipoSegnalazione } from '../../models/segnalazione.model'
 import { MappaService } from '../../services/mappa.service';
 import { AutenticazioneService } from '../../services/autenticazione.service';
 import { Utente, TipoUtente } from '../../models/utente.model';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+const today = new Date();
+const month = today.getMonth();
+const year = today.getFullYear();
 
 @Component({
   selector: 'app-segnalazioni-page',
-  imports: [MatIconModule,
+  providers: [provideNativeDateAdapter()],
+  imports: [
+    MatIconModule,
     MatDividerModule,
     MatButtonModule,
     MatCardModule,
@@ -32,15 +39,15 @@ import { Utente, TipoUtente } from '../../models/utente.model';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatButtonModule,
-    CommonModule],
+    CommonModule,
+    MatDatepickerModule,
+    MatButtonToggleModule
+  ],
   templateUrl: './segnalazioni-page.component.html',
   styleUrl: './segnalazioni-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-
-
-export class SegnalazioniPageComponent {
+export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
   currentUser: Utente | null = null;
   private autenticazioneService = inject(AutenticazioneService);
 
@@ -53,10 +60,36 @@ export class SegnalazioniPageComponent {
   private dialogService = inject(DialogService);
   private segnalazioniService = inject(SegnalazioniService);
   private _formBuilder = inject(FormBuilder);
+
+  // Filtro selezione segnalazione se è aperta o chiusa
+  hideSingleSelectionIndicator = signal(false);
+  hideMultipleSelectionIndicator = signal(false);
+
+  toggleMultipleSelectionIndicator() {
+    this.hideMultipleSelectionIndicator.update(value => !value);
+  }
+
+  // Form controls per i filtri
+  toppings = new FormControl('');
+  toppingList: string[] = ['Degrado', 'Rissa', 'Spaccio', 'Furto', 'Disturbo', 'Vandalismo', 'Altro'];
+  statoSegnalazioni = new FormControl([]);
+
+  // Proprietà per i filtri data
+  readonly campaignOne = new FormGroup({
+    start: new FormControl(new Date(year, month, today.getDate() - 30)),
+    end: new FormControl(new Date(year, month, today.getDate())),
+  });
+  readonly campaignTwo = new FormGroup({
+    start: new FormControl(new Date(year, month, 15)),
+    end: new FormControl(new Date(year, month, 19)),
+  });
+
+  // Proprietà del componente
   disableSelect = new FormControl(false);
   tipoSegnalazione: string = '';
   showSegnalazioneForm = false;
   segnalazioni: Segnalazione[] = [];
+  segnalazioniOriginali: Segnalazione[] = []; // Backup delle segnalazioni originali per i filtri
   TipoUtente = TipoUtente;
 
   ngOnInit(): void {
@@ -87,10 +120,11 @@ export class SegnalazioniPageComponent {
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
+            this.segnalazioniOriginali = [...response.data];
             this.segnalazioni.sort((a, b) => {
               const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
               const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
-              return dateB.getTime() - dateA.getTime(); 
+              return dateB.getTime() - dateA.getTime();
             });// ordina in ordine decrescente
 
             this.cdr .detectChanges();
@@ -109,10 +143,11 @@ export class SegnalazioniPageComponent {
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
+            this.segnalazioniOriginali = [...response.data];
             this.segnalazioni.sort((a, b) => {
               const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
               const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
-              return dateB.getTime() - dateA.getTime(); 
+              return dateB.getTime() - dateA.getTime();
             });// ordina in ordine decrescente
 
             this.cdr.detectChanges();
@@ -135,14 +170,15 @@ export class SegnalazioniPageComponent {
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
+            this.segnalazioniOriginali = [...response.data];
             this.segnalazioni.sort((a, b) => {
               const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
               const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
-              return dateB.getTime() - dateA.getTime(); 
+              return dateB.getTime() - dateA.getTime();
             });// ordina in ordine decrescente
 
             this.cdr.detectChanges();
-            
+
             // Prima pulisci tutti i marker esistenti
             this.mappaService.clearMarkers();
 
@@ -172,10 +208,11 @@ export class SegnalazioniPageComponent {
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
+            this.segnalazioniOriginali = [...response.data];
             this.segnalazioni.sort((a, b) => {
               const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
               const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
-              return dateB.getTime() - dateA.getTime(); 
+              return dateB.getTime() - dateA.getTime();
             });// ordina in ordine decrescente
 
             this.cdr.detectChanges();
@@ -327,4 +364,60 @@ export class SegnalazioniPageComponent {
     });
   }
 
+  applicaFiltri(): void {
+    const startDate = this.campaignOne.get('start')?.value;
+    const endDate = this.campaignOne.get('end')?.value;
+    const tipologie = this.toppings.value;
+    const stati = this.statoSegnalazioni.value;
+
+    console.log('Filtri applicati:', {
+      dataInizio: startDate,
+      dataFine: endDate,
+      tipologie: tipologie,
+      stati: stati
+    });
+
+    const dateArray: Date[] | undefined = (startDate && endDate) ? [startDate, endDate] : undefined;
+    const tipologieArray: string[] | undefined = (tipologie && Array.isArray(tipologie) && tipologie.length > 0) ? tipologie as string[] : undefined;
+    const statiArray: string[] | undefined = (stati && Array.isArray(stati) && stati.length > 0) ? stati as string[] : undefined;
+
+    // Chiama getAllSegnalazioni senza controlli - il BE gestisce i permessi
+    this.segnalazioniService.getAllSegnalazioni(dateArray, tipologieArray, statiArray).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.segnalazioni = response.data;
+          this.segnalazioni.sort((a, b) => {
+            const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
+            const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
+            return dateB.getTime() - dateA.getTime();
+          });
+          console.log('Segnalazioni filtrate ricevute:', this.segnalazioni.length);
+          this.cdr.detectChanges();
+        } else {
+          this.dialogService.showError('Errore nel recupero delle segnalazioni filtrate');
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching filtered segnalazioni:', error);
+        this.dialogService.showError('Errore nel recupero delle segnalazioni filtrate');
+      }
+    });
+  }
+
+  resetFiltri(): void {
+    // Reset dei form controls
+    this.campaignOne.reset({
+      start: new Date(year, month, today.getDate() - 30),
+      end: new Date(year, month, today.getDate())
+    });
+
+    this.toppings.reset();
+    this.statoSegnalazioni.reset();
+
+    console.log('Filtri resettati');
+
+    // Ripristina tutte le segnalazioni originali
+    this.segnalazioni = [...this.segnalazioniOriginali];
+    this.cdr.detectChanges();
+  }
 }
