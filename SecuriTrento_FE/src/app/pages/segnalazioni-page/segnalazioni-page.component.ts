@@ -70,8 +70,11 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
   }
 
   // Form controls per i filtri
-  toppings = new FormControl('');
-  toppingList: string[] = ['Degrado', 'Rissa', 'Spaccio', 'Furto', 'Disturbo', 'Vandalismo', 'Altro'];
+  tipologie = new FormControl('');
+  tipologieList?: string[];
+
+  TipoSegnalazione = TipoSegnalazione;
+
   statoSegnalazioni = new FormControl([]);
 
   // Proprietà per i filtri data
@@ -367,18 +370,18 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
   applicaFiltri(): void {
     const startDate = this.campaignOne.get('start')?.value;
     const endDate = this.campaignOne.get('end')?.value;
-    const tipologie = this.toppings.value;
+    const tipologieFinal = this.tipologieList;
     const stati = this.statoSegnalazioni.value;
 
     console.log('Filtri applicati:', {
       dataInizio: startDate,
       dataFine: endDate,
-      tipologie: tipologie,
+      tipologie: tipologieFinal,
       stati: stati
     });
 
     const dateArray: Date[] | undefined = (startDate && endDate) ? [startDate, endDate] : undefined;
-    const tipologieArray: string[] | undefined = (tipologie && Array.isArray(tipologie) && tipologie.length > 0) ? tipologie as string[] : undefined;
+    const tipologieArray: string[] | undefined = (tipologieFinal && Array.isArray(tipologieFinal) && tipologieFinal.length > 0) ? tipologieFinal as string[] : undefined;
     const statiArray: string[] | undefined = (stati && Array.isArray(stati) && stati.length > 0) ? stati as string[] : undefined;
 
     // Chiama getAllSegnalazioni senza controlli - il BE gestisce i permessi
@@ -411,7 +414,7 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
       end: new Date(year, month, today.getDate())
     });
 
-    this.toppings.reset();
+    this.tipologie.reset();
     this.statoSegnalazioni.reset();
 
     console.log('Filtri resettati');

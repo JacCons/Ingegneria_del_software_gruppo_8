@@ -20,18 +20,20 @@ getAllSegnalazioni(date?: Date[], tipologie?: string[], stati?: string[]): Obser
 
   // Array di date [dataInizio, dataFine]
   if (date && date.length >= 2) {
-    params = params.set('dataInizio', date[0].toISOString());
-    params = params.set('dataFine', date[1].toISOString());
+    params = params.set('dataDa', date[0].toISOString());
+    params = params.set('dataA', date[1].toISOString());
   }
 
   // Array di tipologie
   if (tipologie && tipologie.length > 0) {
-    params = params.set('tipologie', tipologie.join(','));
+    tipologie.forEach(tipologia => {
+      params = params.append('tipologia', tipologia);
+    });
   }
 
   // Array di stati
   if (stati && stati.length > 0) {
-    params = params.set('stati', stati.join(','));
+    params = params.set('stato', stati.join(','));
   }
 
   return this.http.get<ApiResponse<Segnalazione[]>>(

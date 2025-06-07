@@ -11,7 +11,7 @@
   <div class="segnalazioniPage">
     <div class="segnalazioneSection">
       <div id="map"></div>
-      <div class="segnalazioniButtons"  *ngIf="currentUser?.tipoUtente === TipoUtente.CITTADINO">
+      <div class="segnalazioniButtons" *ngIf="currentUser?.tipoUtente === TipoUtente.CITTADINO">
         <button mat-fab extended (click)="creaSegnalazione('urgente')">
           <mat-icon>add</mat-icon>
           Segnalazione Urgente
@@ -96,11 +96,8 @@
     <div class="filtri">
       <mat-form-field class="example-form-field">
         <mat-label>Periodo</mat-label>
-        <mat-date-range-input
-          [formGroup]="campaignOne"
-          [rangePicker]="campaignOnePicker"
-          [comparisonStart]="campaignTwo.value?.start"
-          [comparisonEnd]="campaignTwo.value?.end">
+        <mat-date-range-input [formGroup]="campaignOne" [rangePicker]="campaignOnePicker"
+          [comparisonStart]="campaignTwo.value.start" [comparisonEnd]="campaignTwo.value.end">
           <input matStartDate placeholder="Data inizio" formControlName="start">
           <input matEndDate placeholder="Data fine" formControlName="end">
         </mat-date-range-input>
@@ -110,20 +107,28 @@
 
       <mat-form-field>
         <mat-label>Tipologia</mat-label>
-        <mat-select [formControl]="toppings" multiple>
-          @for (topping of toppingList; track topping) {
-            <mat-option [value]="topping">{{topping}}</mat-option>
+        <!-- <mat-select [formControl]="toppings" multiple>
+          @for (tipologie of tipologieList; track topping) {
+            <mat-option [value]="tipologie">{{topping}}</mat-option>
           }
+        </mat-select> -->
+        <mat-select [(ngModel)]="tipologieList" name="tipologieList" multiple>
+          <mat-option [value]="'DEGRADO'">Degrado</mat-option>
+          <mat-option [value]="'RISSA'">Rissa</mat-option>
+          <mat-option [value]="'SPACCIO'">Spaccio</mat-option>
+          <mat-option [value]="'FURTO'">Furto</mat-option>
+          <mat-option [value]="'DISTURBO'">Disturbo</mat-option>
+          <mat-option [value]="'VANDALISMO'">Vandalismo</mat-option>
+          <mat-option [value]="'ALTRO'">Altro</mat-option>
         </mat-select>
       </mat-form-field>
 
+
+
       <div class="btn">
-        <mat-button-toggle-group
-        name="stato-segnalazioni"
-        aria-label="Stato segnalazioni"
-        [formControl]="statoSegnalazioni"
-        [hideMultipleSelectionIndicator]="hideMultipleSelectionIndicator()"
-        multiple>
+        <mat-button-toggle-group name="stato-segnalazioni" aria-label="Stato segnalazioni"
+          [formControl]="statoSegnalazioni" [hideMultipleSelectionIndicator]="hideMultipleSelectionIndicator()"
+          multiple>
           <mat-button-toggle value="aperte">Aperte</mat-button-toggle>
           <mat-button-toggle value="chiuse">Chiuse</mat-button-toggle>
         </mat-button-toggle-group>
