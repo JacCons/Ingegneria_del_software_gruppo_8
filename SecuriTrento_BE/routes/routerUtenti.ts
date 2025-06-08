@@ -32,7 +32,10 @@ const router = express.Router();
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Utente'
+ *                     oneOf:
+ *                       - $ref: '#/components/schemas/UtenteRegistrato'
+ *                       - $ref: '#/components/schemas/UtenteComunale'
+ *                       - $ref: '#/components/schemas/UtenteFDO'
  *                 count:
  *                   type: integer
  *                   description: Numero totale di utenti
@@ -40,6 +43,8 @@ const router = express.Router();
  *                 message:
  *                   type: string
  *                   example: Utenti recuperati con successo
+ *       403:
+ *         description: Accesso negato - solo UtenteComunale autorizzato
  *       500:
  *         description: Errore del server
  */
@@ -74,7 +79,10 @@ router.get('/', tokenChecker, getAllUtenti);
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Utente'
+ *                     oneOf:
+ *                       - $ref: '#/components/schemas/UtenteRegistrato'
+ *                       - $ref: '#/components/schemas/UtenteComunale'
+ *                       - $ref: '#/components/schemas/UtenteFDO'
  *                 count:
  *                   type: integer
  *                   example: 5
@@ -84,14 +92,13 @@ router.get('/', tokenChecker, getAllUtenti);
  *       400:
  *         description: Tipo di utente non valido
  *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
+ *           application/json: {}
+ *       403:
+ *         description: Accesso negato - solo UtenteComunale autorizzato
  *       500:
  *         description: Errore del server
  */
 router.get('/:tipo', tokenChecker, getUtentiByType);
-
 
 /**
  * @swagger
@@ -119,16 +126,20 @@ router.get('/:tipo', tokenChecker, getUtentiByType);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/Utente'
+ *                   oneOf:
+ *                     - $ref: '#/components/schemas/UtenteRegistrato'
+ *                     - $ref: '#/components/schemas/UtenteComunale'
+ *                     - $ref: '#/components/schemas/UtenteFDO'
  *                 message:
  *                   type: string
  *                   example: Utente recuperato con successo
+ *       403:
+ *         description: Accesso negato - solo UtenteComunale autorizzato
  *       404:
  *         description: Utente non trovato
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Errore del server
  */
@@ -166,7 +177,10 @@ router.get('/id/:id', tokenChecker, getUtenteById);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/Utente'
+ *                   oneOf:
+ *                     - $ref: '#/components/schemas/UtenteRegistrato'
+ *                     - $ref: '#/components/schemas/UtenteComunale'
+ *                     - $ref: '#/components/schemas/UtenteFDO'
  *                 message:
  *                   type: string
  *                   example: Utente standard registrato con successo
@@ -175,7 +189,8 @@ router.get('/id/:id', tokenChecker, getUtenteById);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Accesso negato - solo UtenteComunale autorizzato (per tipo diverso da standard)
  *       500:
  *         description: Errore del server
  */
@@ -209,18 +224,17 @@ router.post('/register/:tipo', registerUser);
  *                 message:
  *                   type: string
  *                   example: Utente eliminato con successo
+ *       403:
+ *         description: Accesso negato - solo UtenteComunale autorizzato
  *       404:
  *         description: Utente non trovato
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Errore del server
  */
-
 router.delete('/:id', tokenChecker, deleteUtente);
-
 
 /**
  * @swagger
@@ -308,7 +322,10 @@ router.delete('/:id', tokenChecker, deleteUtente);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/Utente'
+ *                 oneOf:
+ *                    - $ref: '#/components/schemas/UtenteRegistrato'
+ *                    - $ref: '#/components/schemas/UtenteComunale'
+ *                    - $ref: '#/components/schemas/UtenteFDO'
  *                 message:
  *                   type: string
  *                   example: Utente aggiornato con successo
@@ -317,7 +334,6 @@ router.delete('/:id', tokenChecker, deleteUtente);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
  *               examples:
  *                 invalidId:
  *                   value:
@@ -331,12 +347,13 @@ router.delete('/:id', tokenChecker, deleteUtente);
  *                   value:
  *                     success: false
  *                     message: Nessun campo valido fornito per l'aggiornamento
+ *       403:
+ *         description: Accesso negato - solo UtenteComunale autorizzato
  *       404:
  *         description: Utente non trovato
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Errore del server
  */
