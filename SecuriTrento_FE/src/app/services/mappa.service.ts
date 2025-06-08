@@ -2,16 +2,30 @@ import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import { icon, Marker } from 'leaflet';
 import 'leaflet.markercluster';
+
 @Injectable({
   providedIn: 'root'
 })
 export class MappaService {
   private map: L.Map | null = null;
-  private readonly TRENTO_COORDINATES: L.LatLngExpression = [46.0748, 11.1217]; // Coordinate di Trento [latitudine, longitudine]
+  private readonly TRENTO_COORDINATES: L.LatLngExpression = [46.0748, 11.1217];
   private readonly DEFAULT_ZOOM = 13;
   private markerClusterGroup!: L.MarkerClusterGroup;
 
-  constructor() { }
+  constructor() { 
+    // ✅ Fix globale delle icone per static sites
+    this.fixLeafletIcons();
+  }
+
+  // ✅ Fix una volta sola nel constructor
+  private fixLeafletIcons(): void {
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'assets/marker-icon-2x.png',  // ✅ Punto alle icone copiate
+      iconUrl: 'assets/marker-icon.png',           // ✅ Punto alle icone copiate
+      shadowUrl: 'assets/marker-shadow.png',       // ✅ Punto alle icone copiate
+    });
+  }
 
   /**
    * Inizializza e ritorna una mappa Leaflet centrata su Trento
@@ -19,9 +33,11 @@ export class MappaService {
    * @returns L.Map - L'istanza della mappa Leaflet
    */
   initMap(elementId: string): L.Map {
-    const iconRetinaUrl = 'marker-icon-2x.png';
-    const iconUrl = 'marker-icon.png';
-    const shadowUrl = 'marker-shadow.png';
+    // ✅ Usa i percorsi corretti per le icone copiate
+    const iconRetinaUrl = 'assets/marker-icon-2x.png';  // ✅ Icone copiate da leaflet
+    const iconUrl = 'assets/marker-icon.png';            // ✅ Icone copiate da leaflet  
+    const shadowUrl = 'assets/marker-shadow.png';        // ✅ Icone copiate da leaflet
+
     const iconDefault = icon({
       iconRetinaUrl,
       iconUrl,
@@ -32,35 +48,50 @@ export class MappaService {
       tooltipAnchor: [16, -28],
       shadowSize: [41, 41]
     });
-    Marker.prototype.options.icon = iconDefault
+    Marker.prototype.options.icon = iconDefault;
 
-    // Crea un'istanza della mappa nel contenitore specificato
-    this.map = L.map(elementId).setView(this.TRENTO_COORDINATES, this.DEFAULT_ZOOM);
-
-    // PER MODIFICARE LO STILE DELLA MAPPA
-    // L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    //       attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-    //       maxZoom: 18
-    //     }).addTo(this.map);
+    // ✅ Configurazione mappa per static sites
+    this.map = L.map(elementId, {
+      preferCanvas: false  // ✅ Importante per static deployment
+    }).setView(this.TRENTO_COORDINATES, this.DEFAULT_ZOOM);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>',
       maxZoom: 19
     }).addTo(this.map);
 
-    this.markerClusterGroup = L.markerClusterGroup();
-    this.map.addLayer(this.markerClusterGroup);
+    // ✅ Cluster con configurazione static-safe
+    try {
+      this.markerClusterGroup = L.markerClusterGroup({
+        animate: false,           // ✅ Disabilita animazioni
+        animateAddingMarkers: false,
+        chunkedLoading: false     // ✅ Importante per static sites
+      });
+      this.map.addLayer(this.markerClusterGroup);
+    } catch (error) {
+      console.error('❌ Errore cluster group:', error);
+    }
+
     return this.map;
   }
 
   addMarkerToCluster(latLng: [number, number]): L.Marker {
     const marker = L.marker(latLng);
-    this.markerClusterGroup.addLayer(marker);
+    try {
+      this.markerClusterGroup.addLayer(marker);
+    } catch (error) {
+      console.warn('⚠️ Fallback: aggiunto marker diretto');
+      if (this.map) marker.addTo(this.map);
+    }
     return marker;
   }
 
   clearMarkers(): void {
-    this.markerClusterGroup.clearLayers();
+    try {
+      this.markerClusterGroup.clearLayers();
+    } catch (error) {
+      console.warn('⚠️ Errore clear cluster, uso fallback');
+    }
   }
 
   /**
