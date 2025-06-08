@@ -6,7 +6,7 @@ import { AutenticazioneService } from './autenticazione.service';
 import { NotificaSegnalazione } from '../models/notificaSegnalazione.model';
 import { NotificaConfermaRichiestaAllocazione } from '../models/notificaConfermaRichiestaAllocazione.model';
 import { environment } from '../../environments/environment';
-  
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,19 +17,19 @@ export class NotificheService {
     private autenticazioneService: AutenticazioneService
   ) { }
 
-  getNotificheSegnalazioni(utenteID: string, autoCheck?: boolean, raggio?: number): Observable<ApiResponse<NotificaSegnalazione[]>> {
+  getNotificheSegnalazioni(autoCheck?: boolean, raggio?: number): Observable<ApiResponse<NotificaSegnalazione[]>> {
     let params = new HttpParams();
 
     if (autoCheck !== undefined) {
       params = params.set('autoCheck', autoCheck.toString());
     }
-    
+
     if (raggio !== undefined) {
       params = params.set('raggio', raggio.toString());
     }
 
     return this.http.get<ApiResponse<NotificaSegnalazione[]>>(
-      `${this.apiBasePathUrl}/notifiche/notifiche-segnalazioni/destinatario/${utenteID}`,
+      `${this.apiBasePathUrl}/notifiche/notifiche-segnalazioni`,
       { headers: this.autenticazioneService.getAuthHeaders(),
         params: params
        }

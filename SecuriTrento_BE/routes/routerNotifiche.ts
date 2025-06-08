@@ -6,26 +6,18 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/notifiche/notifiche-segnalazioni/destinatario/{utenteDestinatarioId}:
+ * /api/notifiche/notifiche-segnalazioni:
  *   get:
  *     summary: Recupera notifiche segnalazioni per un utente FDO
  *     description: |
- *       Recupera tutte le notifiche di segnalazioni per un utente FDO specifico. 
+ *       Recupera tutte le notifiche di segnalazioni per un utente FDO specifico (quello che esegue la richiesta). 
  *       Può opzionalmente controllare e creare nuove notifiche per segnalazioni 
- *       recenti (max 8 ore) nel raggio specificato.
+ *       recenti (max 8 ore) nel suo raggio d'azione (nel caso in cui il parametro autoCheck sia true).
  *     tags:
  *       - Notifiche
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: utenteDestinatarioId
- *         required: true
- *         schema:
- *           type: string
- *           pattern: '^[0-9a-fA-F]{24}$'
- *           example: "64f1a2b3c4d5e6f7a8b9c0d1"
- *         description: ID MongoDB dell'utente FDO destinatario delle notifiche
  *       - in: query
  *         name: autoCheck
  *         required: false
@@ -240,8 +232,19 @@ const router = express.Router();
  *                   success: false
  *                   message: "L'utente con ID 64f1a2b3c4d5e6f7a8b9c0d1 non è un UtenteFDO"
  *                   error: "USER_NOT_FDO"
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         description: Accesso negato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Accesso negato"
  *       404:
  *         description: Utente non trovato
  *         content:
@@ -275,7 +278,7 @@ const router = express.Router();
  *                   type: string
  *                   example: "Database connection failed"
  */
-router.get('/notifiche-segnalazioni/destinatario/:utenteDestinatarioId', tokenChecker, getNotificheSegnalazione);
+router.get('/notifiche-segnalazioni', tokenChecker, getNotificheSegnalazione);
 
 /**
  * @swagger
@@ -459,36 +462,46 @@ router.get('/notifiche-segnalazioni/destinatario/:utenteDestinatarioId', tokenCh
  *                       errore: "Utente FDO non trovato"
  *                   count: 1
  *                   message: "Trovate 1 notifiche di conferma richieste allocazione"
- *       401:
+ *       403:
+ *         description: Accesso negato - Utente non autorizzato
  *       500:
  *         description: Errore interno del server
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Errore interno del server"
- *                 error:
- *                   type: string
- *                   example: "Database connection failed"
- *             examples:
- *               errore_database:
- *                 summary: Errore di connessione al database
- *                 value:
- *                   success: false
- *                   message: "Errore interno del server"
- *                   error: "Database connection failed"
- *               errore_generico:
- *                 summary: Errore generico del server
- *                 value:
- *                   success: false
- *                   message: "Errore interno del server nel recupero notifiche richieste allocazione"
- *                   error: "Internal server error"
  */
 router.get('/notifiche-conferma-richieste-allocazione', tokenChecker, getNotificheConfermaRichiesteAllocazione);
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     NotificaSegnalazione:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: "64f1a2b3c4d5e6f7a8b9c0d1"
+ *           description: ID univoco della notifica
+ *         timestamp:
+ *           type: string
+ *           format: date-time
+ *           example: "2025-06-08T10:30:00.000Z"
+ *           description: Data e ora di creazione della notifica
+ *         tipoNotifica:
+ *           type: string
+ *           enum: ["segnalazione"]
+ *           example: "segnalazione"
+ *           description: Tipo di notifica (sempre 'segnalazione')
+ *         idSegnalazione:
+ *           type: string
+ *           example: "64f1a2b3c4d5e6f7a8b9c0d2"
+ *           description: ID della segnalazione associata
+ *         utenteDestinatarioId:
+ *           type: string
+ *           example: "64f1a2b3c4d5e6f7a8b9c0d3"
+ *           description: ID dell'utente destinatario (UtenteFDO)
+ *       required:
+ *         - timestamp
+ *         - tipoNotifica
+ *         - idSegnalazione
+ *         - utenteDestinatarioId
+ *
+ */
 export default router;

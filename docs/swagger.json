@@ -34,7 +34,7 @@
                 "type": "object",
                 "properties": {
                   "telefono": {
-                    "type": "number",
+                    "type": "string",
                     "example": "1489164451"
                   },
                   "password": {
@@ -48,7 +48,7 @@
         },
         "responses": {
           "200": {
-            "description": "Autenticazione avvenuta con successo, ritorna il token.",
+            "description": "Autenticazione avvenuta con successo",
             "content": {
               "application/json": {
                 "schema": {
@@ -65,8 +65,26 @@
               }
             }
           },
+          "400": {
+            "description": "Dati mancanti",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "description": "Credenziali non valide.",
+            "description": "Credenziali non valide",
             "content": {
               "application/json": {
                 "schema": {
@@ -836,7 +854,6 @@
           "content": {
             "application/json": {
               "example": {
-                "idRichiestaAllocazione": "REQ_001",
                 "zonaDiOperazione": {
                   "coordinateGps": {
                     "coordinates": [
@@ -2155,7 +2172,6 @@
       "RichiestaAllocazione": {
         "type": "object",
         "required": [
-          "idRichiestaAllocazione",
           "zonaDiOperazione"
         ],
         "properties": {
@@ -2163,11 +2179,6 @@
             "type": "string",
             "description": "ID automatico generato da MongoDB",
             "example": "60d21b4967d0d8992e610c85"
-          },
-          "idRichiestaAllocazione": {
-            "type": "string",
-            "description": "ID univoco della richiesta di allocazione",
-            "example": "REQ_001"
           },
           "zonaDiOperazione": {
             "type": "object",
@@ -2179,6 +2190,10 @@
             "properties": {
               "coordinateGps": {
                 "type": "object",
+                "required": [
+                  "type",
+                  "coordinates"
+                ],
                 "properties": {
                   "type": {
                     "type": "string",
@@ -2202,30 +2217,38 @@
                 }
               },
               "fasciaOraria": {
-                "type": "string",
-                "description": "Fascia oraria dell'operazione",
-                "example": "08:00-12:00"
+                "type": "integer",
+                "description": "Ora di inizio (0-23)",
+                "example": 8
               },
               "giornoSettimana": {
                 "type": "string",
                 "description": "Giorno della settimana",
-                "example": "lunedì"
+                "enum": [
+                  "LUNEDI",
+                  "MARTEDI",
+                  "MERCOLEDI",
+                  "GIOVEDI",
+                  "VENERDI",
+                  "SABATO",
+                  "DOMENICA"
+                ],
+                "example": "LUNEDI"
               }
             }
           },
           "stato": {
             "type": "string",
             "enum": [
-              "pendente",
-              "assegnata",
-              "completata",
-              "annullata"
+              "IN_ATTESA",
+              "APPROVATA",
+              "RIFIUTATA"
             ],
             "description": "Stato attuale della richiesta",
-            "default": "pendente",
-            "example": "pendente"
+            "default": "IN_ATTESA",
+            "example": "IN_ATTESA"
           },
-          "timeStampCreazione": {
+          "timeStamp": {
             "type": "string",
             "format": "date-time",
             "description": "Data e ora di creazione della richiesta",
@@ -2236,15 +2259,9 @@
       "RichiestaAllocazioneInput": {
         "type": "object",
         "required": [
-          "idRichiestaAllocazione",
           "zonaDiOperazione"
         ],
         "properties": {
-          "idRichiestaAllocazione": {
-            "type": "string",
-            "description": "ID univoco della richiesta di allocazione",
-            "example": "REQ_001"
-          },
           "zonaDiOperazione": {
             "type": "object",
             "required": [
@@ -2255,7 +2272,18 @@
             "properties": {
               "coordinateGps": {
                 "type": "object",
+                "required": [
+                  "type",
+                  "coordinates"
+                ],
                 "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "Point"
+                    ],
+                    "example": "Point"
+                  },
                   "coordinates": {
                     "type": "array",
                     "items": {

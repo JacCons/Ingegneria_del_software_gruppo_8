@@ -4,12 +4,13 @@ import utenteFDOModel from '../models/utenteFDO.ts';
 import mongoose from 'mongoose';
 import express from 'express';
 import bcrypt from 'bcrypt';
+import { tokenChecker } from '../middleware/middlewareTokenChecker.ts';
 
 /**
  * Recupera tutti gli utenti
  */
 export const getAllUtenti = async (req, res) => {
-    
+
     const ruolo = req.loggedUser?.ruolo;
 
     if (ruolo !== 'UtenteComunale') {
@@ -18,7 +19,7 @@ export const getAllUtenti = async (req, res) => {
             message: 'Accesso negato'
         });
     }
-    
+
     try {
         const utenti = await utenteRegistratoModel.find();
         return res.status(200).json({
@@ -40,7 +41,7 @@ export const getAllUtenti = async (req, res) => {
  * Recupera gli utenti per tipo specifico
  */
 export const getUtentiByType = async (req, res) => {
-    
+
     const ruolo = req.loggedUser?.ruolo;
     if (ruolo !== 'UtenteComunale') {
         return res.status(403).json({
@@ -48,7 +49,7 @@ export const getUtentiByType = async (req, res) => {
             message: 'Accesso negato'
         });
     }
-    
+
     try {
         const { tipo } = req.params;
         let utenti;
@@ -58,10 +59,10 @@ export const getUtentiByType = async (req, res) => {
                 utenti = await utenteRegistratoModel.find({ tipoUtente: 'UtenteRegistrato' });
                 break;
             case 'comunale':
-                utenti = await utenteComunaleModel.find({stato: 'Attivo'});
+                utenti = await utenteComunaleModel.find({ stato: 'Attivo' });
                 break;
             case 'fdo':
-                utenti = await utenteFDOModel.find({stato: 'Attivo'});
+                utenti = await utenteFDOModel.find({ stato: 'Attivo' });
                 break;
             default:
                 return res.status(400).json({
@@ -89,7 +90,7 @@ export const getUtentiByType = async (req, res) => {
  * Recupera un utente specifico tramite ID
  */
 export const getUtenteById = async (req, res) => {
-    
+
     const ruolo = req.loggedUser?.ruolo;
 
     if (ruolo !== 'UtenteComunale') {
@@ -98,8 +99,8 @@ export const getUtenteById = async (req, res) => {
             message: 'Accesso negato'
         });
     }
-    
-    
+
+
     try {
         const utente = await utenteRegistratoModel.findById(req.params.id);
 
@@ -130,6 +131,18 @@ export const getUtenteById = async (req, res) => {
 export const registerUser = async (req, res) => {
     try {
         const { tipo } = req.params;
+
+        if (tipo !== 'standard') {
+            await tokenChecker(req, res, () => { });
+            const ruolo = req.loggedUser?.ruolo;
+            if (ruolo !== 'UtenteComunale') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Accesso negato'
+                });
+            }
+        }
+
         const {
             nome,
             cognome,
@@ -195,13 +208,13 @@ export const registerUser = async (req, res) => {
                 break;
 
             case 'fdo':
-                /*
-                if (!TipoFDO) {
+
+                if (!TipoFDO || TipoFDO !== 'POLIZIA' && TipoFDO !== 'CARABINIERI' && TipoFDO !== 'GUARDIA DI FINANZA') {
                     return res.status(400).json({
                         success: false,
                         message: 'Il campo TipoFDO è obbligatorio per utenti FDO'
                     });
-                }*/
+                }
 
                 newUser = new utenteFDOModel({
                     nome,
@@ -248,7 +261,7 @@ export const registerUser = async (req, res) => {
  * Disattiva un utente esistente
  */
 export const deleteUtente = async (req, res) => {  //solo by ID
-    
+
     const ruolo = req.loggedUser?.ruolo;
 
     if (ruolo !== 'UtenteComunale') {
@@ -257,12 +270,12 @@ export const deleteUtente = async (req, res) => {  //solo by ID
             message: 'Accesso negato'
         });
     }
-    
-    
+
+
     try {
         let utente = await utenteRegistratoModel.findByIdAndUpdate(
-            req.params.id, 
-            {stato: 'Disattivato'}, 
+            req.params.id,
+            { stato: 'Disattivato' },
             { new: true });
         if (!utente) {
             return res.status(404).json({
@@ -290,7 +303,7 @@ export const deleteUtente = async (req, res) => {  //solo by ID
  * Per utenti FDO permette anche di aggiornare zoneDiOperazione e coordinateGps
  */
 export const updateUtente = async (req, res) => {
-    
+
     const ruolo = req.loggedUser?.ruolo;
 
     if (ruolo !== 'UtenteComunale') {
@@ -299,7 +312,7 @@ export const updateUtente = async (req, res) => {
             message: 'Accesso negato'
         });
     }
-    
+
     try {
         const { id } = req.params;
         const { password, zoneDiOperazione, coordinateGps } = req.body;

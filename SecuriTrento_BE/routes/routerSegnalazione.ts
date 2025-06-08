@@ -312,6 +312,19 @@ router.get('/', getAllSegnalazioni);
  *                 count:
  *                   type: integer
  *                   example: 3
+ *       403:
+ *         description: Accesso negato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Accesso negato"
  */
 router.get('/nearby/:fdoId', getSegnalazioniNearby);
 
@@ -339,6 +352,19 @@ router.get('/nearby/:fdoId', getSegnalazioniNearby);
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Segnalazione'
+ *       403:
+ *         description: Accesso negato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Accesso negato"
  */
 router.get('/mySegnalazioni', getSegnalazioniByUtente)
 
@@ -369,6 +395,19 @@ router.get('/mySegnalazioni', getSegnalazioniByUtente)
  *                   example: true
  *                 data:
  *                   $ref: '#/components/schemas/Segnalazione'
+ *       403:
+ *         description: Accesso negato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Accesso negato"
  *       404:
  *         description: Segnalazione non trovata
  *       500:
@@ -431,6 +470,19 @@ router.get('/:id', getSegnalazioneById);
  *                   $ref: '#/components/schemas/Segnalazione'
  *       400:
  *         description: Dati non validi
+ *       403:
+ *         description: Accesso negato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Accesso negato"
  *       500:
  *         description: Errore del server
  */
@@ -481,6 +533,19 @@ router.post('/', createSegnalazione); //generaCoordinateTrento prima cera ma ora
  *                   example: true
  *                 data:
  *                   $ref: '#/components/schemas/Segnalazione'
+ *       403:
+ *         description: Accesso negato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Accesso negato"
  *       404:
  *         description: Segnalazione non trovata
  *       500:
@@ -515,6 +580,19 @@ router.put('/:id', updateSegnalazione);
  *                 message:
  *                   type: string
  *                   example: "Segnalazione eliminata con successo"
+ *       403:
+ *         description: Accesso negato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Accesso negato"
  *       404:
  *         description: Segnalazione non trovata
  *       500:

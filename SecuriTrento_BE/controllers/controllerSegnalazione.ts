@@ -334,6 +334,8 @@ export const createSegnalazione = async (req, res) => {
         message: 'Dati non validi'
       });
     }
+    
+    const tipologieValide = ['RISSA', 'SPACCIO', 'FURTO', 'DEGRADO', 'DISTURBO', 'VANDALISMO', 'ALTRO'];
 
     // check dei parametri obbligatori
     const requiredFields = ['tipologia', 'coordinateGps'];
@@ -344,6 +346,24 @@ export const createSegnalazione = async (req, res) => {
           message: `Campo obbligatorio mancante: ${field}`
         });
       }
+    }
+
+    if (dati.descrizione){
+      if (dati.descrizione.length > 350) {
+        return res.status(400).json({
+          success: false,
+          message: 'Descrizione non valida: deve essere una stringa di massimo 350 caratteri'
+        });
+      }
+    }
+
+    const tipologiaNormalizzata = dati.tipologia.toUpperCase().trim();
+    
+    if (!tipologieValide.includes(tipologiaNormalizzata)) {
+      return res.status(400).json({
+        success: false,
+        message: `Tipologia non valida: "${dati.tipologia}". Valori consentiti: ${tipologieValide.join(', ')}`
+      });
     }
 
     if (!mongoose.Types.ObjectId.isValid(idUtentetk)) {

@@ -8,7 +8,7 @@ import express from 'express';
 
 const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string, coordinateGps: any, raggio: number = 2500) => {
     try {
-        console.log(`🔍 Controllo segnalazioni per FDO ${utenteDestinatarioId} nel raggio di ${raggio} metri...`);
+        console.log(`Controllo segnalazioni per FDO ${utenteDestinatarioId} nel raggio di ${raggio} metri...`);
 
         // trova segnalazioni max 8 ore fa nel raggio specificato
         const timeLimit = new Date(Date.now() - 8 * 60 * 60 * 1000);
@@ -73,8 +73,17 @@ const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string,
 
 export const getNotificheSegnalazione = async (req, res) => {
     try {
-        const { utenteDestinatarioId } = req.params;
         const { autoCheck = 'false', raggio = '2500' } = req.query;
+
+        const ruolo = req.loggedUser?.ruolo;
+        const utenteDestinatarioId = req.loggedUser.id;
+
+        if (ruolo !== 'UtenteFDO') {
+            return res.status(403).json({
+                success: false,
+                message: 'Accesso negato'
+            });
+        }
 
         if (!utenteDestinatarioId) {
             return res.status(400).json({
