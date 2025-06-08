@@ -388,7 +388,6 @@ router.put('/:id', tokenChecker, updateUtente);
  *
  *     UtenteComunale:
  *       allOf:
- *         - $ref: '#/components/schemas/UtenteRegistratoInput'
  *         - type: object
  *           properties:
  *             nome:
@@ -408,7 +407,6 @@ router.put('/:id', tokenChecker, updateUtente);
  *
  *     UtenteFDO:
  *       allOf:
- *         - $ref: '#/components/schemas/UtenteRegistratoInput'
  *         - type: object
  *           required:
  *             - TipoFDO

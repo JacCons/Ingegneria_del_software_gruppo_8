@@ -232,6 +232,19 @@ const router = express.Router();
  *                   success: false
  *                   message: "L'utente con ID 64f1a2b3c4d5e6f7a8b9c0d1 non è un UtenteFDO"
  *                   error: "USER_NOT_FDO"
+ *       403:
+ *         description: Accesso negato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Accesso negato"
  *       404:
  *         description: Utente non trovato
  *         content:
@@ -455,4 +468,40 @@ router.get('/notifiche-segnalazioni', tokenChecker, getNotificheSegnalazione);
  *         description: Errore interno del server
  */
 router.get('/notifiche-conferma-richieste-allocazione', tokenChecker, getNotificheConfermaRichiesteAllocazione);
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     NotificaSegnalazione:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: "64f1a2b3c4d5e6f7a8b9c0d1"
+ *           description: ID univoco della notifica
+ *         timestamp:
+ *           type: string
+ *           format: date-time
+ *           example: "2025-06-08T10:30:00.000Z"
+ *           description: Data e ora di creazione della notifica
+ *         tipoNotifica:
+ *           type: string
+ *           enum: ["segnalazione"]
+ *           example: "segnalazione"
+ *           description: Tipo di notifica (sempre 'segnalazione')
+ *         idSegnalazione:
+ *           type: string
+ *           example: "64f1a2b3c4d5e6f7a8b9c0d2"
+ *           description: ID della segnalazione associata
+ *         utenteDestinatarioId:
+ *           type: string
+ *           example: "64f1a2b3c4d5e6f7a8b9c0d3"
+ *           description: ID dell'utente destinatario (UtenteFDO)
+ *       required:
+ *         - timestamp
+ *         - tipoNotifica
+ *         - idSegnalazione
+ *         - utenteDestinatarioId
+ *
+ */
 export default router;

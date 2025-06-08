@@ -74,39 +74,6 @@ const router = express.Router();
  *           description: Data e ora di creazione della richiesta
  *           example: "2023-05-18T14:30:00Z"
  *
- *     RichiestaAllocazioneInput:
- *       type: object
- *       required:
- *         - zonaDiOperazione
- *       properties:
- *         zonaDiOperazione:
- *           type: object
- *           required:
- *             - coordinateGps
- *             - fasciaOraria
- *             - giornoSettimana
- *           properties:
- *             coordinateGps:
- *               type: object
- *               required:
- *                 - type
- *                 - coordinates
- *               properties:
- *                 type:
- *                   type: string
- *                   enum: [Point]
- *                   example: Point
- *                 coordinates:
- *                   type: array
- *                   items:
- *                     type: number
- *                   example: [11.12, 46.07]
- *             fasciaOraria:
- *               type: string
- *               example: "08:00-12:00"
- *             giornoSettimana:
- *               type: string
- *               example: "lunedì"
  */
 
 /**
@@ -328,5 +295,40 @@ router.put('/:id', updateRichiestaAllocazione);
  *         description: Errore del server
  */
 router.delete('/:id', deleteRichiestaAllocazione);
-
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     NotificaRichiestaAllocazione:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: "64f1a2b3c4d5e6f7a8b9c0d1"
+ *           description: ID univoco della notifica
+ *         timestamp:
+ *           type: string
+ *           format: date-time
+ *           example: "2025-06-08T14:30:00.000Z"
+ *           description: Data e ora di creazione della notifica
+ *         tipoNotifica:
+ *           type: string
+ *           enum: ["Richiesta Allocazione"]
+ *           example: "Richiesta Allocazione"
+ *           description: Tipo di notifica (sempre 'Richiesta Allocazione')
+ *         richiestaAllocazioneId:
+ *           type: string
+ *           example: "64f1a2b3c4d5e6f7a8b9c0d2"
+ *           description: ID della richiesta di allocazione associata
+ *         idUtenteFDO:
+ *           type: string
+ *           example: "64f1a2b3c4d5e6f7a8b9c0d3"
+ *           description: ID dell'utente FDO che ha accettato la richiesta
+ *       required:
+ *         - timestamp
+ *         - tipoNotifica
+ *         - richiestaAllocazioneId
+ *         - idUtenteFDO
+ *
+ */
 export default router;
