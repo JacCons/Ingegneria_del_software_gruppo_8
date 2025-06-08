@@ -8,7 +8,7 @@ import express from 'express';
 
 const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string, coordinateGps: any, raggio: number = 2500) => {
     try {
-        console.log(`🔍 Controllo segnalazioni per FDO ${utenteDestinatarioId} nel raggio di ${raggio} metri...`);
+        console.log(`Controllo segnalazioni per FDO ${utenteDestinatarioId} nel raggio di ${raggio} metri...`);
 
         // trova segnalazioni max 8 ore fa nel raggio specificato
         const timeLimit = new Date(Date.now() - 8 * 60 * 60 * 1000);
