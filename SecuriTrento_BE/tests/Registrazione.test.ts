@@ -4,11 +4,11 @@ import request from 'supertest';
 describe('Registrazione API', () => {
   test('dovrebbe registrare un nuovo utente', async () => {
     const res = await request(app)
-      .post('/utenti/register/standard')
+      .post('/api/utenti/register/standard')
       .send({
         nome: 'Mario',
         cognome: 'Rossi',
-        telefono: '3558772356',
+        telefono: '3558792356',
         password: 'Barca-2Cavallo'
       });
     console.log(res.body);

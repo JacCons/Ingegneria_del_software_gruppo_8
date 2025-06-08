@@ -48,7 +48,7 @@ export class NotifichePageComponent {
 
   caricaNotificheSegnalazioni() {
     if (this.currentUser && this.currentUser.tipoUtente === TipoUtente.FDO && this.currentUser._id) {
-      this.notificheService.getNotificheSegnalazioni(this.currentUser._id, true, 2500).subscribe({
+      this.notificheService.getNotificheSegnalazioni(true, 2500).subscribe({
         next: (response) => {
           if (response.success) {
             this.notificheSegnalazioni = response.data;

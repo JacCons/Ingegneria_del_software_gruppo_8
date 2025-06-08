@@ -73,8 +73,17 @@ const controllaECreaNotificheSegnalazioni = async (utenteDestinatarioId: string,
 
 export const getNotificheSegnalazione = async (req, res) => {
     try {
-        const { utenteDestinatarioId } = req.params;
         const { autoCheck = 'false', raggio = '2500' } = req.query;
+
+        const ruolo = req.loggedUser?.ruolo;
+        const utenteDestinatarioId = req.loggedUser.id;
+
+        if (ruolo !== 'UtenteFDO') {
+            return res.status(403).json({
+                success: false,
+                message: 'Accesso negato'
+            });
+        }
 
         if (!utenteDestinatarioId) {
             return res.status(400).json({
