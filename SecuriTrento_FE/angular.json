@@ -24,10 +24,6 @@
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
-            "allowedCommonJsDependencies": [
-              "leaflet",
-              "leaflet.markercluster"
-            ],
             "inlineStyleLanguage": "scss",
             "assets": [
               {
@@ -46,10 +42,6 @@
           },
           "configurations": {
             "production": {
-              "allowedCommonJsDependencies": [
-                "leaflet",
-                "leaflet.markercluster"
-              ],
               "budgets": [
                 {
                   "type": "initial",
