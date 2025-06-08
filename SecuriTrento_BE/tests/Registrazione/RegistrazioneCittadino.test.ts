@@ -1,6 +1,7 @@
 import app from '../../app';
 import request from 'supertest';
 import mongoose from 'mongoose';
+import { utenteRegistratoModel } from '../../models/utenteRegistrato';
 
 describe('Registrazione Utente Cittadino', () => {
     beforeAll(async () => {
@@ -22,8 +23,14 @@ describe('Registrazione Utente Cittadino', () => {
                 password: 'Barca-2Cavallo'
             });
         console.log(res.body);
+        console.log(res.body.error);
         expect(res.statusCode).toBe(201);
         expect(res.body).toHaveProperty('message');
+        let createdUserId = res.body.data._id;
+        if (createdUserId) {
+            await utenteRegistratoModel.findByIdAndDelete(createdUserId);
+            createdUserId = '';
+        }
     });
 
     test('Non dovrebbe registrare un nuovo utente cittadino perché i dati non sono validi', async () => {
