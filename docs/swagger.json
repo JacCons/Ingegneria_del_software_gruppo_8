@@ -34,7 +34,7 @@
                 "type": "object",
                 "properties": {
                   "telefono": {
-                    "type": "string",
+                    "type": "number",
                     "example": "1489164451"
                   },
                   "password": {
@@ -48,7 +48,7 @@
         },
         "responses": {
           "200": {
-            "description": "Autenticazione avvenuta con successo",
+            "description": "Autenticazione avvenuta con successo, ritorna il token.",
             "content": {
               "application/json": {
                 "schema": {
@@ -65,26 +65,8 @@
               }
             }
           },
-          "400": {
-            "description": "Dati mancanti",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
           "401": {
-            "description": "Credenziali non valide",
+            "description": "Credenziali non valide.",
             "content": {
               "application/json": {
                 "schema": {
@@ -104,10 +86,10 @@
         }
       }
     },
-    "/api/notifiche/notifiche-segnalazioni/destinatario/{utenteDestinatarioId}": {
+    "/api/notifiche/notifiche-segnalazioni": {
       "get": {
         "summary": "Recupera notifiche segnalazioni per un utente FDO",
-        "description": "Recupera tutte le notifiche di segnalazioni per un utente FDO specifico. \nPuò opzionalmente controllare e creare nuove notifiche per segnalazioni \nrecenti (max 8 ore) nel raggio specificato.\n",
+        "description": "Recupera tutte le notifiche di segnalazioni per un utente FDO specifico (quello che esegue la richiesta). \nPuò opzionalmente controllare e creare nuove notifiche per segnalazioni \nrecenti (max 8 ore) nel suo raggio d'azione (nel caso in cui il parametro autoCheck sia true).\n",
         "tags": [
           "Notifiche"
         ],
@@ -117,17 +99,6 @@
           }
         ],
         "parameters": [
-          {
-            "in": "path",
-            "name": "utenteDestinatarioId",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$",
-              "example": "64f1a2b3c4d5e6f7a8b9c0d1"
-            },
-            "description": "ID MongoDB dell'utente FDO destinatario delle notifiche"
-          },
           {
             "in": "query",
             "name": "autoCheck",
@@ -417,8 +388,25 @@
               }
             }
           },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
+          "403": {
+            "description": "Accesso negato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Accesso negato"
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
             "description": "Utente non trovato",
@@ -716,48 +704,11 @@
               }
             }
           },
-          "401": null,
+          "403": {
+            "description": "Accesso negato - Utente non autorizzato"
+          },
           "500": {
-            "description": "Errore interno del server",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Errore interno del server"
-                    },
-                    "error": {
-                      "type": "string",
-                      "example": "Database connection failed"
-                    }
-                  }
-                },
-                "examples": {
-                  "errore_database": {
-                    "summary": "Errore di connessione al database",
-                    "value": {
-                      "success": false,
-                      "message": "Errore interno del server",
-                      "error": "Database connection failed"
-                    }
-                  },
-                  "errore_generico": {
-                    "summary": "Errore generico del server",
-                    "value": {
-                      "success": false,
-                      "message": "Errore interno del server nel recupero notifiche richieste allocazione",
-                      "error": "Internal server error"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Errore interno del server"
           }
         }
       }
@@ -1397,6 +1348,26 @@
           "400": {
             "description": "Dati non validi"
           },
+          "403": {
+            "description": "Accesso negato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Accesso negato"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Errore del server"
           }
@@ -1457,6 +1428,26 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Accesso negato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Accesso negato"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1485,6 +1476,26 @@
                       "items": {
                         "$ref": "#/components/schemas/Segnalazione"
                       }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Accesso negato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Accesso negato"
                     }
                   }
                 }
@@ -1526,6 +1537,26 @@
                     },
                     "data": {
                       "$ref": "#/components/schemas/Segnalazione"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Accesso negato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Accesso negato"
                     }
                   }
                 }
@@ -1616,6 +1647,26 @@
               }
             }
           },
+          "403": {
+            "description": "Accesso negato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Accesso negato"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Segnalazione non trovata"
           },
@@ -1661,6 +1712,26 @@
               }
             }
           },
+          "403": {
+            "description": "Accesso negato",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Accesso negato"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Segnalazione non trovata"
           },
@@ -1692,7 +1763,17 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Utente"
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/UtenteRegistrato"
+                          },
+                          {
+                            "$ref": "#/components/schemas/UtenteComunale"
+                          },
+                          {
+                            "$ref": "#/components/schemas/UtenteFDO"
+                          }
+                        ]
                       }
                     },
                     "count": {
@@ -1708,6 +1789,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Accesso negato - solo UtenteComunale autorizzato"
           },
           "500": {
             "description": "Errore del server"
@@ -1753,7 +1837,17 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Utente"
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/UtenteRegistrato"
+                          },
+                          {
+                            "$ref": "#/components/schemas/UtenteComunale"
+                          },
+                          {
+                            "$ref": "#/components/schemas/UtenteFDO"
+                          }
+                        ]
                       }
                     },
                     "count": {
@@ -1772,12 +1866,11 @@
           "400": {
             "description": "Tipo di utente non valido",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
+              "application/json": {}
             }
+          },
+          "403": {
+            "description": "Accesso negato - solo UtenteComunale autorizzato"
           },
           "500": {
             "description": "Errore del server"
@@ -1816,7 +1909,17 @@
                       "example": true
                     },
                     "data": {
-                      "$ref": "#/components/schemas/Utente"
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/UtenteRegistrato"
+                        },
+                        {
+                          "$ref": "#/components/schemas/UtenteComunale"
+                        },
+                        {
+                          "$ref": "#/components/schemas/UtenteFDO"
+                        }
+                      ]
                     },
                     "message": {
                       "type": "string",
@@ -1827,13 +1930,14 @@
               }
             }
           },
+          "403": {
+            "description": "Accesso negato - solo UtenteComunale autorizzato"
+          },
           "404": {
             "description": "Utente non trovato",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+                "schema": null
               }
             }
           },
@@ -1887,7 +1991,17 @@
                       "example": true
                     },
                     "data": {
-                      "$ref": "#/components/schemas/Utente"
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/UtenteRegistrato"
+                        },
+                        {
+                          "$ref": "#/components/schemas/UtenteComunale"
+                        },
+                        {
+                          "$ref": "#/components/schemas/UtenteFDO"
+                        }
+                      ]
                     },
                     "message": {
                       "type": "string",
@@ -1902,11 +2016,12 @@
             "description": "Dati non validi o utente già esistente",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+                "schema": null
               }
             }
+          },
+          "403": {
+            "description": "Accesso negato - solo UtenteComunale autorizzato (per tipo diverso da standard)"
           },
           "500": {
             "description": "Errore del server"
@@ -1953,13 +2068,14 @@
               }
             }
           },
+          "403": {
+            "description": "Accesso negato - solo UtenteComunale autorizzato"
+          },
           "404": {
             "description": "Utente non trovato",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+                "schema": null
               }
             }
           },
@@ -2108,9 +2224,18 @@
                       "type": "boolean",
                       "example": true
                     },
-                    "data": {
-                      "$ref": "#/components/schemas/Utente"
-                    },
+                    "data": null,
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/UtenteRegistrato"
+                      },
+                      {
+                        "$ref": "#/components/schemas/UtenteComunale"
+                      },
+                      {
+                        "$ref": "#/components/schemas/UtenteFDO"
+                      }
+                    ],
                     "message": {
                       "type": "string",
                       "example": "Utente aggiornato con successo"
@@ -2125,7 +2250,6 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error",
                   "examples": {
                     "invalidId": {
                       "value": {
@@ -2150,13 +2274,14 @@
               }
             }
           },
+          "403": {
+            "description": "Accesso negato - solo UtenteComunale autorizzato"
+          },
           "404": {
             "description": "Utente non trovato",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+                "schema": null
               }
             }
           },
@@ -2169,6 +2294,46 @@
   },
   "components": {
     "schemas": {
+      "NotificaSegnalazione": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "64f1a2b3c4d5e6f7a8b9c0d1",
+            "description": "ID univoco della notifica"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-06-08T10:30:00.000Z",
+            "description": "Data e ora di creazione della notifica"
+          },
+          "tipoNotifica": {
+            "type": "string",
+            "enum": [
+              "segnalazione"
+            ],
+            "example": "segnalazione",
+            "description": "Tipo di notifica (sempre 'segnalazione')"
+          },
+          "idSegnalazione": {
+            "type": "string",
+            "example": "64f1a2b3c4d5e6f7a8b9c0d2",
+            "description": "ID della segnalazione associata"
+          },
+          "utenteDestinatarioId": {
+            "type": "string",
+            "example": "64f1a2b3c4d5e6f7a8b9c0d3",
+            "description": "ID dell'utente destinatario (UtenteFDO)"
+          }
+        },
+        "required": [
+          "timestamp",
+          "tipoNotifica",
+          "idSegnalazione",
+          "utenteDestinatarioId"
+        ]
+      },
       "RichiestaAllocazione": {
         "type": "object",
         "required": [
@@ -2256,57 +2421,45 @@
           }
         }
       },
-      "RichiestaAllocazioneInput": {
+      "NotificaRichiestaAllocazione": {
         "type": "object",
-        "required": [
-          "zonaDiOperazione"
-        ],
         "properties": {
-          "zonaDiOperazione": {
-            "type": "object",
-            "required": [
-              "coordinateGps",
-              "fasciaOraria",
-              "giornoSettimana"
+          "_id": {
+            "type": "string",
+            "example": "64f1a2b3c4d5e6f7a8b9c0d1",
+            "description": "ID univoco della notifica"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-06-08T14:30:00.000Z",
+            "description": "Data e ora di creazione della notifica"
+          },
+          "tipoNotifica": {
+            "type": "string",
+            "enum": [
+              "Richiesta Allocazione"
             ],
-            "properties": {
-              "coordinateGps": {
-                "type": "object",
-                "required": [
-                  "type",
-                  "coordinates"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "Point"
-                    ],
-                    "example": "Point"
-                  },
-                  "coordinates": {
-                    "type": "array",
-                    "items": {
-                      "type": "number"
-                    },
-                    "example": [
-                      11.12,
-                      46.07
-                    ]
-                  }
-                }
-              },
-              "fasciaOraria": {
-                "type": "string",
-                "example": "08:00-12:00"
-              },
-              "giornoSettimana": {
-                "type": "string",
-                "example": "lunedì"
-              }
-            }
+            "example": "Richiesta Allocazione",
+            "description": "Tipo di notifica (sempre 'Richiesta Allocazione')"
+          },
+          "richiestaAllocazioneId": {
+            "type": "string",
+            "example": "64f1a2b3c4d5e6f7a8b9c0d2",
+            "description": "ID della richiesta di allocazione associata"
+          },
+          "idUtenteFDO": {
+            "type": "string",
+            "example": "64f1a2b3c4d5e6f7a8b9c0d3",
+            "description": "ID dell'utente FDO che ha accettato la richiesta"
           }
-        }
+        },
+        "required": [
+          "timestamp",
+          "tipoNotifica",
+          "richiestaAllocazioneId",
+          "idUtenteFDO"
+        ]
       },
       "Segnalazione": {
         "type": "object",
@@ -2427,9 +2580,6 @@
       "UtenteComunale": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/UtenteRegistratoInput"
-          },
-          {
             "type": "object",
             "properties": {
               "nome": {
@@ -2456,9 +2606,6 @@
       },
       "UtenteFDO": {
         "allOf": [
-          {
-            "$ref": "#/components/schemas/UtenteRegistratoInput"
-          },
           {
             "type": "object",
             "required": [
