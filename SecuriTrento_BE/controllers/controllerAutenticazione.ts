@@ -10,14 +10,27 @@ export const verificaUtente = async (req, res) => {
     const { telefono, password } = req.body;
 
     try {
+        // check dei parametri obbligatori
+        const dati = req.body;
+        const requiredFields = ['telefono', 'password'];
+        for (const field of requiredFields) {
+            if (!dati[field]) {
+                return res.status(401).json({
+                    success: false,
+                    message: `Campo obbligatorio mancante: ${field}`
+                });
+            }
+        }
+
+
         const utente = await utenteRegistratoModel.findOne({ telefono });
         if (!utente) {
             return res.status(401).json({ message: 'Utente non trovato' });
         }
 
-        if( utente.stato === 'Disattivato') {
+        if (utente.stato === 'Disattivato') {
             return res.status(401).json({ message: 'Utente disattivato' });
-        } 
+        }
 
         const isPasswordValid = await bcrypt.compare(password, utente.password);
         if (!isPasswordValid) {

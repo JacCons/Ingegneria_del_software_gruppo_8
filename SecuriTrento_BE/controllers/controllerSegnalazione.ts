@@ -348,7 +348,7 @@ export const createSegnalazione = async (req, res) => {
       }
     }
 
-    if (!dati.descrizione){
+    if (dati.descrizione){
       if (dati.descrizione.length > 350) {
         return res.status(400).json({
           success: false,
