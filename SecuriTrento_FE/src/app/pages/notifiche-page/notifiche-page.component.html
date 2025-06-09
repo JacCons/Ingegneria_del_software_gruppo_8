@@ -45,10 +45,10 @@
         <div class="lista-segnalazioni">
             <div class="card"
                 *ngFor="let notificaConfermaRichiestaAllocazione of notificheConfermaRichiesteAllocazione">
-                <div><strong>Nuova conferma: </strong> {{ notificaConfermaRichiestaAllocazione.timeStamp | date:'medium'
-                    }}</div>
-                <div><strong>Descrizione:</strong> {{ notificaConfermaRichiestaAllocazione.idUtenteFDO }}</div>
-                <div><strong>Coordinate:</strong> {{ notificaConfermaRichiestaAllocazione._id }}</div>
+                <div><strong>Nuova conferma </strong> {{ notificaConfermaRichiestaAllocazione.timestamp | date:'medium'}}</div>
+                <div><strong>Coordinate:</strong> {{ notificaConfermaRichiestaAllocazione.richiestaAllocazione.zonaDiOperazione?.coordinateGps?.coordinates?.[1] }}, {{ notificaConfermaRichiestaAllocazione.richiestaAllocazione.zonaDiOperazione?.coordinateGps?.coordinates?.[0] }}</div>
+                <!-- <div><strong>Data di conferma:</strong> {{ notificaConfermaRichiestaAllocazione.timeStamp }}</div> -->
+                <div><strong>UtenteFDO:</strong> {{ notificaConfermaRichiestaAllocazione.utenteFDO._id }} | {{ notificaConfermaRichiestaAllocazione.utenteFDO.nome }} {{ notificaConfermaRichiestaAllocazione.utenteFDO.cognome }}</div>
             </div>
 
             <div *ngIf="notificheConfermaRichiesteAllocazione.length === 0" class="empty-state">

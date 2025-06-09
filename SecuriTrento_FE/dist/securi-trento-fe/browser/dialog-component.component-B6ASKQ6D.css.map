@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/dialog-component/dialog-component.component.scss"],
+  "sourcesContent": ["mat-dialog-content {\r\n    min-width: 250px;\r\n    padding: 10px 0;\r\n}"],
+  "mappings": "AAAA,mBACI,UAAA,MADJ,QAEI,KAAA",
+  "names": []
+}

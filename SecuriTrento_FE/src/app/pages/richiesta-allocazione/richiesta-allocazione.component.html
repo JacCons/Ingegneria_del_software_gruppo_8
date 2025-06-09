@@ -19,7 +19,7 @@
       <mat-label>Orario di inizio</mat-label>
       <mat-select name="orario" [(ngModel)]="orarioSelezionato" required>
         <mat-option *ngFor="let ora of [
-          '00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:00',
+          '01:00','02:00','03:00','04:00','05:00','06:00','07:00',
           '08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00',
           '16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'
         ]" [value]="ora">
@@ -46,4 +46,19 @@
       Invia richiesta
     </button>
   </form>
+  
+    <div class="segnalazioni-container">
+        <h3 class="segnalazioni-title">Richieste di allocazione:</h3>
+        <div class="lista-segnalazioni">
+            <div class="card" [ngClass]="richiesta.stato" *ngFor="let richiesta of richiesteAllocazione">
+                <div><strong>Timestamp: </strong> {{ richiesta.timeStamp | date:'medium' }}</div>
+                <div><strong>Fascia oraria:</strong> {{ richiesta.zonaDiOperazione.fasciaOraria }}:00 - {{
+                    richiesta.zonaDiOperazione.fasciaOraria + 1 }}:00</div>
+                <div><strong>Giorno:</strong> {{ richiesta.zonaDiOperazione.giornoSettimana }}</div>
+                <div><strong>Stato:</strong> {{ richiesta.stato }}</div>
+                <div><strong>Coordinate:</strong> {{ richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[1] }}, {{
+                    richiesta.zonaDiOperazione.coordinateGps?.coordinates?.[0] }}</div>
+            </div>
+        </div>
+    </div>
 </div>

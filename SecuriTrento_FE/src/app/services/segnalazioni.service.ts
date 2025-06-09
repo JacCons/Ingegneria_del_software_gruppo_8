@@ -16,35 +16,35 @@ export class SegnalazioniService {
     private autenticazioneService: AutenticazioneService
   ) { }
 
-getAllSegnalazioni(date?: Date[], tipologie?: string[], stati?: string[]): Observable<ApiResponse<Segnalazione[]>> {
-  let params = new HttpParams();
+  getAllSegnalazioni(date?: Date[], tipologie?: string[], stati?: string[]): Observable<ApiResponse<Segnalazione[]>> {
+    let params = new HttpParams();
 
-  // Array di date [dataInizio, dataFine]
-  if (date && date.length >= 2) {
-    params = params.set('dataDa', date[0].toISOString());
-    params = params.set('dataA', date[1].toISOString());
-  }
-
-  // Array di tipologie
-  if (tipologie && tipologie.length > 0) {
-    tipologie.forEach(tipologia => {
-      params = params.append('tipologia', tipologia);
-    });
-  }
-
-  // Array di stati
-  if (stati && stati.length > 0) {
-    params = params.set('stato', stati.join(','));
-  }
-
-  return this.http.get<ApiResponse<Segnalazione[]>>(
-    `${this.apiBasePathUrl}/segnalazioni`,
-    {
-      headers: this.autenticazioneService.getAuthHeaders(),
-      params: params
+    // Array di date [dataInizio, dataFine]
+    if (date && date.length >= 2) {
+      params = params.set('dataDa', date[0].toISOString());
+      params = params.set('dataA', date[1].toISOString());
     }
-  );
-}
+
+    // Array di tipologie
+    if (tipologie && tipologie.length > 0) {
+      tipologie.forEach(tipologia => {
+        params = params.append('tipologia', tipologia);
+      });
+    }
+
+    // Array di stati
+    if (stati && stati.length > 0) {
+      params = params.set('stato', stati.join(','));
+    }
+
+    return this.http.get<ApiResponse<Segnalazione[]>>(
+      `${this.apiBasePathUrl}/segnalazioni`,
+      {
+        headers: this.autenticazioneService.getAuthHeaders(),
+        params: params
+      }
+    );
+  }
 
   getSegnalazioneById(segnalazioneID: String): Observable<ApiResponse<Segnalazione>> {
     return this.http.get<ApiResponse<Segnalazione>>(
@@ -60,10 +60,32 @@ getAllSegnalazioni(date?: Date[], tipologie?: string[], stati?: string[]): Obser
     );
   }
 
-  getSegnalazioniByUtente(): Observable<ApiResponse<Segnalazione[]>> {
+  getSegnalazioniByUtente(date?: Date[], tipologie?: string[], stati?: string[]): Observable<ApiResponse<Segnalazione[]>> {
+    let params = new HttpParams();
+
+    // Array di date [dataInizio, dataFine]
+    if (date && date.length >= 2) {
+      params = params.set('dataDa', date[0].toISOString());
+      params = params.set('dataA', date[1].toISOString());
+    }
+
+    // Array di tipologie
+    if (tipologie && tipologie.length > 0) {
+      tipologie.forEach(tipologia => {
+        params = params.append('tipologia', tipologia);
+      });
+    }
+
+    // Array di stati
+    if (stati && stati.length > 0) {
+      params = params.set('stato', stati.join(','));
+    }
     return this.http.get<ApiResponse<Segnalazione[]>>(
       `${this.apiBasePathUrl}/segnalazioni/mySegnalazioni`,
-      { headers: this.autenticazioneService.getAuthHeaders() }
+      {
+        headers: this.autenticazioneService.getAuthHeaders(),
+        params: params
+      }
     );
   }
 

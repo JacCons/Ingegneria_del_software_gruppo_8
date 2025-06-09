@@ -46,7 +46,7 @@ export class UtentiService {
     return this.http.post<ApiResponse<Utente>>(
       `${this.apiBasePathUrl}/utenti/register/${tipo}`,
       userData,
-      { headers }
+      { headers: this.autenticazioneService.getAuthHeaders() }
     );
   }
 

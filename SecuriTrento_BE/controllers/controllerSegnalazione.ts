@@ -284,6 +284,7 @@ export const getSegnalazioniNearby = async (req, res) => {
 export const getSegnalazioniByUtente = async (req, res) => {
   const ruolo = req.loggedUser?.ruolo;
   const idUtente = req.loggedUser.id;
+  const { dataDa, dataA, tipologia, stato } = req.query;
 
   if (ruolo === 'UtenteFDO' || ruolo === 'UtenteComunale') {
     return res.status(403).json({
@@ -291,9 +292,114 @@ export const getSegnalazioniByUtente = async (req, res) => {
       message: 'Accesso negato'
     });
   }
+  const tipologieValide = ['RISSA', 'SPACCIO', 'FURTO', 'DEGRADO', 'DISTURBO', 'VANDALISMO', 'ALTRO'];
+  let tipologieFiltro: any = null;
+
+  if (tipologia) {
+    const tipologieInput = Array.isArray(tipologia) ? tipologia : [tipologia];
+
+    tipologieFiltro = tipologieInput
+      .map(tip => tip.toUpperCase())
+      .filter(tip => tipologieValide.includes(tip));
+
+    if (tipologieInput.length > 0 && tipologieFiltro.length === 0) {
+      const tipologieInvalide = tipologieInput.filter(tip => !tipologieValide.includes(tip.toUpperCase()));
+      return res.status(400).json({
+        success: false,
+        message: `Tipologie non valide: ${tipologieInvalide.join(', ')}. Valori consentiti: ${tipologieValide.join(', ')}`
+      });
+    }
+
+    if (tipologieInput.length !== tipologieFiltro.length) {
+      const tipologieInvalide = tipologieInput.filter(tip => !tipologieValide.includes(tip.toUpperCase()));
+      console.log(`⚠️ Tipologie ignorate (non valide): ${tipologieInvalide.join(', ')}`);
+    }
+  }
+
+  const statiValidi = ['aperto', 'chiuso'];
+  if (stato && !statiValidi.includes(stato.toLowerCase())) {
+    return res.status(400).json({
+      success: false,
+      message: `Stato non valido. Valori consentiti: ${statiValidi.join(', ')}`
+    });
+  }
+
+  let dataInizio: Date;
+  let dataFine: Date;
+
+  if (dataDa) {
+    dataInizio = new Date(dataDa);
+    if (isNaN(dataInizio.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: 'DataDa non valida. Formato richiesto: YYYY-MM-DD o ISO string'
+      });
+    }
+    dataInizio = new Date(Date.UTC(
+      dataInizio.getUTCFullYear(),
+      dataInizio.getUTCMonth(),
+      dataInizio.getUTCDate(),
+      0, 0, 0, 0
+    ));
+  } else {
+    const oggi = new Date();
+    dataInizio = new Date(Date.UTC(
+      oggi.getUTCFullYear(),
+      oggi.getUTCMonth(),
+      oggi.getUTCDate() - 30,
+      0, 0, 0, 0
+    ));
+  }
+
+  if (dataA) {
+    dataFine = new Date(dataA);
+    if (isNaN(dataFine.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: 'DataA non valida. Formato richiesto: YYYY-MM-DD o ISO string'
+      });
+    }
+    dataFine = new Date(Date.UTC(
+      dataFine.getUTCFullYear(),
+      dataFine.getUTCMonth(),
+      dataFine.getUTCDate(),
+      23, 59, 59, 999
+    ));
+  } else {
+    const oggi = new Date();
+    dataFine = new Date(Date.UTC(
+      oggi.getUTCFullYear(),
+      oggi.getUTCMonth(),
+      oggi.getUTCDate(),
+      23, 59, 59, 999
+    ));
+  }
+
+  if (dataInizio > dataFine) {
+    return res.status(400).json({
+      success: false,
+      message: `Range di date non valido: dataInizio (${dataInizio.toISOString()}) è successiva a dataFine (${dataFine.toISOString()})`
+    });
+  }
 
   try {
-    const segnalazioni = await segnalazioneModel.find({ idUtente });
+    const filtro: any = {};
+
+    if (tipologieFiltro && tipologieFiltro.length > 0) {
+      if (tipologieFiltro.length === 1) {
+        // Singola tipologia
+        filtro.tipologia = tipologieFiltro[0];
+      } else {
+        // Multiple tipologie - usa $in
+        filtro.tipologia = { $in: tipologieFiltro };
+      }
+    }
+
+    filtro.idUtente = idUtente;
+    const segnalazioni = await segnalazioneModel
+      .find(filtro)
+      .sort({ timeStamp: -1 })
+      .lean();
     return res.status(200).json({
       success: true,
       data: segnalazioni,
@@ -334,7 +440,7 @@ export const createSegnalazione = async (req, res) => {
         message: 'Dati non validi'
       });
     }
-    
+
     const tipologieValide = ['RISSA', 'SPACCIO', 'FURTO', 'DEGRADO', 'DISTURBO', 'VANDALISMO', 'ALTRO'];
 
     // check dei parametri obbligatori
@@ -348,7 +454,7 @@ export const createSegnalazione = async (req, res) => {
       }
     }
 
-    if (dati.descrizione){
+    if (dati.descrizione) {
       if (dati.descrizione.length > 350) {
         return res.status(400).json({
           success: false,
@@ -358,7 +464,7 @@ export const createSegnalazione = async (req, res) => {
     }
 
     const tipologiaNormalizzata = dati.tipologia.toUpperCase().trim();
-    
+
     if (!tipologieValide.includes(tipologiaNormalizzata)) {
       return res.status(400).json({
         success: false,

@@ -113,7 +113,7 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
   });
   isLinear = false;
 
-  async ngAfterViewInit(): Promise<void>{
+  async ngAfterViewInit(): Promise<void> {
     await this.mappaService.initMap('map');
     this.caricaSegnalazioniCluster();
     this.cdr.detectChanges();
@@ -133,7 +133,7 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
               return dateB.getTime() - dateA.getTime();
             });// ordina in ordine decrescente
 
-            this.cdr .detectChanges();
+            this.cdr.detectChanges();
           } else {
             this.dialogService.showError('Errore nel recupero di tutte segnalazioni');
           }
@@ -145,7 +145,22 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
         }
       });
     } else if (this.currentUser?.tipoUtente === TipoUtente.CITTADINO) {
-      this.segnalazioniService.getSegnalazioniByUtente().subscribe({
+      const startDate = this.campaignOne.get('start')?.value;
+      const endDate = this.campaignOne.get('end')?.value;
+      const tipologieFinal = this.tipologieList;
+      const stati = this.statoSegnalazioni.value;
+
+      console.log('Filtri applicati:', {
+        dataInizio: startDate,
+        dataFine: endDate,
+        tipologie: tipologieFinal,
+        stati: stati
+      });
+
+      const dateArray: Date[] | undefined = (startDate && endDate) ? [startDate, endDate] : undefined;
+      const tipologieArray: string[] | undefined = (tipologieFinal && Array.isArray(tipologieFinal) && tipologieFinal.length > 0) ? tipologieFinal as string[] : undefined;
+      const statiArray: string[] | undefined = (stati && Array.isArray(stati) && stati.length > 0) ? stati as string[] : undefined;
+      this.segnalazioniService.getSegnalazioniByUtente(dateArray, tipologieArray).subscribe({
         next: (response) => {
           if (response.success) {
             this.segnalazioni = response.data;
@@ -276,7 +291,7 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
       'Vuoi confermare la segnalazione?',
       'Conferma',
       'Annulla'
-    ).subscribe(result => {
+    ).subscribe(async result => {
       if (result === 'confirm') {
         this.showSegnalazioneForm = false;
         console.log('Segnalazione confermata!');
@@ -285,87 +300,92 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
         const tipologia = this.firstFormGroup.get('newTipologiaSegnalazione')?.value;
         const descrizione = this.secondFormGroup.get('newDescrizione')?.value;
 
-        // Ottieni la posizione GPS dell'utente
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
+        if (!tipologia) {
+          this.dialogService.showError('Tipologia segnalazione mancante');
+          return;
+        }
 
-            console.log('Coordinate GPS:', { lat, lng });
+        try {
+          // Aspetta di ricevere la posizione GPS
+          const coordinates = await this.getCurrentPosition();
+          console.log('Coordinate GPS ricevute:', coordinates);
 
-            const segnalazione: Segnalazione = {
-              tipologia: tipologia as TipoSegnalazione,
-              descrizione: descrizione || '',
-              coordinateGps: {
-                type: 'Point',
-                coordinates: [lng, lat]
-              }
-            };
-            // AGGIUNGI QUESTO DEBUG
-            console.log('Segnalazione completa prima dell\'invio:', JSON.stringify(segnalazione, null, 2));
-            console.log('Coordinate specifiche:', segnalazione.coordinateGps?.coordinates);
-
-            // Verifica che i dati siano validi prima di inviare
-            if (!tipologia) {
-              this.dialogService.showError('Tipologia segnalazione mancante');
-              return;
+          const segnalazione: Segnalazione = {
+            tipologia: tipologia as TipoSegnalazione,
+            descrizione: descrizione || '',
+            coordinateGps: {
+              type: 'Point',
+              coordinates: [coordinates.lng, coordinates.lat]
             }
+          };
 
-            this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
-              next: (response) => {
-                if (response.success) {
-                  this.dialogService.showSuccess("Operazione effettuata", 'Segnalazione creata con successo!');
-                  console.log('Segnalazione creata:', response.data);
-                  // Aggiorna la mappa con i nuovi dati
-                  this.caricaSegnalazioniCluster();
+          console.log('Segnalazione completa prima dell\'invio:', JSON.stringify(segnalazione, null, 2));
 
-                  // Reset dei form
-                  this.firstFormGroup.reset();
-                  this.secondFormGroup.reset();
-                }
-              },
-            });
+          this.creaSegnalazioneConDati(segnalazione);
 
-            this.cdr.detectChanges();
-          },
-          (error) => {
-            console.error('Errore nel recuperare le coordinate GPS:', error);
-            this.dialogService.showError('Impossibile ottenere la posizione GPS');
+        } catch (error) {
+          console.error('Errore nel recuperare le coordinate GPS:', error);
+          this.dialogService.showError('Impossibile ottenere la posizione GPS');
 
-            // Procedi comunque con la creazione della segnalazione, ma senza coordinate
-            const segnalazione: Segnalazione = {
-              tipologia: tipologia as TipoSegnalazione,
-              descrizione: descrizione || ''
-            };
+          // Procedi comunque con la creazione della segnalazione, ma senza coordinate
+          const segnalazione: Segnalazione = {
+            tipologia: tipologia as TipoSegnalazione,
+            descrizione: descrizione || ''
+          };
 
-            if (!tipologia) {
-              this.dialogService.showError('Tipologia segnalazione mancante');
-              return;
-            }
-
-            this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
-              next: (response) => {
-                if (response.success) {
-                  this.dialogService.showSuccess("Operazione effettuata", 'Segnalazione creata con successo!');
-                  this.caricaSegnalazioniCluster();
-                  this.firstFormGroup.reset();
-                  this.secondFormGroup.reset();
-                }
-              },
-            });
-
-            this.cdr.detectChanges();
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-          }
-        );
+          this.creaSegnalazioneConDati(segnalazione);
+        }
       } else if (result === 'cancel') {
         console.log('Operazione annullata');
       }
     });
+  }
+
+  // Metodo helper per ottenere la posizione come Promise
+  private getCurrentPosition(): Promise<{ lat: number, lng: number }> {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          reject(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000, // Aumentato il timeout a 10 secondi
+          maximumAge: 0
+        }
+      );
+    });
+  }
+
+  // Metodo helper per creare la segnalazione
+  private creaSegnalazioneConDati(segnalazione: Segnalazione): void {
+    this.segnalazioniService.createSegnalazione(segnalazione).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.dialogService.showSuccess("Operazione effettuata", 'Segnalazione creata con successo!');
+          console.log('Segnalazione creata:', response.data);
+
+          // Aggiorna la mappa con i nuovi dati
+          this.caricaSegnalazioniCluster();
+
+          // Reset dei form
+          this.firstFormGroup.reset();
+          this.secondFormGroup.reset();
+        }
+      },
+      error: (error) => {
+        console.error('Errore nella creazione della segnalazione:', error);
+        this.dialogService.showError('Errore nella creazione della segnalazione');
+      }
+    });
+
+    this.cdr.detectChanges();
   }
 
   applicaFiltri(): void {
@@ -384,28 +404,51 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
     const dateArray: Date[] | undefined = (startDate && endDate) ? [startDate, endDate] : undefined;
     const tipologieArray: string[] | undefined = (tipologieFinal && Array.isArray(tipologieFinal) && tipologieFinal.length > 0) ? tipologieFinal as string[] : undefined;
     const statiArray: string[] | undefined = (stati && Array.isArray(stati) && stati.length > 0) ? stati as string[] : undefined;
-
     // Chiama getAllSegnalazioni senza controlli - il BE gestisce i permessi
-    this.segnalazioniService.getAllSegnalazioni(dateArray, tipologieArray, statiArray).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.segnalazioni = response.data;
-          this.segnalazioni.sort((a, b) => {
-            const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
-            const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
-            return dateB.getTime() - dateA.getTime();
-          });
-          console.log('Segnalazioni filtrate ricevute:', this.segnalazioni.length);
-          this.cdr.detectChanges();
-        } else {
+    if (this.currentUser?.tipoUtente !== TipoUtente.CITTADINO) {
+      this.segnalazioniService.getAllSegnalazioni(dateArray, tipologieArray).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.segnalazioni = response.data;
+            this.segnalazioni.sort((a, b) => {
+              const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
+              const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
+              return dateB.getTime() - dateA.getTime();
+            });
+            console.log('Segnalazioni filtrate ricevute:', this.segnalazioni.length);
+            this.cdr.detectChanges();
+          } else {
+            this.dialogService.showError('Errore nel recupero delle segnalazioni filtrate');
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching filtered segnalazioni:', error);
           this.dialogService.showError('Errore nel recupero delle segnalazioni filtrate');
         }
-      },
-      error: (error) => {
-        console.error('Error fetching filtered segnalazioni:', error);
-        this.dialogService.showError('Errore nel recupero delle segnalazioni filtrate');
-      }
-    });
+      });
+    } else if (this.currentUser?.tipoUtente === TipoUtente.CITTADINO) {
+      this.segnalazioniService.getSegnalazioniByUtente(dateArray, tipologieArray).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.segnalazioni = response.data;
+            this.segnalazioni.sort((a, b) => {
+              const dateA = a.timeStamp ? new Date(a.timeStamp) : new Date(0);
+              const dateB = b.timeStamp ? new Date(b.timeStamp) : new Date(0);
+              return dateB.getTime() - dateA.getTime();
+            });
+            console.log('Segnalazioni filtrate ricevute:', this.segnalazioni.length);
+            this.cdr.detectChanges();
+          } else {
+            this.dialogService.showError('Errore nel recupero delle segnalazioni Utente filtrate');
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching filtered segnalazioni:', error);
+          this.dialogService.showError('Errore nel recupero delle segnalazioni Utente filtrate');
+        }
+      });
+    }
+
   }
 
   resetFiltri(): void {

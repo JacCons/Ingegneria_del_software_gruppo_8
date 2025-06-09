@@ -43,6 +43,7 @@ export class RichiestaAllocazioneComponent {
   orarioSelezionato?: string;
   raggio: number = 500;
   stato?: StatoRichiesta;
+  richiesteAllocazione: RichiestaAllocazione[] = [];
 
   private autenticazioneService = inject(AutenticazioneService);
   private cdr = inject(ChangeDetectorRef);
@@ -63,6 +64,7 @@ export class RichiestaAllocazioneComponent {
     this.mappaService.initMap('map');
     this.caricaSegnalazioniCluster();
     this.setupMapClickListener();
+    this.caricaRichiesteAllocazione();
   }
 
   private setupMapClickListener(): void {
@@ -149,7 +151,21 @@ export class RichiestaAllocazioneComponent {
     });
   }
 
-
+  caricaRichiesteAllocazione() {
+    this.richiesteAllocazioneService.getRichiesteAllocazione().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.richiesteAllocazione = response.data;
+          console.log("richieste allocazione: ", this.richiesteAllocazione);
+        } else {
+          console.error('Errore nel recupero delle richieste di allocazione');
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching richieste allocazione:', error);
+      }
+    });
+  }
   caricaSegnalazioniCluster() {
     if (this.currentUser?.tipoUtente === TipoUtente.FDO || this.currentUser?.tipoUtente === TipoUtente.COMUNALE) {
       this.segnalazioniService.getAllSegnalazioni().subscribe({
