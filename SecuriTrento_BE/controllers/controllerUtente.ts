@@ -306,7 +306,7 @@ export const updateUtente = async (req, res) => {
 
     const ruolo = req.loggedUser?.ruolo;
 
-    if (ruolo !== 'UtenteComunale') {
+    if (ruolo === 'UtenteCittadino') {
         return res.status(403).json({
             success: false,
             message: 'Accesso negato'

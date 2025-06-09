@@ -7,7 +7,9 @@ import { Router, NavigationEnd } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { AutenticazioneService } from './services/autenticazione.service';
 import { MappaService } from './services/mappa.service';
+import { UtentiService } from './services/utenti.service';
 import { Utente } from './models/utente.model';
+import { GeoPoint } from './models/utente.model';
 import { interval, Subscription } from 'rxjs';
 import * as L from 'leaflet';
 
@@ -23,6 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
   showDashboard = true;
   currentUser: Utente | null = null;
   private autenticazioneService = inject(AutenticazioneService);
+  private utentiService = inject(UtentiService);
   private mappaService = inject(MappaService);
   private intervalSubscription: Subscription | null = null;
   private currentAgentMarker: L.Marker | null = null;
@@ -49,7 +52,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   // Funzione eseguita ogni 5 secondi
-controllaPosizioneUtente(): void {
+  controllaPosizioneUtente(): void {
     if (this.currentUser && this.currentUser.tipoUtente === 'UtenteFDO') {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -57,6 +60,27 @@ controllaPosizioneUtente(): void {
           const lng = position.coords.longitude;
 
           console.log(`Coordinate GPS agente ${this.currentUser?.TipoFDO}:`, { lat, lng });
+          if (!this.currentUser?._id) {
+            console.error('ID utente non disponibile per aggiornamento GPS');
+            return;
+          }
+
+          const updatedUser: Partial<Utente> = {
+            coordinateGps: {
+              type: "Point",
+              coordinates: [lng, lat]  //[longitude, latitude] per GeoJSON
+            }
+          };
+          this.utentiService.updateUtente(this.currentUser._id, updatedUser).subscribe({
+            next: (response) => {
+              if (response.success) {
+                console.log('Posizione GPS aggiornata con successo');
+              }
+            },
+            error: (error) => {
+              console.error('Errore nell\'aggiornamento della posizione GPS:', error);
+            }
+          });
 
           // Rimuovi il marker e il cerchio precedenti se esistono
           if (this.currentAgentMarker && this.mappaService.getMap()) {
