@@ -18,7 +18,7 @@ export class MappaService {
    * @param elementId - ID dell'elemento HTML dove verrà renderizzata la mappa
    * @returns L.Map - L'istanza della mappa Leaflet
    */
-  initMap(elementId: string): L.Map {
+  async initMap(elementId: string): Promise<L.Map> {
     const iconRetinaUrl = 'marker-icon-2x.png';
     const iconUrl = 'marker-icon.png';
     const shadowUrl = 'marker-shadow.png';

@@ -72,10 +72,17 @@ export class RichiestaAllocazioneComponent {
       return;
     }
 
+    this.caricaSegnalazioniCluster();
+
+
     map.on('click', (e: any) => {
       const lat = e.latlng.lat;
       const lng = e.latlng.lng;
       this.coordinates = [lng, lat];
+
+      console.log('Map clicked at:', this.coordinates);
+      this.caricaSegnalazioniCluster();
+      this.cdr.detectChanges();
 
       // Remove only the current marker if it exists
       if (this.currentMarker) {
@@ -157,8 +164,6 @@ export class RichiestaAllocazioneComponent {
 
             this.cdr.detectChanges();
 
-            // Prima pulisci tutti i marker esistenti
-            this.mappaService.clearMarkers();
 
             // Aggiungi i marker con clustering
             if (this.segnalazioni && this.segnalazioni.length) {
@@ -166,7 +171,7 @@ export class RichiestaAllocazioneComponent {
                 const lon = Number(s.coordinateGps?.coordinates?.at(0));
                 const lat = Number(s.coordinateGps?.coordinates?.at(1));
                 if (lon && lat) {
-                  this.mappaService.addMarkerToCluster([lat, lon])
+                  this.mappaService.addMarker([lat, lon])
                     .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
                 }
               });
@@ -193,8 +198,6 @@ export class RichiestaAllocazioneComponent {
             });// ordina in ordine decrescente
 
             this.cdr.detectChanges();
-            // Prima pulisci tutti i marker esistenti
-            this.mappaService.clearMarkers();
 
             // Aggiungi i marker con clustering
             if (this.segnalazioni && this.segnalazioni.length) {
@@ -202,7 +205,7 @@ export class RichiestaAllocazioneComponent {
                 const lon = Number(s.coordinateGps?.coordinates?.at(0));
                 const lat = Number(s.coordinateGps?.coordinates?.at(1));
                 if (lon && lat) {
-                  this.mappaService.addMarkerToCluster([lat, lon])
+                  this.mappaService.addMarker([lat, lon])
                     .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
                 }
               });

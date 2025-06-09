@@ -25284,7 +25284,7 @@ function \u0275\u0275validateIframeAttribute(attrValue, tagName, attrName) {
     iframe.src = "";
     iframe.srcdoc = trustedHTMLFromString("");
     nativeRemoveNode(lView[RENDERER], iframe);
-    const errorMessage = ngDevMode && `Angular has detected that the \`${attrName}\` was applied as a binding to an <iframe>${getTemplateLocationDetails(lView)}. For security reasons, the \`${attrName}\` can be set on an <iframe> as a static attribute only. 
+    const errorMessage = ngDevMode && `Angular has detected that the \`${attrName}\` was applied as a binding to an <iframe>${getTemplateLocationDetails(lView)}. For security reasons, the \`${attrName}\` can be set on an <iframe> as a static attribute only.
 To fix this, switch the \`${attrName}\` binding to a static attribute in a template or in host bindings section.`;
     throw new RuntimeError(-910, errorMessage);
   }
@@ -40744,14 +40744,14 @@ function assertNoImageDistortion(dir, img, renderer) {
     const inaccurateDimensions = Math.abs(suppliedAspectRatio - intrinsicAspectRatio) > ASPECT_RATIO_TOLERANCE;
     const stylingDistortion = nonZeroRenderedDimensions && Math.abs(intrinsicAspectRatio - renderedAspectRatio) > ASPECT_RATIO_TOLERANCE;
     if (inaccurateDimensions) {
-      console.warn(formatRuntimeError(2952, `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes. 
-Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h (aspect-ratio: ${round(intrinsicAspectRatio)}). 
-Supplied width and height attributes: ${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${round(suppliedAspectRatio)}). 
+      console.warn(formatRuntimeError(2952, `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes.
+Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h (aspect-ratio: ${round(intrinsicAspectRatio)}).
+Supplied width and height attributes: ${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${round(suppliedAspectRatio)}).
 To fix this, update the width and height attributes.`));
     } else if (stylingDistortion) {
-      console.warn(formatRuntimeError(2952, `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the rendered image does not match the image's intrinsic aspect ratio. 
-Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h (aspect-ratio: ${round(intrinsicAspectRatio)}). 
-Rendered image size: ${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ${round(renderedAspectRatio)}). 
+      console.warn(formatRuntimeError(2952, `${imgDirectiveDetails(dir.ngSrc)} the aspect ratio of the rendered image does not match the image's intrinsic aspect ratio.
+Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h (aspect-ratio: ${round(intrinsicAspectRatio)}).
+Rendered image size: ${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ${round(renderedAspectRatio)}).
 This issue can occur if "width" and "height" attributes are added to an image without updating the corresponding image styling. To fix this, adjust image styling. In most cases, adding "height: auto" or "width: auto" to the image styling will fix this issue.`));
     } else if (!dir.ngSrcset && nonZeroRenderedDimensions) {
       const recommendedWidth = RECOMMENDED_SRCSET_DENSITY_CAP * renderedWidth;
@@ -40759,10 +40759,10 @@ This issue can occur if "width" and "height" attributes are added to an image wi
       const oversizedWidth = intrinsicWidth - recommendedWidth >= OVERSIZED_IMAGE_TOLERANCE2;
       const oversizedHeight = intrinsicHeight - recommendedHeight >= OVERSIZED_IMAGE_TOLERANCE2;
       if (oversizedWidth || oversizedHeight) {
-        console.warn(formatRuntimeError(2960, `${imgDirectiveDetails(dir.ngSrc)} the intrinsic image is significantly larger than necessary. 
-Rendered image size: ${renderedWidth}w x ${renderedHeight}h. 
-Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h. 
-Recommended intrinsic image size: ${recommendedWidth}w x ${recommendedHeight}h. 
+        console.warn(formatRuntimeError(2960, `${imgDirectiveDetails(dir.ngSrc)} the intrinsic image is significantly larger than necessary.
+Rendered image size: ${renderedWidth}w x ${renderedHeight}h.
+Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h.
+Recommended intrinsic image size: ${recommendedWidth}w x ${recommendedHeight}h.
 Note: Recommended intrinsic image size is calculated assuming a maximum DPR of ${RECOMMENDED_SRCSET_DENSITY_CAP}. To improve loading time, resize the image or consider using the "ngSrcset" and "sizes" attributes.`));
       }
     }
@@ -89316,7 +89316,7 @@ var RichiestaAllocazioneComponent = class _RichiestaAllocazioneComponent {
             <mat-option [value]="GiornoSettimana.GIOVEDI">Gioved\xEC</mat-option>
             <mat-option [value]="GiornoSettimana.VENERDI">Venerd\xEC</mat-option>
             <mat-option [value]="GiornoSettimana.SABATO">Sabato</mat-option>
-            <mat-option [value]="GiornoSettimana.DOMENICA">Domenica</mat-option>    
+            <mat-option [value]="GiornoSettimana.DOMENICA">Domenica</mat-option>
         </mat-select>
     </mat-form-field>
 
@@ -89343,9 +89343,9 @@ var RichiestaAllocazioneComponent = class _RichiestaAllocazioneComponent {
       <mat-hint>Latitudine, Longitudine</mat-hint>
     </mat-form-field>
 
-    <button mat-raised-button 
-            color="primary" 
-            type="submit" 
+    <button mat-raised-button
+            color="primary"
+            type="submit"
             [disabled]="!richiestaForm.valid || coordinates[0] === 0"
             (click)="inviaRichiestaAllocazione()">
       Invia richiesta

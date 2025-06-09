@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "static-site": "ng build --configuration=production && npx serve -s dist/securi-trento-fe/browser -p 4200",
     "build_prod": "ng build --configuration production && ng serve --configuration production",
     "render": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",

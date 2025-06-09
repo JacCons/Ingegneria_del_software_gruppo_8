@@ -100,7 +100,9 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
       this.currentUser = user;
       console.log("currentUser", this.currentUser);
     });
-    this.caricaSegnalazioni();
+    this.mappaService.initMap('map');
+    this.caricaSegnalazioniCluster();
+    this.cdr.detectChanges();
   }
 
   firstFormGroup = this._formBuilder.group({
@@ -111,9 +113,10 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
   });
   isLinear = false;
 
-  ngAfterViewInit(): void {
-    this.mappaService.initMap('map');
+  async ngAfterViewInit(): Promise<void>{
+    await this.mappaService.initMap('map');
     this.caricaSegnalazioniCluster();
+    this.cdr.detectChanges();
   }
 
   caricaSegnalazioni() {
@@ -183,7 +186,6 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
             this.cdr.detectChanges();
 
             // Prima pulisci tutti i marker esistenti
-            this.mappaService.clearMarkers();
 
             // Aggiungi i marker con clustering
             if (this.segnalazioni && this.segnalazioni.length) {
@@ -191,7 +193,7 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
                 const lon = Number(s.coordinateGps?.coordinates?.at(0));
                 const lat = Number(s.coordinateGps?.coordinates?.at(1));
                 if (lon && lat) {
-                  this.mappaService.addMarkerToCluster([lat, lon])
+                  this.mappaService.addMarker([lat, lon])
                     .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
                 }
               });
@@ -220,7 +222,6 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
 
             this.cdr.detectChanges();
             // Prima pulisci tutti i marker esistenti
-            this.mappaService.clearMarkers();
 
             // Aggiungi i marker con clustering
             if (this.segnalazioni && this.segnalazioni.length) {
@@ -228,7 +229,7 @@ export class SegnalazioniPageComponent implements OnInit, AfterViewInit {
                 const lon = Number(s.coordinateGps?.coordinates?.at(0));
                 const lat = Number(s.coordinateGps?.coordinates?.at(1));
                 if (lon && lat) {
-                  this.mappaService.addMarkerToCluster([lat, lon])
+                  this.mappaService.addMarker([lat, lon])
                     .bindPopup(`<b>${s.tipologia}</b><br>${s.descrizione}`);
                 }
               });
